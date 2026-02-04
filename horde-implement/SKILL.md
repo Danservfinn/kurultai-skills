@@ -1,10 +1,11 @@
 ---
 name: implement
-description: This skill should be used when the user invokes "/implement" to automatically generate an implementation plan using senior-prompt-engineer, create structured tasks, and deploy a subagent swarm using subagent-driven-development to execute the plan. After implementation, invokes critical-review to validate the work. The skill handles the full pipeline from prompt engineering through task creation to autonomous execution and review across software development, infrastructure, content creation, and data processing domains.
+description: This skill should be used when the user invokes "/implement" to automatically generate an implementation plan using senior-prompt-engineer, create structured tasks, and deploy a subagent swarm using subagent-driven-development to execute the plan. After implementation, invokes implementation-status to audit completion before running critical-review. The skill handles the full pipeline from prompt engineering through task creation to autonomous execution, audit, and review across software development, infrastructure, content creation, and data processing domains.
 integrations:
   - senior-prompt-engineer
   - subagent-driven-development
   - dispatching-parallel-agents
+  - implementation-status
   - critical-review
 ---
 
@@ -20,7 +21,8 @@ This skill provides a complete implementation pipeline:
 2. **Task Decomposition** - Breaks the plan into discrete, trackable tasks
 3. **Subagent Swarm Deployment** - Uses `subagent-driven-development` to execute tasks with parallel subagents
 4. **Autonomous Execution** - Automatically proceeds through the full pipeline without user intervention
-5. **Critical Review** - Uses `critical-review` to validate the implemented work across all relevant domains
+5. **Implementation Status Audit** - Uses `implementation-status` to verify 100% completion before review
+6. **Critical Review** - Uses `critical-review` to validate the implemented work across all relevant domains (only after 100% completion)
 
 ## When to Use
 
@@ -112,9 +114,35 @@ After all tasks complete:
    - Link to detailed changes
    - Next steps (if any)
 
-### Phase 5: Critical Review
+### Phase 5: Implementation Status Audit
 
-After implementation completes, invoke `critical-review` for comprehensive validation:
+Before proceeding to review, invoke `implementation-status` to verify completion:
+
+1. **Invoke implementation-status** to audit the implementation:
+   - Provide the plan path and context
+   - Request comprehensive audit of all phases/tasks
+   - Get completion percentage (Complete/Partial/Missing for each phase)
+
+2. **Process audit results**:
+   - If **100% complete** (all phases marked "Complete"): Proceed to Phase 6
+   - If **partial completion** (some phases marked "Partial" or "Missing"):
+     - Present status matrix to user
+     - Ask whether to:
+       - Complete remaining work first (recommended)
+       - Proceed to review with incomplete implementation (not recommended)
+     - If user chooses to complete: Return to Phase 3 with remaining tasks
+
+3. **Audit output format** (expected from `implementation-status`):
+   ```markdown
+   | Phase | Status | Implemented | Missing | Blockers |
+   |-------|--------|-------------|---------|----------|
+   | Phase 1 | Complete | Files... | None | None |
+   | Phase 2 | Complete | Files... | None | None |
+   ```
+
+### Phase 6: Critical Review
+
+**Only after Phase 5 confirms 100% completion**, invoke `critical-review` for comprehensive validation:
 
 1. **Determine review scope** based on implementation type:
    - **Backend changes**: Backend, Architecture, Security, Performance, DevOps
@@ -323,8 +351,10 @@ Track task progress through states:
 4. Deploy subagent swarm via `subagent-driven-development`
 5. Execute tasks with verification and reviews
 6. Present completed implementation summary
-7. Invoke `critical-review` for comprehensive validation across Backend, Architecture, Security, and DevOps domains
-8. Present consolidated review report with findings and improvement recommendations
+7. Invoke `implementation-status` to audit completion (verifies 100% before review)
+8. If 100% complete: Invoke `critical-review` for comprehensive validation across Backend, Architecture, Security, and DevOps domains
+9. If not 100% complete: Offer to complete remaining work first
+10. Present consolidated review report with findings and improvement recommendations
 
 ## Error Handling
 
@@ -358,4 +388,5 @@ Track task progress through states:
 - `senior-data-engineer` - Data pipelines
 - `content-research-writer` - Content creation
 - `systematic-debugging` - Error analysis
-- `critical-review` - Comprehensive post-implementation validation (Phase 5)
+- `implementation-status` - Completion audit before review (Phase 5)
+- `critical-review` - Comprehensive post-implementation validation (Phase 6, only after 100% completion)

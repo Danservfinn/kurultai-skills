@@ -273,8 +273,8 @@ Phase 1 (Setup)
 
 Once approved, this plan will be executed using:
 - **Skill:** `horde-implement`
-- **Pipeline:** senior-prompt-engineer → subagent-driven-development
-- **Mode:** Same-session parallel dispatch with review gates
+- **Pipeline:** senior-prompt-engineer → subagent-driven-development → implementation-status → critical-review
+- **Mode:** Same-session parallel dispatch with review gates and completion audit
 
 ## Approval
 
@@ -345,6 +345,8 @@ horde-implement will:
 2. Deploy subagent-driven-development for parallel task execution
 3. Apply review gates at each task completion
 4. Track progress and handle errors with systematic-debugging
+5. Upon completion, run implementation-status to verify 100% completion
+6. Only after 100% verification, run critical-review for comprehensive validation
 
 [Proceeds with implementation]
 ```
@@ -698,8 +700,8 @@ Phase 1 (Database & Models)
 
 Once approved, this plan will be executed using:
 - **Skill:** `horde-implement`
-- **Pipeline:** senior-prompt-engineer → subagent-driven-development
-- **Mode:** Same-session parallel dispatch with review gates
+- **Pipeline:** senior-prompt-engineer → subagent-driven-development → implementation-status → critical-review
+- **Mode:** Same-session parallel dispatch with review gates and completion audit
 - **Specialist Routing:** Backend (2.x), DevOps (3.1), Frontend (4.x)
 
 ## Approval
@@ -819,8 +821,8 @@ When the user rejects or requests changes to the plan:
 
 **Complementary Skills:**
 - `horde-brainstorming` - Use before planning for complex features
-- `horde-implement` - Use after planning for execution (hands off to subagent-driven-development)
-- `implementation-status` - Use to check plan completion status
+- `horde-implement` - Use after planning for execution (full pipeline: subagent-driven-development → implementation-status → critical-review)
+- `implementation-status` - Use to check plan completion status (built into horde-implement before review)
 
 **File Locations:**
 - Plans saved to: `docs/plans/YYYY-MM-DD-[feature].md`
