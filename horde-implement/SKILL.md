@@ -1,10 +1,11 @@
 ---
 name: implement
-description: This skill should be used when the user invokes "/implement" to automatically generate an implementation plan using senior-prompt-engineer, create structured tasks, and deploy a subagent swarm using subagent-driven-development to execute the plan. The skill handles the full pipeline from prompt engineering through task creation to autonomous execution across software development, infrastructure, content creation, and data processing domains.
+description: This skill should be used when the user invokes "/implement" to automatically generate an implementation plan using senior-prompt-engineer, create structured tasks, and deploy a subagent swarm using subagent-driven-development to execute the plan. After implementation, invokes critical-review to validate the work. The skill handles the full pipeline from prompt engineering through task creation to autonomous execution and review across software development, infrastructure, content creation, and data processing domains.
 integrations:
   - senior-prompt-engineer
   - subagent-driven-development
   - dispatching-parallel-agents
+  - critical-review
 ---
 
 # Implement
@@ -19,6 +20,7 @@ This skill provides a complete implementation pipeline:
 2. **Task Decomposition** - Breaks the plan into discrete, trackable tasks
 3. **Subagent Swarm Deployment** - Uses `subagent-driven-development` to execute tasks with parallel subagents
 4. **Autonomous Execution** - Automatically proceeds through the full pipeline without user intervention
+5. **Critical Review** - Uses `critical-review` to validate the implemented work across all relevant domains
 
 ## When to Use
 
@@ -109,6 +111,32 @@ After all tasks complete:
    - High-level summary
    - Link to detailed changes
    - Next steps (if any)
+
+### Phase 5: Critical Review
+
+After implementation completes, invoke `critical-review` for comprehensive validation:
+
+1. **Determine review scope** based on implementation type:
+   - **Backend changes**: Backend, Architecture, Security, Performance, DevOps
+   - **Frontend changes**: UX & Accessibility, Frontend, Architecture
+   - **Fullstack changes**: All domains applicable
+   - **Infrastructure**: DevOps, Architecture (possibly Security)
+
+2. **Invoke critical-review** with the implemented artifact:
+   - Provide context: what was built, files changed
+   - Request multi-domain analysis based on scope
+   - Parallel dispatch of specialist skills
+
+3. **Present consolidated review report**:
+   - Executive summary of review findings
+   - Findings by domain with severity levels
+   - Cross-cutting concerns
+   - Prioritized improvement list
+
+4. **Handle review outcomes**:
+   - All findings passed → Implementation verified complete
+   - Issues found → Present to user for approval to fix
+   - User approves fixes → Return to Phase 3 with improvement tasks
 
 ## Domain Routing
 
@@ -295,6 +323,8 @@ Track task progress through states:
 4. Deploy subagent swarm via `subagent-driven-development`
 5. Execute tasks with verification and reviews
 6. Present completed implementation summary
+7. Invoke `critical-review` for comprehensive validation across Backend, Architecture, Security, and DevOps domains
+8. Present consolidated review report with findings and improvement recommendations
 
 ## Error Handling
 
@@ -328,3 +358,4 @@ Track task progress through states:
 - `senior-data-engineer` - Data pipelines
 - `content-research-writer` - Content creation
 - `systematic-debugging` - Error analysis
+- `critical-review` - Comprehensive post-implementation validation (Phase 5)

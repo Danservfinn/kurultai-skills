@@ -54,7 +54,7 @@ Dispatch domain specialists in parallel based on problem characteristics:
 | "infrastructure", "deploy", "scale" | `senior-devops`, `senior-architect` |
 | "data pipeline", "ETL", "analytics" | `senior-data-engineer`, `senior-data-scientist` |
 | "ML", "model", "prediction" | `senior-ml-engineer`, `senior-data-scientist` |
-| "authentication", "security", "privacy" | `security-auditor` (if available), `senior-backend` |
+| "authentication", "security", "privacy" | `senior-backend`, `senior-architect` |
 | "real-time", "websocket", "queue" | `senior-backend`, `senior-devops` |
 
 **Domain Routing Table (using Task subagent dispatch):**

@@ -1,11 +1,11 @@
 ---
 name: horde-plan
-description: Create comprehensive implementation plans using plan mode with EnterPlanMode/ExitPlanMode. Use when starting any multi-step feature implementation, complex refactoring, or system design work. Integrates with tasks and subagent-driven-development for execution.
+description: Create comprehensive implementation plans using plan mode with EnterPlanMode/ExitPlanMode. Use when starting any multi-step feature implementation, complex refactoring, or system design work. Integrates with tasks and hands off to horde-implement for execution.
 ---
 
 # Horde Plan
 
-Create comprehensive implementation plans using plan mode with task breakdown, dependency mapping, and subagent-driven-development integration.
+Create comprehensive implementation plans using plan mode with task breakdown, dependency mapping, and hands off to horde-implement for execution.
 
 ## Quick Start
 
@@ -20,7 +20,7 @@ Claude:
 4. Maps dependencies (TaskCreate with addBlockedBy)
 5. Generates plan.md
 6. Exits plan mode for approval (ExitPlanMode)
-7. Hands off to subagent-driven-development for execution
+7. Hands off to horde-implement for execution
 ```
 
 ## When to Use
@@ -51,10 +51,10 @@ Is this a multi-step implementation task?
 
 | Skill | Use When | Key Difference |
 |-------|----------|----------------|
-| **horde-plan** (this skill) | Creating implementation plans with task tracking | Uses EnterPlanMode, integrates with subagent-driven-development |
+| **horde-plan** (this skill) | Creating implementation plans with task tracking | Uses EnterPlanMode, hands off to horde-implement |
+| **horde-implement** | Executing an implementation plan | Uses senior-prompt-engineer + subagent-driven-development |
 | **horde-brainstorming** | Exploring multiple approaches before planning | Research and options generation, not structured planning |
 | **writing-plans** | Writing detailed step-by-step plans | Focuses on bite-sized TDD steps, less task tracking |
-| **subagent-driven-development** | Executing existing plans | Executes plans, doesn't create them |
 
 ## Pre-Flight Confirmation
 
@@ -105,7 +105,7 @@ Areas affected:
 This will:
 - Create detailed task breakdown
 - Map all dependencies
-- Generate execution plan for subagent-driven-development
+- Generate execution plan for horde-implement
 - Take 5-10 minutes to plan thoroughly
 
 Type 'PROCEED' to continue or 'no' to cancel.
@@ -272,9 +272,9 @@ Phase 1 (Setup)
 ## Execution Handoff
 
 Once approved, this plan will be executed using:
-- **Skill:** `subagent-driven-development`
-- **Mode:** Same-session parallel dispatch
-- **Review Gates:** Spec compliance, test verification, code quality
+- **Skill:** `horde-implement`
+- **Pipeline:** senior-prompt-engineer → subagent-driven-development
+- **Mode:** Same-session parallel dispatch with review gates
 
 ## Approval
 
@@ -306,24 +306,24 @@ Plan complete! Here's what I'll build:
 
 **Next Steps:**
 1. Review the plan above
-2. If approved, I'll use subagent-driven-development to execute
+2. If approved, I'll use horde-implement to execute
 3. Each task will have review gates before proceeding
 4. Progress tracked via TaskList throughout
 
 Shall I proceed with execution?
 ```
 
-## Integration with Subagent-Driven-Development
+## Integration with Horde-Implement
 
-After plan approval, the skill automatically hands off:
+After plan approval, the skill automatically hands off to `horde-implement`:
 
 ```
 User: "Yes, proceed"
 
 Claude:
-Using subagent-driven-development to execute [feature-name] plan.
+Using horde-implement to execute [feature-name] plan.
 
-[Invokes subagent-driven-development with:
+[Invokes horde-implement with:
 - Plan file reference
 - All tasks pre-created via TaskCreate
 - Dependency mapping established
@@ -334,13 +334,19 @@ Using subagent-driven-development to execute [feature-name] plan.
 ```markdown
 ## Execution Handoff
 
-I'm now using **subagent-driven-development** to execute this plan.
+I'm now using **horde-implement** to execute this plan.
 
 **Plan Reference:** `docs/plans/YYYY-MM-DD-[feature].md`
 **Total Tasks:** N
 **Current Phase:** Phase 1
 
-[Proceeds with subagent dispatch per task]
+horde-implement will:
+1. Use senior-prompt-engineer to refine the implementation approach
+2. Deploy subagent-driven-development for parallel task execution
+3. Apply review gates at each task completion
+4. Track progress and handle errors with systematic-debugging
+
+[Proceeds with implementation]
 ```
 
 ## Task Domain Routing
@@ -691,9 +697,9 @@ Phase 1 (Database & Models)
 ## Execution Handoff
 
 Once approved, this plan will be executed using:
-- **Skill:** `subagent-driven-development`
-- **Mode:** Same-session parallel dispatch
-- **Review Gates:** Spec compliance, test verification, code quality
+- **Skill:** `horde-implement`
+- **Pipeline:** senior-prompt-engineer → subagent-driven-development
+- **Mode:** Same-session parallel dispatch with review gates
 - **Specialist Routing:** Backend (2.x), DevOps (3.1), Frontend (4.x)
 
 ## Approval
@@ -725,7 +731,7 @@ Plan complete! Here's what I'll build:
 
 **Next Steps:**
 1. Review the plan above
-2. If approved, I'll use subagent-driven-development to execute
+2. If approved, I'll use horde-implement to execute
 3. Each task will have review gates before proceeding
 4. Progress tracked via TaskList throughout
 
@@ -749,7 +755,7 @@ Shall I proceed with execution?
 - Map dependencies with addBlockedBy
 - Specify exact file paths
 - Include testing in every plan
-- Hand off to subagent-driven-development
+- Hand off to horde-implement
 
 ## Plan Revision Workflow
 
@@ -813,7 +819,7 @@ When the user rejects or requests changes to the plan:
 
 **Complementary Skills:**
 - `horde-brainstorming` - Use before planning for complex features
-- `subagent-driven-development` - Use after planning for execution
+- `horde-implement` - Use after planning for execution (hands off to subagent-driven-development)
 - `implementation-status` - Use to check plan completion status
 
 **File Locations:**
