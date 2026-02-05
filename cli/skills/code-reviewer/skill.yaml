@@ -1,0 +1,44 @@
+name: code-reviewer
+version: 1.0.0
+description: Comprehensive code review skill that analyzes code for bugs, security issues, performance problems, and best practices
+author: kurultai
+type: skill
+
+# Skill configuration
+config:
+  # Default review depth: quick, standard, thorough
+  default_depth: standard
+  # Programming languages supported
+  languages:
+    - python
+    - javascript
+    - typescript
+    - java
+    - go
+    - rust
+    - ruby
+    - csharp
+
+# Entry points
+entry_points:
+  default: prompts/main.md
+
+# Tags for discovery
+tags:
+  - code-review
+  - quality-assurance
+  - security
+  - performance
+  - best-practices
+
+# Dependencies (other skills this skill can use)
+dependencies: []
+
+# Example usage
+examples:
+  - command: "kurultai run code-reviewer --file src/main.py"
+    description: "Review a single file"
+  - command: "kurultai run code-reviewer --dir src/ --depth thorough"
+    description: "Thorough review of entire directory"
+  - command: "kurultai run code-reviewer --pr 123"
+    description: "Review a pull request"

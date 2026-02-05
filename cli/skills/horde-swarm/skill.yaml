@@ -1,0 +1,84 @@
+name: horde-swarm
+version: 1.0.0
+description: Core execution engine for parallel subagent dispatch
+author: Kurultai
+type: engine
+entry_point: prompts/main.md
+tags:
+  - horde
+  - engine
+  - parallel
+  - swarm
+repository: https://github.com/kurultai/horde-swarm
+
+# Engine Configuration
+engine:
+  # Maximum number of parallel subagents that can be dispatched
+  max_parallel_agents: 10
+
+  # Default timeout for subagent execution (seconds)
+  default_timeout: 300
+
+  # Whether to enable result caching for identical subagent calls
+  enable_caching: true
+
+  # Retry configuration for failed subagents
+  retry:
+    enabled: true
+    max_attempts: 3
+    backoff_strategy: exponential
+    base_delay_ms: 1000
+
+  # Result aggregation strategy
+  aggregation:
+    default_strategy: merge
+    strategies:
+      - merge
+      - concatenate
+      - vote
+      - reduce
+
+  # Error handling configuration
+  error_handling:
+    # Continue execution if a subagent fails
+    continue_on_failure: false
+    # Collect partial results from failed agents
+    capture_partial_results: true
+    # Maximum number of failures before aborting entire operation
+    max_failures: 3
+
+# Dependencies on other skills
+dependencies: []
+
+# Required capabilities from the host
+capabilities:
+  - subagent_dispatch
+  - parallel_execution
+  - result_aggregation
+
+# Documentation
+documentation:
+  readme: README.md
+  examples: examples/
+
+# Schema for skill configuration
+config_schema:
+  type: object
+  properties:
+    max_parallel_agents:
+      type: integer
+      minimum: 1
+      maximum: 50
+      default: 10
+    default_timeout:
+      type: integer
+      minimum: 30
+      maximum: 3600
+      default: 300
+    enable_caching:
+      type: boolean
+      default: true
+    continue_on_failure:
+      type: boolean
+      default: false
+  additionalProperties: false

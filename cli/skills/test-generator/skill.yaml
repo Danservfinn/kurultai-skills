@@ -1,0 +1,58 @@
+name: test-generator
+version: 1.0.0
+description: Generate comprehensive test cases from code analysis including unit tests, edge cases, and integration test scaffolding
+author: kurultai
+type: skill
+
+# Skill configuration
+config:
+  # Default test framework (auto-detect if not specified)
+  default_framework: auto
+  # Test types to generate
+  test_types:
+    - unit
+    - integration
+    - edge_cases
+    - property_based
+  # Programming languages supported
+  languages:
+    - python
+    - javascript
+    - typescript
+    - java
+    - go
+    - rust
+    - ruby
+    - csharp
+  # Coverage targets
+  coverage:
+    lines: 80
+    branches: 70
+    functions: 90
+
+# Entry points
+entry_points:
+  default: prompts/main.md
+
+# Tags for discovery
+tags:
+  - testing
+  - test-generation
+  - unit-tests
+  - integration-tests
+  - quality-assurance
+  - tdd
+
+# Dependencies (other skills this skill can use)
+dependencies: []
+
+# Example usage
+examples:
+  - command: "kurultai run test-generator --file src/calculator.py"
+    description: "Generate tests for a single file"
+  - command: "kurultai run test-generator --file src/api.js --framework jest"
+    description: "Generate tests with specific framework"
+  - command: "kurultai run test-generator --file src/utils.py --type edge_cases"
+    description: "Generate only edge case tests"
+  - command: "kurultai run test-generator --dir src/ --output tests/"
+    description: "Generate tests for entire project"

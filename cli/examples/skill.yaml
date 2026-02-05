@@ -1,0 +1,34 @@
+# Example skill.yaml manifest for Kurultai CLI
+# This demonstrates all available fields and their formats
+
+# Required fields
+name: example-skill
+version: 1.2.3
+description: |
+  An example skill demonstrating the Kurultai manifest format.
+  This skill provides natural language processing capabilities
+  for text analysis and entity extraction.
+author: Kurultai Team
+type: skill  # Can be: engine, skill, workflow
+
+# Optional fields
+entry_point: src/main.py
+prompts_dir: prompts
+
+# Dependencies with version constraints
+# Supports: >=, <=, >, <, =, ^ (compatible), ~ (approximately)
+dependencies:
+  nlp-engine: ">=2.0.0"
+  data-utils: "^1.5.0"
+  optional-dep: "optional:>=1.0.0"  # Optional dependency
+
+# Tags for categorization and discovery
+tags:
+  - nlp
+  - ai
+  - text-analysis
+  - entity-extraction
+
+# URLs for project information
+homepage: https://kurultai.ai/skills/example-skill
+repository: https://github.com/kurultai/example-skill

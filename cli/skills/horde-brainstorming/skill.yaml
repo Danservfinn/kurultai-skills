@@ -1,0 +1,14 @@
+name: horde-brainstorming
+version: 1.0.0
+description: 6-phase collaborative design process for complex problem solving
+author: Kurultai
+type: skill
+dependencies:
+  - horde-swarm: ^1.0.0
+entry_point: prompts/main.md
+tags:
+  - horde
+  - brainstorming
+  - design
+  - collaboration
+repository: https://github.com/kurultai/horde-brainstorming

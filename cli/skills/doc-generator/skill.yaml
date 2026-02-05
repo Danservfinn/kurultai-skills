@@ -1,0 +1,50 @@
+name: doc-generator
+version: 1.0.0
+description: Generate comprehensive documentation from code including API docs, usage examples, and README files from source code analysis
+author: kurultai
+type: skill
+
+# Skill configuration
+config:
+  # Default output format: markdown, html, json
+  default_format: markdown
+  # Documentation types to generate
+  doc_types:
+    - api
+    - usage
+    - readme
+    - changelog
+  # Programming languages supported
+  languages:
+    - python
+    - javascript
+    - typescript
+    - java
+    - go
+    - rust
+    - ruby
+    - csharp
+
+# Entry points
+entry_points:
+  default: prompts/main.md
+
+# Tags for discovery
+tags:
+  - documentation
+  - api-docs
+  - code-analysis
+  - readme-generator
+  - developer-experience
+
+# Dependencies (other skills this skill can use)
+dependencies: []
+
+# Example usage
+examples:
+  - command: "kurultai run doc-generator --file src/api.py"
+    description: "Generate docs for a single file"
+  - command: "kurultai run doc-generator --dir src/ --output docs/"
+    description: "Generate docs for entire project"
+  - command: "kurultai run doc-generator --file src/api.py --type api"
+    description: "Generate only API documentation"

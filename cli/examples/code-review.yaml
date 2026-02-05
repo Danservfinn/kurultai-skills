@@ -1,0 +1,182 @@
+# Code Review Workflow
+# This workflow demonstrates parallel execution patterns for comprehensive code review.
+# Multiple review tasks run simultaneously and results are aggregated.
+#
+# Usage:
+#   kurultai workflow run examples/code-review.yaml --var target_path="./src" --var depth="thorough"
+
+workflow:
+  name: code-review
+  version: 1.0.0
+  description: |
+    Comprehensive code review workflow that runs multiple review skills
+    in parallel and aggregates results into a unified report.
+
+  # Workflow variables
+  variables:
+    target_path:
+      description: "Path to code to review"
+      required: true
+      default: "./src"
+    depth:
+      description: "Review depth (basic|thorough|strict)"
+      default: "thorough"
+    language:
+      description: "Primary programming language"
+      default: "python"
+    exclude_patterns:
+      description: "Patterns to exclude from review"
+      default: "*.pyc,__pycache__,node_modules"
+
+  # Workflow steps
+  steps:
+    # Step 1: Initial code review (runs first to establish baseline)
+    - id: initial_review
+      name: Initial Code Review
+      skill: code-reviewer
+      description: Perform initial comprehensive code review
+      inputs:
+        path: "{{ target_path }}"
+        depth: "{{ depth }}"
+        language: "{{ language }}"
+        exclude: "{{ exclude_patterns }}"
+      outputs:
+        - review_report
+        - issues
+        - score
+        - recommendations
+
+    # Step 2: Documentation check (runs in parallel with test check)
+    - id: doc_check
+      name: Documentation Check
+      skill: doc-generator
+      description: Verify documentation completeness and quality
+      inputs:
+        mode: "check"
+        path: "{{ target_path }}"
+        language: "{{ language }}"
+      outputs:
+        - doc_coverage
+        - missing_docs
+        - doc_quality_score
+      # This runs in parallel with other steps
+      parallel_group: quality_checks
+
+    # Step 3: Test coverage verification (runs in parallel)
+    - id: test_check
+      name: Test Coverage Verification
+      skill: test-generator
+      description: Verify test coverage and identify gaps
+      inputs:
+        mode: "analyze"
+        path: "{{ target_path }}"
+        language: "{{ language }}"
+      outputs:
+        - coverage_report
+        - uncovered_areas
+        - test_quality_score
+      parallel_group: quality_checks
+
+    # Step 4: Security scan (runs in parallel)
+    - id: security_scan
+      name: Security Scan
+      skill: security-auditor
+      description: Scan for security vulnerabilities
+      inputs:
+        path: "{{ target_path }}"
+        language: "{{ language }}"
+        level: "{{ depth }}"
+      outputs:
+        - security_report
+        - vulnerabilities
+        - security_score
+      parallel_group: quality_checks
+
+    # Step 5: Aggregate results (runs after all parallel checks complete)
+    - id: aggregate
+      name: Aggregate Review Results
+      skill: horde-synthesize
+      description: Combine all review results into unified report
+      inputs:
+        sources:
+          - "{{ steps.initial_review.outputs.review_report }}"
+          - "{{ steps.doc_check.outputs.doc_coverage }}"
+          - "{{ steps.test_check.outputs.coverage_report }}"
+          - "{{ steps.security_scan.outputs.security_report }}"
+        format: "unified_review"
+      outputs:
+        - unified_report
+        - action_items
+        - overall_score
+      # Depends on all previous steps
+      depends_on:
+        - initial_review
+        - doc_check
+        - test_check
+        - security_scan
+
+  # Final aggregated outputs
+  outputs:
+    summary:
+      description: "Complete code review summary"
+      value: |
+        # Code Review Report
+
+        ## Overall Score: {{ steps.aggregate.outputs.overall_score }}/100
+
+        ## Code Quality
+        {{ steps.initial_review.outputs.review_report }}
+
+        Score: {{ steps.initial_review.outputs.score }}/100
+
+        ## Documentation
+        Coverage: {{ steps.doc_check.outputs.doc_coverage }}%
+        Quality Score: {{ steps.doc_check.outputs.doc_quality_score }}/100
+
+        Missing Documentation:
+        {{ steps.doc_check.outputs.missing_docs }}
+
+        ## Test Coverage
+        {{ steps.test_check.outputs.coverage_report }}
+
+        Quality Score: {{ steps.test_check.outputs.test_quality_score }}/100
+
+        Uncovered Areas:
+        {{ steps.test_check.outputs.uncovered_areas }}
+
+        ## Security
+        Security Score: {{ steps.security_scan.outputs.security_score }}/100
+
+        {{ steps.security_scan.outputs.security_report }}
+
+        ## Action Items
+        {{ steps.aggregate.outputs.action_items }}
+
+    scores:
+      code_quality: "{{ steps.initial_review.outputs.score }}"
+      documentation: "{{ steps.doc_check.outputs.doc_quality_score }}"
+      test_coverage: "{{ steps.test_check.outputs.test_quality_score }}"
+      security: "{{ steps.security_scan.outputs.security_score }}"
+      overall: "{{ steps.aggregate.outputs.overall_score }}"
+
+    reports:
+      code: "{{ steps.initial_review.outputs.review_report }}"
+      docs: "{{ steps.doc_check.outputs.doc_coverage }}"
+      tests: "{{ steps.test_check.outputs.coverage_report }}"
+      security: "{{ steps.security_scan.outputs.security_report }}"
+
+  # Configuration for workflow execution
+  config:
+    continue_on_error: true
+    step_timeout: 600
+    max_retries: 1
+    parallel:
+      enabled: true
+      # Maximum number of parallel steps
+      max_workers: 4
+      # Groups define which steps can run together
+      groups:
+        quality_checks:
+          - doc_check
+          - test_check
+          - security_scan

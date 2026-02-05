@@ -1,0 +1,218 @@
+# Research Analysis Workflow
+# This workflow demonstrates context passing between skills for research tasks.
+# Each step builds on previous findings to create comprehensive analysis.
+#
+# Usage:
+#   kurultai workflow run examples/research-analysis.yaml --var topic="AI Safety" --var sources="papers,blogs,news"
+
+workflow:
+  name: research-analysis
+  version: 1.0.0
+  description: |
+    Research and analysis workflow that extracts insights from multiple sources,
+    analyzes findings through structured brainstorming, and generates a
+    comprehensive research report with citations and recommendations.
+
+  # Workflow variables
+  variables:
+    topic:
+      description: "Research topic to investigate"
+      required: true
+      default: "emerging-technology"
+    sources:
+      description: "Comma-separated list of source types (papers,blogs,news,docs)"
+      default: "papers,blogs"
+    depth:
+      description: "Research depth (brief|standard|deep)"
+      default: "standard"
+    output_format:
+      description: "Report format (markdown|pdf|html)"
+      default: "markdown"
+    max_sources:
+      description: "Maximum number of sources to analyze"
+      default: "10"
+
+  # Workflow steps
+  steps:
+    # Step 1: Gather and extract insights from sources
+    - id: gather
+      name: Gather Research Sources
+      skill: horde-learn
+      description: Extract insights from specified sources
+      inputs:
+        topic: "{{ topic }}"
+        sources: "{{ sources }}"
+        depth: "{{ depth }}"
+        max_sources: "{{ max_sources }}"
+      outputs:
+        - extracted_data
+        - source_list
+        - key_findings
+        - raw_insights
+
+    # Step 2: Analyze findings through structured brainstorming
+    - id: analyze
+      name: Analyze Findings
+      skill: horde-brainstorming
+      description: Analyze research findings and identify patterns
+      inputs:
+        topic: "Analysis of {{ topic }}"
+        context: |
+          Based on the following research findings:
+          {{ steps.gather.outputs.key_findings }}
+
+          Analyze patterns, trends, and implications.
+        mode: "structured"
+        perspectives:
+          - technical
+          - business
+          - ethical
+          - future_implications
+      outputs:
+        - analysis_report
+        - identified_patterns
+        - implications
+        - stakeholder_impacts
+      depends_on:
+        - gather
+
+    # Step 3: Cross-reference and validate findings
+    - id: validate
+      name: Validate Findings
+      skill: horde-synthesize
+      description: Cross-reference and validate research findings
+      inputs:
+        sources:
+          - "{{ steps.gather.outputs.raw_insights }}"
+          - "{{ steps.analyze.outputs.analysis_report }}"
+        task: "validate_and_cross_reference"
+        criteria:
+          - consistency
+          - credibility
+          - completeness
+      outputs:
+        - validated_findings
+        - confidence_scores
+        - gaps_identified
+      depends_on:
+        - gather
+        - analyze
+
+    # Step 4: Generate comprehensive research report
+    - id: report
+      name: Generate Research Report
+      skill: doc-generator
+      description: Create formatted research report
+      inputs:
+        mode: "generate"
+        template: "research_report"
+        format: "{{ output_format }}"
+        content:
+          title: "Research Report: {{ topic }}"
+          abstract: "{{ steps.gather.outputs.key_findings }}"
+          findings: "{{ steps.analyze.outputs.analysis_report }}"
+          validation: "{{ steps.validate.outputs.validated_findings }}"
+          sources: "{{ steps.gather.outputs.source_list }}"
+          patterns: "{{ steps.analyze.outputs.identified_patterns }}"
+          implications: "{{ steps.analyze.outputs.implications }}"
+          gaps: "{{ steps.validate.outputs.gaps_identified }}"
+      outputs:
+        - report_document
+        - executive_summary
+        - citations
+      depends_on:
+        - validate
+
+    # Step 5: Create action recommendations
+    - id: recommend
+      name: Generate Recommendations
+      skill: horde-brainstorming
+      description: Generate actionable recommendations based on research
+      inputs:
+        topic: "Recommendations for {{ topic }}"
+        context: |
+          Research findings:
+          {{ steps.analyze.outputs.analysis_report }}
+
+          Implications:
+          {{ steps.analyze.outputs.implications }}
+
+          Stakeholder impacts:
+          {{ steps.analyze.outputs.stakeholder_impacts }}
+        mode: "actionable"
+        output_format: "structured_recommendations"
+      outputs:
+        - recommendations
+        - action_items
+        - priority_ranking
+        - implementation_roadmap
+      depends_on:
+        - analyze
+        - report
+
+  # Final outputs
+  outputs:
+    summary:
+      description: "Complete research analysis summary"
+      value: |
+        # Research Report: {{ topic }}
+
+        ## Executive Summary
+        {{ steps.report.outputs.executive_summary }}
+
+        ## Key Findings
+        {{ steps.gather.outputs.key_findings }}
+
+        ## Analysis
+        {{ steps.analyze.outputs.analysis_report }}
+
+        ## Identified Patterns
+        {{ steps.analyze.outputs.identified_patterns }}
+
+        ## Implications
+        {{ steps.analyze.outputs.implications }}
+
+        ## Validated Findings (Confidence: {{ steps.validate.outputs.confidence_scores }})
+        {{ steps.validate.outputs.validated_findings }}
+
+        ## Research Gaps
+        {{ steps.validate.outputs.gaps_identified }}
+
+        ## Recommendations
+        {{ steps.recommend.outputs.recommendations }}
+
+        ## Action Items
+        {{ steps.recommend.outputs.action_items }}
+
+        ## Implementation Roadmap
+        {{ steps.recommend.outputs.implementation_roadmap }}
+
+        ## Sources
+        {{ steps.report.outputs.citations }}
+
+    artifacts:
+      full_report: "{{ steps.report.outputs.report_document }}"
+      findings: "{{ steps.gather.outputs.extracted_data }}"
+      analysis: "{{ steps.analyze.outputs.analysis_report }}"
+      recommendations: "{{ steps.recommend.outputs.recommendations }}"
+      sources: "{{ steps.gather.outputs.source_list }}"
+
+    metadata:
+      topic: "{{ topic }}"
+      depth: "{{ depth }}"
+      confidence: "{{ steps.validate.outputs.confidence_scores }}"
+      source_count: "{{ steps.gather.outputs.source_list | length }}"
+
+  # Configuration
+  config:
+    continue_on_error: true
+    step_timeout: 900
+    max_retries: 2
+    parallel:
+      enabled: false
+    # Context persistence between steps
+    context:
+      # Persist these outputs for context in subsequent runs
+      persist:
+        - steps.gather.outputs.source_list
+        - steps.analyze.outputs.identified_patterns

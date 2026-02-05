@@ -1,0 +1,226 @@
+{
+  "schema_version": "1.0.0",
+  "registry_name": "Kurultai Official Registry",
+  "registry_url": "https://registry.kurultai.dev",
+  "last_updated": "2026-02-04T00:00:00Z",
+  "skills": [
+    {
+      "name": "horde-swarm",
+      "version": "1.0.0",
+      "description": "Core execution engine for parallel subagent dispatch",
+      "author": "Kurultai",
+      "type": "engine",
+      "repository": "https://github.com/kurultai/horde-swarm",
+      "tags": [
+        "horde",
+        "engine",
+        "parallel",
+        "swarm"
+      ],
+      "keywords": [
+        "parallel execution",
+        "subagent dispatch",
+        "swarm intelligence",
+        "distributed computing",
+        "concurrent processing",
+        "multi-agent",
+        "orchestration"
+      ],
+      "dependencies": [],
+      "entry_point": "prompts/main.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/horde-swarm#readme"
+    },
+    {
+      "name": "horde-brainstorming",
+      "version": "1.0.0",
+      "description": "6-phase collaborative design process for complex problem solving",
+      "author": "Kurultai",
+      "type": "skill",
+      "repository": "https://github.com/kurultai/horde-brainstorming",
+      "tags": [
+        "horde",
+        "brainstorming",
+        "design",
+        "collaboration"
+      ],
+      "keywords": [
+        "brainstorming",
+        "design process",
+        "collaborative",
+        "problem solving",
+        "ideation",
+        "workshop",
+        "team collaboration",
+        "creative thinking"
+      ],
+      "dependencies": [
+        {
+          "name": "horde-swarm",
+          "version_constraint": "^1.0.0",
+          "required": true
+        }
+      ],
+      "entry_point": "prompts/main.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/horde-brainstorming#readme"
+    },
+    {
+      "name": "code-reviewer",
+      "version": "1.0.0",
+      "description": "Comprehensive code review skill that analyzes code for bugs, security issues, performance problems, and best practices",
+      "author": "kurultai",
+      "type": "skill",
+      "repository": "https://github.com/kurultai/code-reviewer",
+      "tags": [
+        "code-review",
+        "quality-assurance",
+        "security",
+        "performance",
+        "best-practices"
+      ],
+      "keywords": [
+        "code review",
+        "static analysis",
+        "bug detection",
+        "security audit",
+        "performance analysis",
+        "best practices",
+        "code quality",
+        "linting",
+        "vulnerability scanning"
+      ],
+      "dependencies": [],
+      "entry_point": "prompts/main.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/code-reviewer#readme",
+      "config": {
+        "default_depth": "standard",
+        "languages": [
+          "python",
+          "javascript",
+          "typescript",
+          "java",
+          "go",
+          "rust",
+          "ruby",
+          "csharp"
+        ]
+      }
+    },
+    {
+      "name": "doc-generator",
+      "version": "1.0.0",
+      "description": "Generate comprehensive documentation from code including API docs, usage examples, and README files from source code analysis",
+      "author": "kurultai",
+      "type": "skill",
+      "repository": "https://github.com/kurultai/doc-generator",
+      "tags": [
+        "documentation",
+        "api-docs",
+        "code-analysis",
+        "readme-generator",
+        "developer-experience"
+      ],
+      "keywords": [
+        "documentation",
+        "doc generation",
+        "API docs",
+        "README generator",
+        "code analysis",
+        "developer experience",
+        "markdown",
+        "documentation automation"
+      ],
+      "dependencies": [],
+      "entry_point": "prompts/main.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/doc-generator#readme",
+      "config": {
+        "default_format": "markdown",
+        "doc_types": [
+          "api",
+          "usage",
+          "readme",
+          "changelog"
+        ],
+        "languages": [
+          "python",
+          "javascript",
+          "typescript",
+          "java",
+          "go",
+          "rust",
+          "ruby",
+          "csharp"
+        ]
+      }
+    },
+    {
+      "name": "test-generator",
+      "version": "1.0.0",
+      "description": "Generate comprehensive test cases from code analysis including unit tests, edge cases, and integration test scaffolding",
+      "author": "kurultai",
+      "type": "skill",
+      "repository": "https://github.com/kurultai/test-generator",
+      "tags": [
+        "testing",
+        "test-generation",
+        "unit-tests",
+        "integration-tests",
+        "quality-assurance",
+        "tdd"
+      ],
+      "keywords": [
+        "test generation",
+        "unit tests",
+        "integration tests",
+        "edge cases",
+        "property based testing",
+        "TDD",
+        "test automation",
+        "code coverage",
+        "quality assurance"
+      ],
+      "dependencies": [],
+      "entry_point": "prompts/main.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/test-generator#readme",
+      "config": {
+        "default_framework": "auto",
+        "test_types": [
+          "unit",
+          "integration",
+          "edge_cases",
+          "property_based"
+        ],
+        "languages": [
+          "python",
+          "javascript",
+          "typescript",
+          "java",
+          "go",
+          "rust",
+          "ruby",
+          "csharp"
+        ],
+        "coverage": {
+          "lines": 80,
+          "branches": 70,
+          "functions": 90
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "total_skills": 5,
+    "engines": 1,
+    "skills": 4,
+    "workflows": 0
+  }
+}

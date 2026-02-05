@@ -1,0 +1,158 @@
+# Feature Development Workflow
+# This workflow demonstrates a complete feature development pipeline
+# using multiple skills in sequence with output chaining.
+#
+# Usage:
+#   kurultai workflow run examples/feature-development.yaml --var feature_name="my-feature" --var description="Add user authentication"
+
+workflow:
+  name: feature-development
+  version: 1.0.0
+  description: |
+    Complete feature development workflow that designs, plans, implements,
+    reviews, and tests a new feature using the Kurultai skill system.
+
+  # Workflow variables that can be overridden at runtime
+  variables:
+    feature_name:
+      description: "Name of the feature to develop"
+      required: true
+      default: "new-feature"
+    description:
+      description: "Detailed description of the feature"
+      required: true
+      default: "Implement a new feature"
+    tech_stack:
+      description: "Technology stack to use"
+      default: "python"
+    review_depth:
+      description: "Depth of code review (basic|thorough|strict)"
+      default: "thorough"
+
+  # Workflow steps executed in sequence
+  steps:
+    # Step 1: Design the feature using brainstorming
+    - id: design
+      name: Feature Design
+      skill: horde-brainstorming
+      description: Generate design ideas and architecture for the feature
+      inputs:
+        topic: "Design architecture for {{ feature_name }}"
+        context: "{{ description }}"
+        tech_stack: "{{ tech_stack }}"
+        output_format: "structured"
+      outputs:
+        - design_document
+        - architecture_diagram
+        - key_decisions
+
+    # Step 2: Create implementation plan
+    - id: plan
+      name: Implementation Planning
+      skill: horde-plan
+      description: Create detailed implementation plan based on design
+      inputs:
+        feature: "{{ feature_name }}"
+        design: "{{ steps.design.outputs.design_document }}"
+        tech_stack: "{{ tech_stack }}"
+      outputs:
+        - implementation_plan
+        - task_breakdown
+        - estimated_effort
+      # This step depends on the previous step's output
+      depends_on:
+        - design
+
+    # Step 3: Implement the feature
+    - id: implement
+      name: Feature Implementation
+      skill: horde-implement
+      description: Build the feature according to the plan
+      inputs:
+        feature: "{{ feature_name }}"
+        plan: "{{ steps.plan.outputs.implementation_plan }}"
+        tech_stack: "{{ tech_stack }}"
+        context: "{{ steps.design.outputs.key_decisions }}"
+      outputs:
+        - source_files
+        - changes_summary
+        - tests_needed
+      depends_on:
+        - plan
+
+    # Step 4: Review the implementation
+    - id: review
+      name: Code Review
+      skill: code-reviewer
+      description: Review the implemented code for quality and standards
+      inputs:
+        files: "{{ steps.implement.outputs.source_files }}"
+        depth: "{{ review_depth }}"
+        context: "Feature: {{ feature_name }}\n{{ description }}"
+      outputs:
+        - review_report
+        - issues_found
+        - suggestions
+      depends_on:
+        - implement
+
+    # Step 5: Generate tests
+    - id: test
+      name: Test Generation
+      skill: test-generator
+      description: Generate comprehensive tests for the feature
+      inputs:
+        source_files: "{{ steps.implement.outputs.source_files }}"
+        requirements: "{{ steps.implement.outputs.tests_needed }}"
+        tech_stack: "{{ tech_stack }}"
+      outputs:
+        - test_files
+        - coverage_report
+        - test_plan
+      depends_on:
+        - implement
+
+  # Output aggregation - combines outputs from all steps
+  outputs:
+    summary:
+      description: "Complete feature development summary"
+      value: |
+        # Feature Development: {{ feature_name }}
+
+        ## Design
+        {{ steps.design.outputs.design_document }}
+
+        ## Implementation Plan
+        {{ steps.plan.outputs.implementation_plan }}
+
+        ## Code Changes
+        {{ steps.implement.outputs.changes_summary }}
+
+        ## Review Results
+        {{ steps.review.outputs.review_report }}
+
+        ## Tests Generated
+        {{ steps.test.outputs.test_files }}
+
+        ## Key Decisions
+        {{ steps.design.outputs.key_decisions }}
+
+    artifacts:
+      design: "{{ steps.design.outputs.design_document }}"
+      plan: "{{ steps.plan.outputs.implementation_plan }}"
+      code: "{{ steps.implement.outputs.source_files }}"
+      review: "{{ steps.review.outputs.review_report }}"
+      tests: "{{ steps.test.outputs.test_files }}"
+
+  # Configuration for workflow execution
+  config:
+    # Continue on step failure (collect all results)
+    continue_on_error: false
+    # Timeout for each step in seconds
+    step_timeout: 300
+    # Maximum number of retries for failed steps
+    max_retries: 2
+    # Parallel execution settings
+    parallel:
+      # Steps that can run in parallel (none in this sequential workflow)
+      enabled: false
