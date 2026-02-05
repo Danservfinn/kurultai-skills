@@ -1,204 +1,108 @@
 {
   "schema_version": "1.0.0",
-  "last_updated": "2026-02-05T12:30:00Z",
-  "registry_url": "https://github.com/Danservfinn/kurultai",
+  "last_updated": "2026-02-05T19:45:00Z",
+  "registry_url": "https://github.com/kurultai/kurultai",
   "skills": [
     {
       "name": "horde-swarm",
-      "description": "Dispatch a swarm of specialized subagents to work on a prompt in parallel",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/horde-swarm",
-      "tags": ["parallel", "agents", "swarm", "execution"],
-      "categories": ["core", "execution"],
-      "engine": null,
-      "integrations": [],
-      "installed": false
+      "repository": "https://github.com/kurultai/horde-swarm",
+      "manifest_path": "skill.yaml",
+      "type": "engine"
     },
     {
       "name": "horde-brainstorming",
-      "description": "Multi-phase collaborative design with parallel domain expert analysis",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/horde-brainstorming",
-      "tags": ["brainstorming", "design", "architecture", "collaboration"],
-      "categories": ["core", "design"],
-      "engine": "horde-swarm",
-      "integrations": ["horde-swarm"],
-      "installed": false
+      "repository": "https://github.com/kurultai/horde-brainstorming",
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-plan",
-      "description": "Create comprehensive implementation plans using plan mode with task breakdown",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/horde-plan",
-      "tags": ["planning", "task-management", "implementation"],
-      "categories": ["core", "planning"],
-      "engine": "horde-swarm",
-      "integrations": ["horde-swarm", "horde-implement"],
-      "installed": false
+      "repository": "https://github.com/kurultai/horde-plan",
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-implement",
-      "description": "Automatically transform user requests into executed implementations through AI-driven planning and subagent swarm execution",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/horde-implement",
-      "tags": ["implementation", "execution", "automation", "swarm"],
-      "categories": ["core", "execution"],
-      "engine": "horde-swarm",
-      "integrations": ["horde-swarm", "senior-prompt-engineer", "subagent-driven-development", "implementation-status", "horde-review"],
-      "installed": false
+      "repository": "https://github.com/kurultai/horde-implement",
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-learn",
-      "description": "Extract insights and actionable learnings from text sources",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/horde-learn",
-      "tags": ["learning", "extraction", "insights", "research"],
-      "categories": ["core", "research"],
-      "engine": "horde-swarm",
-      "integrations": ["horde-swarm"],
-      "installed": false
+      "repository": "https://github.com/kurultai/horde-learn",
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-gate-testing",
-      "description": "Run integration tests between implementation phases to catch integration issues",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/horde-gate-testing",
-      "tags": ["testing", "integration", "gates", "validation"],
-      "categories": ["testing", "quality"],
-      "engine": "horde-swarm",
-      "integrations": ["horde-swarm", "horde-implement"],
-      "installed": false
+      "repository": "https://github.com/kurultai/horde-gate-testing",
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-test",
-      "description": "Execute comprehensive testing plans using horde-swarm to dispatch parallel test agents across multiple test categories (unit, integration, e2e, performance, security, accessibility)",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/horde-test",
-      "tags": ["testing", "validation", "coverage", "parallel-execution", "quality-assurance"],
-      "categories": ["testing", "devops", "quality"],
-      "engine": "horde-swarm",
-      "integrations": ["horde-swarm", "horde-implement", "horde-gate-testing"],
-      "installed": false
+      "repository": "https://github.com/kurultai/horde-test",
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "implementation-status",
-      "description": "Audits active implementation plans for completion status and generates status reports",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/implementation-status",
-      "tags": ["audit", "status", "implementation", "tracking"],
-      "categories": ["quality", "tracking"],
-      "engine": null,
-      "integrations": ["horde-implement"],
-      "installed": false
+      "repository": "https://github.com/kurultai/implementation-status",
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "senior-prompt-engineer",
-      "description": "World-class prompt engineering skill for LLM optimization, prompt patterns, and systematic refinement",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/senior-prompt-engineer",
-      "tags": ["prompt-engineering", "llm", "optimization", "refinement"],
-      "categories": ["core", "llm"],
-      "engine": null,
-      "integrations": ["horde-implement"],
-      "installed": false
+      "repository": "https://github.com/kurultai/senior-prompt-engineer",
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "subagent-driven-development",
-      "description": "Execute implementation plans with independent tasks using fresh subagents per task with multi-stage review",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/subagent-driven-development",
-      "tags": ["development", "execution", "subagents", "review"],
-      "categories": ["core", "execution"],
-      "engine": null,
-      "integrations": ["horde-implement"],
-      "installed": false
+      "repository": "https://github.com/kurultai/subagent-driven-development",
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-review",
-      "description": "Comprehensive multi-domain review using specialist skills for code, architecture, security, and more",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/horde-review",
-      "tags": ["review", "validation", "quality", "multi-domain"],
-      "categories": ["quality", "review"],
-      "engine": "horde-swarm",
-      "integrations": ["horde-swarm", "horde-implement"],
-      "installed": false
+      "repository": "https://github.com/kurultai/horde-review",
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-skill-creator",
-      "description": "Guide for creating effective skills using a 7-phase multi-agent workflow from requirements through packaging",
       "version": "1.0.0",
-      "author": "kurultai",
-      "repository": "https://github.com/Danservfinn/horde-skill-creator",
-      "tags": ["skill-creation", "workflow", "multi-agent", "development", "scaffolding"],
-      "categories": ["core", "development"],
-      "engine": "horde-swarm",
-      "integrations": ["horde-swarm", "horde-plan"],
-      "installed": false
+      "repository": "https://github.com/kurultai/horde-skill-creator",
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     }
   ],
-  "categories": {
-    "core": {
-      "description": "Core Kurultai skills that form the foundation of the ecosystem",
-      "color": "#4A90E2"
-    },
-    "execution": {
-      "description": "Skills focused on task execution and implementation",
-      "color": "#7ED321"
-    },
-    "planning": {
-      "description": "Skills for creating implementation plans and task breakdowns",
-      "color": "#F5A623"
-    },
-    "design": {
-      "description": "Skills for architecture and design exploration",
-      "color": "#9013FE"
-    },
-    "testing": {
-      "description": "Skills for testing, validation, and quality assurance",
-      "color": "#D0021B"
-    },
-    "quality": {
-      "description": "Skills for code review, audits, and quality checks",
-      "color": "#BD10E0"
-    },
-    "research": {
-      "description": "Skills for information extraction and learning",
-      "color": "#417505"
-    },
-    "devops": {
-      "description": "Skills for deployment, infrastructure, and operations",
-      "color": "#50E3C2"
-    },
-    "tracking": {
-      "description": "Skills for progress tracking and status monitoring",
-      "color": "#B8E986"
-    },
-    "review": {
-      "description": "Skills for comprehensive review and validation",
-      "color": "#F8E71C"
-    },
-    "llm": {
-      "description": "Skills for LLM optimization and prompt engineering",
-      "color": "#B8E986"
-    }
-  },
   "engines": {
     "horde-swarm": {
       "description": "Parallel subagent dispatch engine",
-      "repository": "https://github.com/Danservfinn/horde-swarm",
-      "skills_using": ["horde-brainstorming", "horde-plan", "horde-implement", "horde-learn", "horde-gate-testing", "horde-test", "horde-review", "horde-skill-creator"]
+      "repository": "https://github.com/kurultai/horde-swarm",
+      "skills_using": [
+        "horde-brainstorming",
+        "horde-plan",
+        "horde-implement",
+        "horde-learn",
+        "horde-gate-testing",
+        "horde-test",
+        "horde-review",
+        "horde-skill-creator"
+      ]
     }
-  }
+  },
+  "note": "Detailed metadata (description, dependencies, config) lives in each skill's skill.yaml"
 }

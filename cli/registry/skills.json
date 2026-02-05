@@ -2,584 +2,114 @@
   "schema_version": "1.0.0",
   "registry_name": "Kurultai Official Registry",
   "registry_url": "https://registry.kurultai.dev",
-  "last_updated": "2026-02-05T19:40:00Z",
+  "last_updated": "2026-02-05T19:45:00Z",
   "skills": [
     {
       "name": "horde-swarm",
       "version": "1.0.0",
-      "description": "Core execution engine for parallel subagent dispatch",
-      "author": "Kurultai",
-      "type": "engine",
       "repository": "https://github.com/kurultai/horde-swarm",
-      "tags": [
-        "horde",
-        "engine",
-        "parallel",
-        "swarm"
-      ],
-      "keywords": [
-        "parallel execution",
-        "subagent dispatch",
-        "swarm intelligence",
-        "distributed computing",
-        "concurrent processing",
-        "multi-agent",
-        "orchestration"
-      ],
-      "dependencies": [],
-      "entry_point": "prompts/main.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/horde-swarm#readme"
+      "manifest_path": "skill.yaml",
+      "type": "engine"
     },
     {
       "name": "horde-brainstorming",
       "version": "1.0.0",
-      "description": "6-phase collaborative design process for complex problem solving",
-      "author": "Kurultai",
-      "type": "skill",
       "repository": "https://github.com/kurultai/horde-brainstorming",
-      "tags": [
-        "horde",
-        "brainstorming",
-        "design",
-        "collaboration"
-      ],
-      "keywords": [
-        "brainstorming",
-        "design process",
-        "collaborative",
-        "problem solving",
-        "ideation",
-        "workshop",
-        "team collaboration",
-        "creative thinking"
-      ],
-      "dependencies": [
-        {
-          "name": "horde-swarm",
-          "version_constraint": "^1.0.0",
-          "required": true
-        }
-      ],
-      "entry_point": "prompts/main.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/horde-brainstorming#readme"
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-learn",
       "version": "1.0.0",
-      "description": "Extract insights and actionable learnings from text sources and apply them to the current project context",
-      "author": "kurultai",
-      "type": "skill",
       "repository": "https://github.com/kurultai/horde-learn",
-      "tags": [
-        "horde",
-        "learning",
-        "extraction",
-        "insights",
-        "research",
-        "knowledge-application"
-      ],
-      "keywords": [
-        "learning",
-        "insight extraction",
-        "knowledge application",
-        "text analysis",
-        "research",
-        "content analysis",
-        "best practices",
-        "pattern recognition"
-      ],
-      "dependencies": [
-        {
-          "name": "horde-swarm",
-          "version_constraint": "^1.0.0",
-          "required": true
-        }
-      ],
-      "entry_point": "SKILL.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/horde-learn#readme",
-      "config": {
-        "content_types": [
-          "short_form",
-          "long_form",
-          "technical_docs",
-          "conversational"
-        ],
-        "analysis_depths": [
-          "surface",
-          "moderate",
-          "deep"
-        ]
-      }
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-plan",
       "version": "1.0.0",
-      "description": "Create comprehensive implementation plans using plan mode with task breakdown, dependency mapping, and hands off to horde-implement for execution",
-      "author": "kurultai",
-      "type": "skill",
       "repository": "https://github.com/kurultai/horde-plan",
-      "tags": [
-        "horde",
-        "planning",
-        "task-management",
-        "implementation",
-        "plan-mode",
-        "workflow"
-      ],
-      "keywords": [
-        "planning",
-        "task breakdown",
-        "dependency mapping",
-        "plan mode",
-        "implementation planning",
-        "project management",
-        "workflow orchestration",
-        "task tracking"
-      ],
-      "dependencies": [
-        {
-          "name": "horde-swarm",
-          "version_constraint": "^1.0.0",
-          "required": true
-        }
-      ],
-      "entry_point": "SKILL.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/horde-plan#readme",
-      "config": {
-        "default_phases": [
-          "setup",
-          "core-implementation",
-          "integration",
-          "testing",
-          "documentation",
-          "deployment"
-        ]
-      }
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-implement",
       "version": "1.0.0",
-      "description": "Automatically transform user requests into executed implementations through AI-driven planning and subagent swarm execution",
-      "author": "kurultai",
-      "type": "skill",
       "repository": "https://github.com/kurultai/horde-implement",
-      "tags": [
-        "horde",
-        "implementation",
-        "execution",
-        "automation",
-        "swarm",
-        "subagent-orchestration"
-      ],
-      "keywords": [
-        "implementation",
-        "execution",
-        "automation",
-        "subagent orchestration",
-        "swarm execution",
-        "prompt engineering",
-        "task decomposition",
-        "code generation",
-        "autonomous execution"
-      ],
-      "dependencies": [
-        {
-          "name": "horde-swarm",
-          "version_constraint": "^1.0.0",
-          "required": true
-        }
-      ],
-      "entry_point": "SKILL.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/horde-implement#readme",
-      "config": {
-        "max_retries": 3,
-        "retry_backoff": [1, 2, 4],
-        "enable_verification": true,
-        "enable_spec_review": true,
-        "enable_code_quality_review": true,
-        "parallel_execution": false
-      }
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-gate-testing",
       "version": "1.0.0",
-      "description": "Run integration tests between implementation phases to catch integration issues before proceeding to next phase",
-      "author": "kurultai",
-      "type": "skill",
       "repository": "https://github.com/kurultai/horde-gate-testing",
-      "tags": [
-        "horde",
-        "testing",
-        "integration",
-        "gates",
-        "validation",
-        "phase-checkpoints"
-      ],
-      "keywords": [
-        "integration testing",
-        "phase gates",
-        "validation",
-        "quality gates",
-        "pre-commit",
-        "post-deployment",
-        "automated testing",
-        "checkpoint validation"
-      ],
-      "dependencies": [
-        {
-          "name": "horde-swarm",
-          "version_constraint": "^1.0.0",
-          "required": true
-        }
-      ],
-      "entry_point": "SKILL.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/horde-gate-testing#readme",
-      "config": {
-        "gate_types": [
-          "pre_commit",
-          "post_commit",
-          "pre_merge",
-          "post_deploy"
-        ],
-        "default_severity_threshold": "error",
-        "auto_fix_suggestions": true
-      }
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "code-reviewer",
       "version": "1.0.0",
-      "description": "Comprehensive code review skill that analyzes code for bugs, security issues, performance problems, and best practices",
-      "author": "kurultai",
-      "type": "skill",
       "repository": "https://github.com/kurultai/code-reviewer",
-      "tags": [
-        "code-review",
-        "quality-assurance",
-        "security",
-        "performance",
-        "best-practices"
-      ],
-      "keywords": [
-        "code review",
-        "static analysis",
-        "bug detection",
-        "security audit",
-        "performance analysis",
-        "best practices",
-        "code quality",
-        "linting",
-        "vulnerability scanning"
-      ],
-      "dependencies": [],
-      "entry_point": "prompts/main.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/code-reviewer#readme",
-      "config": {
-        "default_depth": "standard",
-        "languages": [
-          "python",
-          "javascript",
-          "typescript",
-          "java",
-          "go",
-          "rust",
-          "ruby",
-          "csharp"
-        ]
-      }
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "doc-generator",
       "version": "1.0.0",
-      "description": "Generate comprehensive documentation from code including API docs, usage examples, and README files from source code analysis",
-      "author": "kurultai",
-      "type": "skill",
       "repository": "https://github.com/kurultai/doc-generator",
-      "tags": [
-        "documentation",
-        "api-docs",
-        "code-analysis",
-        "readme-generator",
-        "developer-experience"
-      ],
-      "keywords": [
-        "documentation",
-        "doc generation",
-        "API docs",
-        "README generator",
-        "code analysis",
-        "developer experience",
-        "markdown",
-        "documentation automation"
-      ],
-      "dependencies": [],
-      "entry_point": "prompts/main.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/doc-generator#readme",
-      "config": {
-        "default_format": "markdown",
-        "doc_types": [
-          "api",
-          "usage",
-          "readme",
-          "changelog"
-        ],
-        "languages": [
-          "python",
-          "javascript",
-          "typescript",
-          "java",
-          "go",
-          "rust",
-          "ruby",
-          "csharp"
-        ]
-      }
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "test-generator",
       "version": "1.0.0",
-      "description": "Generate comprehensive test cases from code analysis including unit tests, edge cases, and integration test scaffolding",
-      "author": "kurultai",
-      "type": "skill",
       "repository": "https://github.com/kurultai/test-generator",
-      "tags": [
-        "testing",
-        "test-generation",
-        "unit-tests",
-        "integration-tests",
-        "quality-assurance",
-        "tdd"
-      ],
-      "keywords": [
-        "test generation",
-        "unit tests",
-        "integration tests",
-        "edge cases",
-        "property based testing",
-        "TDD",
-        "test automation",
-        "code coverage",
-        "quality assurance"
-      ],
-      "dependencies": [],
-      "entry_point": "prompts/main.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/test-generator#readme",
-      "config": {
-        "default_framework": "auto",
-        "test_types": [
-          "unit",
-          "integration",
-          "edge_cases",
-          "property_based"
-        ],
-        "languages": [
-          "python",
-          "javascript",
-          "typescript",
-          "java",
-          "go",
-          "rust",
-          "ruby",
-          "csharp"
-        ],
-        "coverage": {
-          "lines": 80,
-          "branches": 70,
-          "functions": 90
-        }
-      }
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-test",
       "version": "1.0.0",
-      "description": "Execute comprehensive testing plans using horde-swarm to dispatch parallel test agents across multiple test categories (unit, integration, e2e, performance, security, accessibility)",
-      "author": "kurultai",
-      "type": "skill",
       "repository": "https://github.com/kurultai/horde-test",
-      "tags": [
-        "horde",
-        "testing",
-        "validation",
-        "coverage",
-        "parallel-execution",
-        "quality-assurance"
-      ],
-      "keywords": [
-        "test execution",
-        "parallel testing",
-        "unit tests",
-        "integration tests",
-        "e2e tests",
-        "performance tests",
-        "security tests",
-        "accessibility tests",
-        "coverage tracking",
-        "test aggregation",
-        "swarm testing"
-      ],
-      "dependencies": [
-        {
-          "name": "horde-swarm",
-          "version_constraint": "^1.0.0",
-          "required": true
-        }
-      ],
-      "entry_point": "SKILL.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/horde-test#readme",
-      "config": {
-        "test_categories": [
-          "unit",
-          "integration",
-          "e2e",
-          "performance",
-          "security",
-          "accessibility"
-        ],
-        "coverage": {
-          "line": 80,
-          "branch": 70,
-          "function": 90
-        },
-        "default_timeout": 300,
-        "max_parallel_suites": 4
-      }
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-review",
       "version": "1.0.0",
-      "description": "Perform comprehensive multi-disciplinary critical reviews of designs, plans, and technical artifacts by analyzing from multiple expert perspectives",
-      "author": "kurultai",
-      "type": "skill",
       "repository": "https://github.com/kurultai/horde-review",
-      "tags": [
-        "horde",
-        "review",
-        "critique",
-        "evaluation",
-        "multi-disciplinary",
-        "quality-assurance"
-      ],
-      "keywords": [
-        "critical review",
-        "multi-disciplinary",
-        "expert analysis",
-        "adversarial analysis",
-        "design review",
-        "architecture review",
-        "quality assessment",
-        "improvement suggestions",
-        "swarm review"
-      ],
-      "dependencies": [
-        {
-          "name": "horde-swarm",
-          "version_constraint": "^1.0.0",
-          "required": true
-        }
-      ],
-      "entry_point": "SKILL.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/horde-review#readme",
-      "config": {
-        "review_domains": [
-          "ux",
-          "backend",
-          "frontend",
-          "architecture",
-          "data-science",
-          "data-engineering",
-          "fullstack",
-          "prompt-engineering",
-          "devops"
-        ],
-        "parallel_review": true,
-        "consolidate_findings": true
-      }
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     },
     {
       "name": "horde-skill-creator",
       "version": "1.0.0",
-      "description": "Guide for creating effective skills using a 7-phase multi-agent workflow from requirements through packaging",
-      "author": "kurultai",
-      "type": "skill",
       "repository": "https://github.com/kurultai/horde-skill-creator",
-      "tags": [
-        "horde",
-        "skill-creation",
-        "workflow",
-        "multi-agent",
-        "development",
-        "scaffolding"
-      ],
-      "keywords": [
-        "skill creation",
-        "7-phase workflow",
-        "multi-agent",
-        "requirements analysis",
-        "specification design",
-        "implementation planning",
-        "skill packaging",
-        "registry integration",
-        "skill scaffolding"
-      ],
-      "dependencies": [
-        {
-          "name": "horde-swarm",
-          "version_constraint": "^1.0.0",
-          "required": true
-        },
-        {
-          "name": "horde-plan",
-          "version_constraint": "^1.0.0",
-          "required": true
-        }
-      ],
-      "entry_point": "SKILL.md",
-      "min_kurultai_version": "0.1.0",
-      "license": "MIT",
-      "homepage": "https://github.com/kurultai/horde-skill-creator#readme",
-      "config": {
-        "phases": [
-          "requirements-analysis",
-          "specification-design",
-          "implementation-planning",
-          "core-implementation",
-          "testing-validation",
-          "documentation",
-          "packaging-review"
-        ],
-        "complexity_multipliers": {
-          "simple": 1.0,
-          "moderate": 1.5,
-          "complex": 2.0
-        }
-      }
+      "manifest_path": "skill.yaml",
+      "type": "skill"
     }
   ],
+  "engines": {
+    "horde-swarm": {
+      "description": "Parallel subagent dispatch engine",
+      "repository": "https://github.com/kurultai/horde-swarm",
+      "skills_using": [
+        "horde-brainstorming",
+        "horde-plan",
+        "horde-implement",
+        "horde-learn",
+        "horde-gate-testing",
+        "horde-test",
+        "horde-review",
+        "horde-skill-creator"
+      ]
+    }
+  },
   "metadata": {
     "total_skills": 12,
     "engines": 1,
     "skills": 11,
-    "workflows": 0
+    "workflows": 0,
+    "note": "Detailed metadata lives in each skill's skill.yaml"
   }
 }
