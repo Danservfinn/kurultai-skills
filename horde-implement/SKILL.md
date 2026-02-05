@@ -144,9 +144,9 @@ Before proceeding to testing, invoke `implementation-status` to verify completio
 
 ### Phase 6: Testing and Validation
 
-**Only after Phase 5 confirms 100% completion**, design and execute comprehensive testing:
+**Only after Phase 5 confirms 100% completion**, design and execute comprehensive testing using `horde-test`:
 
-1. **Design Testing Plan** (using `generate-tests` or `Task(subagent_type=...)`):
+1. **Design Testing Plan** (using `generate-tests`):
    - Analyze implementation to identify test requirements
    - Design test strategy covering:
      - **Unit tests** - Individual component validation
@@ -156,9 +156,10 @@ Before proceeding to testing, invoke `implementation-status` to verify completio
      - **Performance tests** - Load and stress testing (if applicable)
    - Define test success criteria and coverage targets
 
-2. **Execute Testing Plan**:
-   - Generate test cases and test code
-   - Run tests and collect results
+2. **Execute Testing Plan with horde-test**:
+   - Invoke `horde-test` with comprehensive test plan
+   - horde-test dispatches parallel test agents via horde-swarm
+   - Collect and aggregate results from all test categories
    - Measure coverage against targets
 
 3. **Process Test Results**:
@@ -190,23 +191,66 @@ Design comprehensive test plan for:
 - Output: Test plan with test cases
 """)
 
-# Execute tests (parallel dispatch)
-Task(
-    subagent_type="python-development:python-pro",
-    prompt="""Implement and run unit tests:
-- Files to test: [list]
+# Execute tests using horde-test
+Skill("horde-test", """
+Execute comprehensive test plan for implementation:
+
+Context:
+- Implementation files: {files_changed}
+- Test requirements: unit, integration, e2e, edge cases
 - Coverage target: >80%
-- Run: pytest with coverage
-- Report: Pass/fail status and coverage"""
-)
-Task(
-    subagent_type="backend-development:backend-architect",
-    prompt="""Implement and run integration tests:
-- API endpoints: [list]
-- Database interactions: [list]
-- External service mocks: [list]
-- Report: Pass/fail status"""
-)
+
+Test Plan:
+```yaml
+plan_id: "implement-phase-6-{timestamp}"
+version: "1.0.0"
+context:
+  implementation_files:
+    {files_list}
+  test_requirements:
+    - "Unit tests for all new modules"
+    - "Integration tests for API endpoints"
+    - "E2E tests for critical workflows"
+  coverage_target: 80
+
+suites:
+  - name: "unit-tests"
+    category: unit
+    files: {unit_test_files}
+    config:
+      timeout: 300
+      retries: 1
+      parallel: true
+      coverage: true
+
+  - name: "integration-tests"
+    category: integration
+    files: {integration_test_files}
+    dependencies:
+      - "unit-tests"
+    config:
+      timeout: 600
+      retries: 0
+      parallel: false
+      coverage: true
+
+coverage:
+  enabled: true
+  targets:
+    line: 80
+    branch: 70
+    function: 90
+  fail_on_missed: true
+
+success_criteria:
+  min_pass_rate: 100
+  critical_suites:
+    - "unit-tests"
+  no_critical_failures: true
+```
+
+Report: Full test results with coverage analysis
+""")
 ```
 
 ### Phase 7: Critical Review
