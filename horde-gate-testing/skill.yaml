@@ -1,0 +1,59 @@
+name: horde-gate-testing
+description: |
+  Run integration tests between implementation phases to catch integration issues.
+  Validates that completed work integrates correctly before proceeding to next phase.
+
+version: 1.0.0
+author: kurultai
+license: MIT
+
+engine: horde-swarm
+
+integrations:
+  - horde-swarm
+  - horde-implement
+  - horde-test
+
+tags:
+  - testing
+  - integration
+  - gates
+  - validation
+  - phase-checkpoints
+
+categories:
+  - testing
+  - quality
+
+entry_points:
+  skill: SKILL.md
+
+config:
+  gate_types:
+    - pre_commit
+    - post_commit
+    - pre_merge
+    - post_deploy
+  default_severity_threshold: error
+  auto_fix_suggestions: true
+
+dependencies:
+  required:
+    - name: horde-swarm
+      version: ">=1.0.0"
+
+features:
+  - Phase gate validation
+  - Integration test execution
+  - Pre-commit hooks
+  - Post-deployment verification
+  - Automatic issue detection
+  - Fix suggestions
+  - Progress blocking on failures
+
+resources:
+  documentation: SKILL.md
+
+compatibility:
+  claude_code: ">=1.0.0"
+  skills_format: "1.0"
