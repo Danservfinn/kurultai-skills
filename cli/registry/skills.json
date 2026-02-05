@@ -325,12 +325,71 @@
         "parallel_review": true,
         "consolidate_findings": true
       }
+    },
+    {
+      "name": "horde-skill-creator",
+      "version": "1.0.0",
+      "description": "Guide for creating effective skills using a 7-phase multi-agent workflow from requirements through packaging",
+      "author": "kurultai",
+      "type": "skill",
+      "repository": "https://github.com/kurultai/horde-skill-creator",
+      "tags": [
+        "horde",
+        "skill-creation",
+        "workflow",
+        "multi-agent",
+        "development",
+        "scaffolding"
+      ],
+      "keywords": [
+        "skill creation",
+        "7-phase workflow",
+        "multi-agent",
+        "requirements analysis",
+        "specification design",
+        "implementation planning",
+        "skill packaging",
+        "registry integration",
+        "skill scaffolding"
+      ],
+      "dependencies": [
+        {
+          "name": "horde-swarm",
+          "version_constraint": "^1.0.0",
+          "required": true
+        },
+        {
+          "name": "horde-plan",
+          "version_constraint": "^1.0.0",
+          "required": true
+        }
+      ],
+      "entry_point": "SKILL.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/horde-skill-creator#readme",
+      "config": {
+        "phases": [
+          "requirements-analysis",
+          "specification-design",
+          "implementation-planning",
+          "core-implementation",
+          "testing-validation",
+          "documentation",
+          "packaging-review"
+        ],
+        "complexity_multipliers": {
+          "simple": 1.0,
+          "moderate": 1.5,
+          "complex": 2.0
+        }
+      }
     }
   ],
   "metadata": {
-    "total_skills": 7,
+    "total_skills": 8,
     "engines": 1,
-    "skills": 6,
+    "skills": 7,
     "workflows": 0
   }
 }

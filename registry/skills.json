@@ -134,6 +134,18 @@
       "engine": "horde-swarm",
       "integrations": ["horde-swarm", "horde-implement"],
       "installed": false
+    },
+    {
+      "name": "horde-skill-creator",
+      "description": "Guide for creating effective skills using a 7-phase multi-agent workflow from requirements through packaging",
+      "version": "1.0.0",
+      "author": "kurultai",
+      "repository": "https://github.com/Danservfinn/horde-skill-creator",
+      "tags": ["skill-creation", "workflow", "multi-agent", "development", "scaffolding"],
+      "categories": ["core", "development"],
+      "engine": "horde-swarm",
+      "integrations": ["horde-swarm", "horde-plan"],
+      "installed": false
     }
   ],
   "categories": {
@@ -186,7 +198,7 @@
     "horde-swarm": {
       "description": "Parallel subagent dispatch engine",
       "repository": "https://github.com/Danservfinn/horde-swarm",
-      "skills_using": ["horde-brainstorming", "horde-plan", "horde-implement", "horde-learn", "horde-gate-testing", "horde-test", "horde-review"]
+      "skills_using": ["horde-brainstorming", "horde-plan", "horde-implement", "horde-learn", "horde-gate-testing", "horde-test", "horde-review", "horde-skill-creator"]
     }
   }
 }
