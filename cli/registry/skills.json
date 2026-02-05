@@ -272,12 +272,65 @@
         "default_timeout": 300,
         "max_parallel_suites": 4
       }
+    },
+    {
+      "name": "horde-review",
+      "version": "1.0.0",
+      "description": "Perform comprehensive multi-disciplinary critical reviews of designs, plans, and technical artifacts by analyzing from multiple expert perspectives",
+      "author": "kurultai",
+      "type": "skill",
+      "repository": "https://github.com/kurultai/horde-review",
+      "tags": [
+        "horde",
+        "review",
+        "critique",
+        "evaluation",
+        "multi-disciplinary",
+        "quality-assurance"
+      ],
+      "keywords": [
+        "critical review",
+        "multi-disciplinary",
+        "expert analysis",
+        "adversarial analysis",
+        "design review",
+        "architecture review",
+        "quality assessment",
+        "improvement suggestions",
+        "swarm review"
+      ],
+      "dependencies": [
+        {
+          "name": "horde-swarm",
+          "version_constraint": "^1.0.0",
+          "required": true
+        }
+      ],
+      "entry_point": "SKILL.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/horde-review#readme",
+      "config": {
+        "review_domains": [
+          "ux",
+          "backend",
+          "frontend",
+          "architecture",
+          "data-science",
+          "data-engineering",
+          "fullstack",
+          "prompt-engineering",
+          "devops"
+        ],
+        "parallel_review": true,
+        "consolidate_findings": true
+      }
     }
   ],
   "metadata": {
-    "total_skills": 6,
+    "total_skills": 7,
     "engines": 1,
-    "skills": 5,
+    "skills": 6,
     "workflows": 0
   }
 }
