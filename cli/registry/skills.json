@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "registry_name": "Kurultai Official Registry",
   "registry_url": "https://registry.kurultai.dev",
-  "last_updated": "2026-02-05T12:30:00Z",
+  "last_updated": "2026-02-05T19:35:00Z",
   "skills": [
     {
       "name": "horde-swarm",
@@ -66,6 +66,56 @@
       "min_kurultai_version": "0.1.0",
       "license": "MIT",
       "homepage": "https://github.com/kurultai/horde-brainstorming#readme"
+    },
+    {
+      "name": "horde-learn",
+      "version": "1.0.0",
+      "description": "Extract insights and actionable learnings from text sources and apply them to the current project context",
+      "author": "kurultai",
+      "type": "skill",
+      "repository": "https://github.com/kurultai/horde-learn",
+      "tags": [
+        "horde",
+        "learning",
+        "extraction",
+        "insights",
+        "research",
+        "knowledge-application"
+      ],
+      "keywords": [
+        "learning",
+        "insight extraction",
+        "knowledge application",
+        "text analysis",
+        "research",
+        "content analysis",
+        "best practices",
+        "pattern recognition"
+      ],
+      "dependencies": [
+        {
+          "name": "horde-swarm",
+          "version_constraint": "^1.0.0",
+          "required": true
+        }
+      ],
+      "entry_point": "SKILL.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/horde-learn#readme",
+      "config": {
+        "content_types": [
+          "short_form",
+          "long_form",
+          "technical_docs",
+          "conversational"
+        ],
+        "analysis_depths": [
+          "surface",
+          "moderate",
+          "deep"
+        ]
+      }
     },
     {
       "name": "code-reviewer",
@@ -387,9 +437,9 @@
     }
   ],
   "metadata": {
-    "total_skills": 8,
+    "total_skills": 9,
     "engines": 1,
-    "skills": 7,
+    "skills": 8,
     "workflows": 0
   }
 }
