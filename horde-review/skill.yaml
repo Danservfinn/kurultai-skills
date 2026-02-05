@@ -1,0 +1,67 @@
+name: horde-review
+description: |
+  Perform comprehensive multi-disciplinary critical reviews of designs, plans, and technical artifacts
+  by analyzing from multiple expert perspectives: UX, backend, frontend, architecture, data science,
+  data engineering, fullstack, prompt engineering, and DevOps. Synthesizes findings into a consolidated
+  report and presents suggested improvements for batch approval.
+
+version: 1.0.0
+author: kurultai
+license: MIT
+
+engine: horde-swarm
+
+integrations:
+  - horde-swarm
+  - dispatching-parallel-agents
+  - subagent-driven-development
+  - code-reviewer
+  - accessibility-auditor
+  - senior-architect
+  - senior-backend
+
+tags:
+  - review
+  - critique
+  - evaluation
+  - multi-disciplinary
+  - quality-assurance
+  - adversarial-analysis
+
+categories:
+  - quality
+  - review
+
+entry_points:
+  skill: SKILL.md
+
+config:
+  review_domains:
+    - ux
+    - backend
+    - frontend
+    - architecture
+    - data-science
+    - data-engineering
+    - fullstack
+    - prompt-engineering
+    - devops
+
+dependencies:
+  required:
+    - name: horde-swarm
+      version: ">=1.0.0"
+
+features:
+  - Multi-disciplinary expert review
+  - Parallel domain analysis
+  - Consolidated findings report
+  - Batch improvement approval workflow
+  - Integration with horde-implement
+
+resources:
+  documentation: SKILL.md
+
+compatibility:
+  claude_code: ">=1.0.0"
+  skills_format: "1.0"
