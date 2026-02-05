@@ -1,0 +1,1129 @@
+{
+  "extracted_at": "2025-12-20T12:14:11.654193",
+  "source_image": "data/raw/pihs/pihs_redraft_standard_2025-12-20.png",
+  "chart_type": "redraft",
+  "league_type": "superflex",
+  "player_count": 140,
+  "players": [
+    {
+      "player_name": "Jonathan Taylor",
+      "position": "RB",
+      "team": "IND",
+      "value": 59,
+      "tier": 1,
+      "trend": "up"
+    },
+    {
+      "player_name": "Christian McCaffrey",
+      "position": "RB",
+      "team": "SF",
+      "value": 56,
+      "tier": 1,
+      "trend": "down"
+    },
+    {
+      "player_name": "Bijan Robinson",
+      "position": "RB",
+      "team": "ATL",
+      "value": 52,
+      "tier": 1,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jahmyr Gibbs",
+      "position": "RB",
+      "team": "DET",
+      "value": 51,
+      "tier": 1,
+      "trend": "up"
+    },
+    {
+      "player_name": "Devon Achane",
+      "position": "RB",
+      "team": "MIA",
+      "value": 45,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Josh Jacobs",
+      "position": "RB",
+      "team": "LV",
+      "value": 42,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "James Cook",
+      "position": "RB",
+      "team": "BUF",
+      "value": 41,
+      "tier": 2,
+      "trend": "down"
+    },
+    {
+      "player_name": "Derrick Henry",
+      "position": "RB",
+      "team": "BAL",
+      "value": 36,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Kyren Williams",
+      "position": "RB",
+      "team": "LAR",
+      "value": 35,
+      "tier": 2,
+      "trend": "up"
+    },
+    {
+      "player_name": "Javonte Williams",
+      "position": "RB",
+      "team": "DEN",
+      "value": 34,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Saquon Barkley",
+      "position": "RB",
+      "team": "PHI",
+      "value": 32,
+      "tier": 3,
+      "trend": "down"
+    },
+    {
+      "player_name": "Ashton Jeanty",
+      "position": "RB",
+      "team": "COL",
+      "value": 25,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Rico Dowdle",
+      "position": "RB",
+      "team": "DAL",
+      "value": 23,
+      "tier": 3,
+      "trend": "up"
+    },
+    {
+      "player_name": "Chase Brown",
+      "position": "RB",
+      "team": "CIN",
+      "value": 22,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Breece Hall",
+      "position": "RB",
+      "team": "NYJ",
+      "value": 21,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Bucky Irving",
+      "position": "RB",
+      "team": "TB",
+      "value": 20,
+      "tier": 3,
+      "trend": "down"
+    },
+    {
+      "player_name": "Quinshon Judkins",
+      "position": "RB",
+      "team": "SEA",
+      "value": 19,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "D'Andre Swift",
+      "position": "RB",
+      "team": "CHI",
+      "value": 18,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Travis Etienne",
+      "position": "RB",
+      "team": "JAX",
+      "value": 17,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jaylen Warren",
+      "position": "RB",
+      "team": "PIT",
+      "value": 17,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Tre'Veyon Henderson",
+      "position": "RB",
+      "team": "LV",
+      "value": 12,
+      "tier": 4,
+      "trend": "up"
+    },
+    {
+      "player_name": "Omarion Hampton",
+      "position": "RB",
+      "team": "CAR",
+      "value": 12,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "David Montgomery",
+      "position": "RB",
+      "team": "DET",
+      "value": 11,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "RJ Harvey",
+      "position": "RB",
+      "team": "CHI",
+      "value": 11,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Woody Marks",
+      "position": "RB",
+      "team": "MIA",
+      "value": 10,
+      "tier": 4,
+      "trend": "down"
+    },
+    {
+      "player_name": "Aaron Jones",
+      "position": "RB",
+      "team": "MIN",
+      "value": 10,
+      "tier": 4,
+      "trend": "up"
+    },
+    {
+      "player_name": "J.K. Dobbins",
+      "position": "RB",
+      "team": "LAC",
+      "value": 10,
+      "tier": 4,
+      "trend": "down"
+    },
+    {
+      "player_name": "Kenneth Walker",
+      "position": "RB",
+      "team": "SEA",
+      "value": 10,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Kimani Vidal",
+      "position": "RB",
+      "team": "LAC",
+      "value": 9,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Alvin Kamara",
+      "position": "RB",
+      "team": "NO",
+      "value": 9,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Zach Charbonnet",
+      "position": "RB",
+      "team": "SEA",
+      "value": 8,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Wil Gohangal",
+      "position": "RB",
+      "team": "ATL",
+      "value": 8,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Trey Benson",
+      "position": "RB",
+      "team": "ARI",
+      "value": 7,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Rhamondre Stevenson",
+      "position": "RB",
+      "team": "NE",
+      "value": 7,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Rachaad White",
+      "position": "RB",
+      "team": "TB",
+      "value": 7,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Tyrone Tracy",
+      "position": "RB",
+      "team": "NYG",
+      "value": 6,
+      "tier": 4,
+      "trend": "down"
+    },
+    {
+      "player_name": "Tony Pollard",
+      "position": "RB",
+      "team": "TEN",
+      "value": 5,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jacory Croskey-Merritt",
+      "position": "RB",
+      "team": "WAS",
+      "value": 5,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Tysae Spears",
+      "position": "RB",
+      "team": "TEN",
+      "value": 4,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Isiah Pacheco",
+      "position": "RB",
+      "team": "KC",
+      "value": 3,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Kareem Hunt",
+      "position": "RB",
+      "team": "KC",
+      "value": 3,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jordan Mason",
+      "position": "RB",
+      "team": "SF",
+      "value": 2,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Chuba Hubbard",
+      "position": "RB",
+      "team": "CAR",
+      "value": 1,
+      "tier": 5,
+      "trend": "down"
+    },
+    {
+      "player_name": "Tyler Allgeier",
+      "position": "RB",
+      "team": "ATL",
+      "value": 1,
+      "tier": 5,
+      "trend": "up"
+    },
+    {
+      "player_name": "Zonovan Knight",
+      "position": "RB",
+      "team": "NYJ",
+      "value": 1,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Ja'Marr Chase",
+      "position": "WR",
+      "team": "CIN",
+      "value": 0,
+      "tier": 1,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jaxon Smith-Njigba",
+      "position": "WR",
+      "team": "SEA",
+      "value": 2,
+      "tier": 1,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Puka Nacua",
+      "position": "WR",
+      "team": "LAR",
+      "value": 0,
+      "tier": 1,
+      "trend": "stable"
+    },
+    {
+      "player_name": "CeeDee Lamb",
+      "position": "WR",
+      "team": "DAL",
+      "value": 0,
+      "tier": 1,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Amon-Ra St. Brown",
+      "position": "WR",
+      "team": "DET",
+      "value": 0,
+      "tier": 1,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Rashee Rice",
+      "position": "WR",
+      "team": "KC",
+      "value": 0,
+      "tier": 1,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Drake London",
+      "position": "WR",
+      "team": "ATL",
+      "value": 0,
+      "tier": 1,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Justin Jefferson",
+      "position": "WR",
+      "team": "MIN",
+      "value": -3,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Davante Adams",
+      "position": "WR",
+      "team": "NYJ",
+      "value": 0,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Trey McBride",
+      "position": "TE",
+      "team": "ARI",
+      "value": 4,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Nico Collins",
+      "position": "WR",
+      "team": "HOU",
+      "value": 6,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Emeka Egbuka",
+      "position": "WR",
+      "team": "CLE",
+      "value": 0,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Brock Bowers",
+      "position": "TE",
+      "team": "LV",
+      "value": -4,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "George Pickens",
+      "position": "WR",
+      "team": "PIT",
+      "value": 0,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Ladd McConkey",
+      "position": "WR",
+      "team": "LAC",
+      "value": 2,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jaylen Waddle",
+      "position": "WR",
+      "team": "MIA",
+      "value": 0,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "A.J. Brown",
+      "position": "WR",
+      "team": "PHI",
+      "value": 0,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Tee Higgins",
+      "position": "WR",
+      "team": "CIN",
+      "value": 3,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "DeVonta Smith",
+      "position": "WR",
+      "team": "PHI",
+      "value": 0,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Rome Odunze",
+      "position": "WR",
+      "team": "CHI",
+      "value": 0,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Chris Olave",
+      "position": "WR",
+      "team": "NO",
+      "value": 0,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Michael Pittman",
+      "position": "WR",
+      "team": "IND",
+      "value": -3,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Marvin Harrison Jr.",
+      "position": "WR",
+      "team": "ARI",
+      "value": 4,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "DK Metcalf",
+      "position": "WR",
+      "team": "SEA",
+      "value": 0,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Zay Flowers",
+      "position": "WR",
+      "team": "BAL",
+      "value": 0,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Tetairoa McMillan",
+      "position": "WR",
+      "team": "ARI",
+      "value": 0,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Brian Thomas Jr.",
+      "position": "WR",
+      "team": "JAX",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Stefon Diggs",
+      "position": "WR",
+      "team": "HOU",
+      "value": 2,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jordan Addison",
+      "position": "WR",
+      "team": "MIN",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jameson Williams",
+      "position": "WR",
+      "team": "DET",
+      "value": 4,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Courtland Sutton",
+      "position": "WR",
+      "team": "DEN",
+      "value": -3,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Wan'Dale Robinson",
+      "position": "WR",
+      "team": "NYG",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Keenan Allen",
+      "position": "WR",
+      "team": "CHI",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Terry McLaurin",
+      "position": "WR",
+      "team": "WAS",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Alec Pierce",
+      "position": "WR",
+      "team": "IND",
+      "value": 2,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jauan Jennings",
+      "position": "WR",
+      "team": "SF",
+      "value": 2,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Quentin Johnston",
+      "position": "WR",
+      "team": "LAC",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Troy Franklin",
+      "position": "WR",
+      "team": "DEN",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "DeeBo Samuel",
+      "position": "WR",
+      "team": "SF",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Ricky Pearsall",
+      "position": "WR",
+      "team": "SF",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Khalil Shakir",
+      "position": "WR",
+      "team": "BUF",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Romeo Doubs",
+      "position": "WR",
+      "team": "GB",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Rashid Shaheed",
+      "position": "WR",
+      "team": "NO",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "D.J. Moore",
+      "position": "WR",
+      "team": "CHI",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Xavier Worthy",
+      "position": "WR",
+      "team": "KC",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Garrett Wilson",
+      "position": "WR",
+      "team": "NYJ",
+      "value": -13,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Tez Johnson",
+      "position": "WR",
+      "team": "BAL",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "DJ Mowns",
+      "position": "WR",
+      "team": "KC",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jerry Jeudy",
+      "position": "WR",
+      "team": "CLE",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Parker Washington",
+      "position": "WR",
+      "team": "JAX",
+      "value": 3,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Christian Watson",
+      "position": "WR",
+      "team": "GB",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Chris Godwin",
+      "position": "WR",
+      "team": "TB",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Keyshon Boutte",
+      "position": "WR",
+      "team": "NE",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Darius Slayton",
+      "position": "WR",
+      "team": "NYG",
+      "value": 5,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jakobi Meyers",
+      "position": "WR",
+      "team": "LV",
+      "value": -4,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Tre Tucker",
+      "position": "WR",
+      "team": "LV",
+      "value": 0,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jayden Higgins",
+      "position": "WR",
+      "team": "CIN",
+      "value": 6,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Josh Allen",
+      "position": "QB",
+      "team": "BUF",
+      "value": 0,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Lamar Jackson",
+      "position": "QB",
+      "team": "BAL",
+      "value": -3,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Patrick Mahomes",
+      "position": "QB",
+      "team": "KC",
+      "value": 0,
+      "tier": 2,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jalen Hurts",
+      "position": "QB",
+      "team": "PHI",
+      "value": -3,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Tyler Warren",
+      "position": "TE",
+      "team": "GB",
+      "value": 0,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "George Kittle",
+      "position": "TE",
+      "team": "SF",
+      "value": 0,
+      "tier": 3,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Sam LaPorta",
+      "position": "TE",
+      "team": "DET",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Drake Maye",
+      "position": "QB",
+      "team": "NE",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Justin Herbert",
+      "position": "QB",
+      "team": "LAC",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jake Ferguson",
+      "position": "TE",
+      "team": "DAL",
+      "value": -2,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Omarion Goodden",
+      "position": "QB",
+      "team": "WAS",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Travis Kelce",
+      "position": "TE",
+      "team": "KC",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Dallas Goedert",
+      "position": "TE",
+      "team": "PHI",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Baker Mayfield",
+      "position": "QB",
+      "team": "TB",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jaxon Dart",
+      "position": "QB",
+      "team": "NO",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Dak Prescott",
+      "position": "QB",
+      "team": "DAL",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Matthew Stafford",
+      "position": "QB",
+      "team": "LAR",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Bo Nix",
+      "position": "QB",
+      "team": "DEN",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Kyle Pitts",
+      "position": "TE",
+      "team": "ATL",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jared Goff",
+      "position": "QB",
+      "team": "DET",
+      "value": 3,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Dalton Kincaid",
+      "position": "TE",
+      "team": "BUF",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Sam Darnold",
+      "position": "QB",
+      "team": "MIN",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Colston Loveland",
+      "position": "TE",
+      "team": "MIA",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Daniel Jones",
+      "position": "QB",
+      "team": "NYG",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Mark Andrews",
+      "position": "TE",
+      "team": "BAL",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Harold Fannin Jr.",
+      "position": "TE",
+      "team": "BUF",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Juwan Johnson",
+      "position": "TE",
+      "team": "NO",
+      "value": 5,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Caleb Williams",
+      "position": "QB",
+      "team": "CHI",
+      "value": 0,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Cade Otton",
+      "position": "TE",
+      "team": "TB",
+      "value": 2,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jayden Daniels",
+      "position": "QB",
+      "team": "WAS",
+      "value": 31,
+      "tier": 4,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Dalton Schultz",
+      "position": "TE",
+      "team": "HOU",
+      "value": 4,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "T.J. Hockenson",
+      "position": "TE",
+      "team": "MIN",
+      "value": 0,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Jordan Love",
+      "position": "QB",
+      "team": "GB",
+      "value": 0,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Zach Ertz",
+      "position": "TE",
+      "team": "WAS",
+      "value": 0,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Hunter Henry",
+      "position": "TE",
+      "team": "NE",
+      "value": 0,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Trevor Lawrence",
+      "position": "QB",
+      "team": "JAX",
+      "value": 0,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Brock Purdy",
+      "position": "QB",
+      "team": "SF",
+      "value": 0,
+      "tier": 5,
+      "trend": "stable"
+    },
+    {
+      "player_name": "Joe Flacco",
+      "position": "QB",
+      "team": "IND",
+      "value": 0,
+      "tier": 5,
+      "trend": "stable"
+    }
+  ]
+}

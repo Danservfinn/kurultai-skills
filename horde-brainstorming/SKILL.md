@@ -1,9 +1,11 @@
 ---
-name: supercharged-brainstorming
+name: horde-brainstorming
 description: "Use for complex feature design, system architecture, or when exploring multiple technical approaches. Combines collaborative discovery with parallel domain expert analysis to produce validated, implementable designs."
+integrations:
+  - horde-swarm
 ---
 
-# Supercharged Brainstorming
+# Horde Brainstorming
 
 Transform ideas into production-ready designs through collaborative discovery amplified by parallel domain expert analysis.
 
@@ -19,7 +21,7 @@ Invoke this skill when:
 
 **vs. Simple Brainstorming:**
 - Simple brainstorming: Linear Q&A, single-threaded exploration
-- Supercharged brainstorming: Parallel domain analysis, adversarial review, validated options
+- Horde brainstorming: Parallel domain analysis, adversarial review, validated options
 
 ## The Process
 
@@ -107,13 +109,79 @@ Task(
 
 ### Phase 3: Adversarial Review
 
-Stress-test the emerging design by dispatching critics:
+Stress-test the emerging design by dispatching critics using `Task(subagent_type=...)`:
 
 **Dispatch in parallel:**
-- **Security reviewer:** "How could this be attacked? What are the vulnerabilities?"
-- **Edge case reviewer:** "Where does this break? What are the failure modes?"
-- **Maintenance reviewer:** "What will be hard to change? Where is technical debt introduced?"
-- **Cost/performance reviewer:** "What will be expensive to run? Where are the bottlenecks?"
+
+```python
+# Security reviewer
+Task(
+    subagent_type="security-auditor",
+    prompt="""Review this design for security vulnerabilities:
+
+[Design from Phase 2]
+
+Identify:
+1. Attack vectors and vulnerabilities
+2. OWASP compliance gaps
+3. Authentication/authorization issues
+4. Data exposure risks
+5. Mitigation strategies
+
+Rate each finding: CRITICAL/HIGH/MEDIUM/LOW"""
+)
+
+# Edge case reviewer
+Task(
+    subagent_type="feature-dev:code-reviewer",
+    prompt="""Find edge cases and failure modes in this design:
+
+[Design from Phase 2]
+
+Identify:
+1. Boundary conditions that break
+2. Scale limitations
+3. Race conditions
+4. Error handling gaps
+5. Recovery scenarios
+
+Rate severity: CRITICAL/HIGH/MEDIUM/LOW"""
+)
+
+# Maintenance reviewer
+Task(
+    subagent_type="code-simplifier:code-simplifier",
+    prompt="""Assess maintainability of this design:
+
+[Design from Phase 2]
+
+Identify:
+1. Technical debt introduced
+2. Coupling issues
+3. Future refactoring challenges
+4. Documentation needs
+5. Onboarding complexity
+
+Rate concerns: HIGH/MEDIUM/LOW"""
+)
+
+# Cost/performance reviewer
+Task(
+    subagent_type="python-development:python-pro",
+    prompt="""Analyze cost and performance implications:
+
+[Design from Phase 2]
+
+Identify:
+1. Resource bottlenecks
+2. Scaling costs
+3. Inefficient patterns
+4. Infrastructure requirements
+5. Optimization opportunities
+
+Rate impact: HIGH/MEDIUM/LOW"""
+)
+```
 
 **Each critic returns:**
 - Identified risks and failure modes
@@ -196,7 +264,7 @@ If ready to proceed:
 
 | Skill | Integration Point |
 |-------|-------------------|
-| `critical-review` | Phase 3 adversarial review |
+| `horde-review` | Phase 3 adversarial review |
 | `subagent-driven-development` | Phase 6 implementation |
 | `writing-plans` | Phase 6 plan creation |
 | `using-git-worktrees` | Phase 6 workspace setup |

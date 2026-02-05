@@ -1,3 +1,11 @@
+---
+name: horde-skill-creator
+description: Guide for creating effective skills using a 7-phase multi-agent workflow. Use when the user wants to "create a skill", "add a skill", "build a skill", or "new skill".
+integrations:
+  - horde-swarm
+  - horde-plan
+---
+
 # Supercharged Skill Creator
 
 **Version:** 1.0
