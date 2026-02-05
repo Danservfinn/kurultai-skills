@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "registry_name": "Kurultai Official Registry",
   "registry_url": "https://registry.kurultai.dev",
-  "last_updated": "2026-02-04T00:00:00Z",
+  "last_updated": "2026-02-05T12:30:00Z",
   "skills": [
     {
       "name": "horde-swarm",
@@ -215,12 +215,69 @@
           "functions": 90
         }
       }
+    },
+    {
+      "name": "horde-test",
+      "version": "1.0.0",
+      "description": "Execute comprehensive testing plans using horde-swarm to dispatch parallel test agents across multiple test categories (unit, integration, e2e, performance, security, accessibility)",
+      "author": "kurultai",
+      "type": "skill",
+      "repository": "https://github.com/kurultai/horde-test",
+      "tags": [
+        "horde",
+        "testing",
+        "validation",
+        "coverage",
+        "parallel-execution",
+        "quality-assurance"
+      ],
+      "keywords": [
+        "test execution",
+        "parallel testing",
+        "unit tests",
+        "integration tests",
+        "e2e tests",
+        "performance tests",
+        "security tests",
+        "accessibility tests",
+        "coverage tracking",
+        "test aggregation",
+        "swarm testing"
+      ],
+      "dependencies": [
+        {
+          "name": "horde-swarm",
+          "version_constraint": "^1.0.0",
+          "required": true
+        }
+      ],
+      "entry_point": "SKILL.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/horde-test#readme",
+      "config": {
+        "test_categories": [
+          "unit",
+          "integration",
+          "e2e",
+          "performance",
+          "security",
+          "accessibility"
+        ],
+        "coverage": {
+          "line": 80,
+          "branch": 70,
+          "function": 90
+        },
+        "default_timeout": 300,
+        "max_parallel_suites": 4
+      }
     }
   ],
   "metadata": {
-    "total_skills": 5,
+    "total_skills": 6,
     "engines": 1,
-    "skills": 4,
+    "skills": 5,
     "workflows": 0
   }
 }
