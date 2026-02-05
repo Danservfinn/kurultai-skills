@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "registry_name": "Kurultai Official Registry",
   "registry_url": "https://registry.kurultai.dev",
-  "last_updated": "2026-02-05T19:35:00Z",
+  "last_updated": "2026-02-05T19:40:00Z",
   "skills": [
     {
       "name": "horde-swarm",
@@ -115,6 +115,146 @@
           "moderate",
           "deep"
         ]
+      }
+    },
+    {
+      "name": "horde-plan",
+      "version": "1.0.0",
+      "description": "Create comprehensive implementation plans using plan mode with task breakdown, dependency mapping, and hands off to horde-implement for execution",
+      "author": "kurultai",
+      "type": "skill",
+      "repository": "https://github.com/kurultai/horde-plan",
+      "tags": [
+        "horde",
+        "planning",
+        "task-management",
+        "implementation",
+        "plan-mode",
+        "workflow"
+      ],
+      "keywords": [
+        "planning",
+        "task breakdown",
+        "dependency mapping",
+        "plan mode",
+        "implementation planning",
+        "project management",
+        "workflow orchestration",
+        "task tracking"
+      ],
+      "dependencies": [
+        {
+          "name": "horde-swarm",
+          "version_constraint": "^1.0.0",
+          "required": true
+        }
+      ],
+      "entry_point": "SKILL.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/horde-plan#readme",
+      "config": {
+        "default_phases": [
+          "setup",
+          "core-implementation",
+          "integration",
+          "testing",
+          "documentation",
+          "deployment"
+        ]
+      }
+    },
+    {
+      "name": "horde-implement",
+      "version": "1.0.0",
+      "description": "Automatically transform user requests into executed implementations through AI-driven planning and subagent swarm execution",
+      "author": "kurultai",
+      "type": "skill",
+      "repository": "https://github.com/kurultai/horde-implement",
+      "tags": [
+        "horde",
+        "implementation",
+        "execution",
+        "automation",
+        "swarm",
+        "subagent-orchestration"
+      ],
+      "keywords": [
+        "implementation",
+        "execution",
+        "automation",
+        "subagent orchestration",
+        "swarm execution",
+        "prompt engineering",
+        "task decomposition",
+        "code generation",
+        "autonomous execution"
+      ],
+      "dependencies": [
+        {
+          "name": "horde-swarm",
+          "version_constraint": "^1.0.0",
+          "required": true
+        }
+      ],
+      "entry_point": "SKILL.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/horde-implement#readme",
+      "config": {
+        "max_retries": 3,
+        "retry_backoff": [1, 2, 4],
+        "enable_verification": true,
+        "enable_spec_review": true,
+        "enable_code_quality_review": true,
+        "parallel_execution": false
+      }
+    },
+    {
+      "name": "horde-gate-testing",
+      "version": "1.0.0",
+      "description": "Run integration tests between implementation phases to catch integration issues before proceeding to next phase",
+      "author": "kurultai",
+      "type": "skill",
+      "repository": "https://github.com/kurultai/horde-gate-testing",
+      "tags": [
+        "horde",
+        "testing",
+        "integration",
+        "gates",
+        "validation",
+        "phase-checkpoints"
+      ],
+      "keywords": [
+        "integration testing",
+        "phase gates",
+        "validation",
+        "quality gates",
+        "pre-commit",
+        "post-deployment",
+        "automated testing",
+        "checkpoint validation"
+      ],
+      "dependencies": [
+        {
+          "name": "horde-swarm",
+          "version_constraint": "^1.0.0",
+          "required": true
+        }
+      ],
+      "entry_point": "SKILL.md",
+      "min_kurultai_version": "0.1.0",
+      "license": "MIT",
+      "homepage": "https://github.com/kurultai/horde-gate-testing#readme",
+      "config": {
+        "gate_types": [
+          "pre_commit",
+          "post_commit",
+          "pre_merge",
+          "post_deploy"
+        ],
+        "default_severity_threshold": "error",
+        "auto_fix_suggestions": true
       }
     },
     {
@@ -437,9 +577,9 @@
     }
   ],
   "metadata": {
-    "total_skills": 9,
+    "total_skills": 12,
     "engines": 1,
-    "skills": 8,
+    "skills": 11,
     "workflows": 0
   }
 }
