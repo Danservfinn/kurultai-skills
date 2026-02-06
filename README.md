@@ -3,7 +3,38 @@
 > A skills marketplace for Claude Code. Discover, install, and compose agent workflows for complex multi-agent orchestration.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=discord&logo=discord)](https://discord.gg/kurultai)
+
+## For Machines
+
+Copy and paste this prompt into Claude Code to install all 65 skills:
+
+```
+Clone https://github.com/Danservfinn/kurultai-skills and copy every subdirectory from the skills/ folder into ~/.claude/skills/. Each subdirectory is a separate skill containing a SKILL.md file and optional supporting files. Do not overwrite any existing skills that are already installed. Exclude .git, __pycache__, and .zip files. After copying, list how many skills were installed.
+```
+
+Or run this in your terminal:
+
+```bash
+git clone https://github.com/Danservfinn/kurultai-skills.git /tmp/kurultai-skills-install && \
+rsync -av --ignore-existing --exclude='.git' --exclude='__pycache__' --exclude='*.zip' \
+  /tmp/kurultai-skills-install/skills/ ~/.claude/skills/ && \
+rm -rf /tmp/kurultai-skills-install && \
+echo "Installed. Total skills: $(ls -d ~/.claude/skills/*/ 2>/dev/null | wc -l)"
+```
+
+### What's Included (65 skills)
+
+| Category | Skills |
+|---|---|
+| **Horde Ecosystem** | golden-horde, horde-swarm, horde-plan, horde-implement, horde-test, horde-review, horde-brainstorming, horde-learn, horde-gate-testing, horde-skill-creator |
+| **Senior Specialists** | senior-architect, senior-backend, senior-frontend, senior-fullstack, senior-devops, senior-data-engineer, senior-data-scientist, senior-ml-engineer, senior-computer-vision, senior-prompt-engineer |
+| **Dev Workflow** | brainstorming, writing-plans, executing-plans, subagent-driven-development, dispatching-parallel-agents, code-reviewer, requesting-code-review, receiving-code-review, verification-before-completion, systematic-debugging, implementation-status, ship-it, generate-tests |
+| **Specialized** | agent-collaboration, agent-development, command-development, skill-creator, skill-development, changelog-generator, claude-cleanup, file-organizer, video-downloader, webapp-testing, oauth-setup, theme-factory, web-artifacts-builder, frontend-design |
+| **Analysis & Content** | accessibility-auditor, critical-reviewer, content-research-writer, seo-optimizer, lead-research-assistant, ui-design-system, ux-researcher-designer, product-strategist |
+| **Leadership** | cto-advisor, ceo-advisor, parse-cfo |
+| **Project-Specific** | molt, kurultai-model-switcher, data-ingestion, last30days, dev-deploy, review, using-superpowers, writing-rules |
+
+---
 
 ## What is Kurultai?
 
@@ -62,16 +93,20 @@ The "horde" skills are the centerpiece of Kurultai. They work together as an **e
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### The Six Horde Skills
+### The Horde Skills
 
 | Skill | Purpose | When to Use |
 |-------|---------|-------------|
+| [**golden-horde**](#golden-horde) | Master orchestrator - 9 patterns, 60+ agents, all skill methodologies embedded | Tasks requiring inter-agent communication, review loops, debates, consensus |
 | [**horde-swarm**](#horde-swarm) | Core execution engine - dispatch parallel subagents | Any multi-perspective task |
 | [**horde-brainstorming**](#horde-brainstorming) | 6-phase collaborative design process | Complex feature design, architecture decisions |
 | [**horde-plan**](#horde-plan) | Create comprehensive implementation plans | Breaking down large tasks |
 | [**horde-implement**](#horde-implement) | Automated execution of implementation plans | Building features from plans |
+| [**horde-test**](#horde-test) | Comprehensive test suite execution | Unit, integration, e2e, edge case testing |
+| [**horde-review**](#horde-review) | Multi-disciplinary critical review | Backend, security, performance, architecture review |
 | [**horde-learn**](#horde-learn) | Extract insights from text sources | Research, analysis, competitive intelligence |
 | [**horde-gate-testing**](#horde-gate-testing) | Integration testing between phases | Validating implementations |
+| [**horde-skill-creator**](#horde-skill-creator) | 7-phase skill creation workflow | Building new skills with validation |
 
 ### How Skills Compose
 

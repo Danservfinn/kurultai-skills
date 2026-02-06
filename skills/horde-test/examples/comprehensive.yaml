@@ -1,0 +1,174 @@
+# Comprehensive Test Plan Example
+# This demonstrates all test categories and advanced features
+
+plan_id: "comprehensive-example"
+version: "2.0.0"
+
+context:
+  implementation_files:
+    - "src/**/*.py"
+    - "src/**/*.tsx"
+  test_requirements:
+    - "Full test coverage across all categories"
+    - "Security audit required"
+    - "Performance benchmarks"
+    - "Accessibility compliance"
+  coverage_target: 90
+
+scope:
+  include_patterns:
+    - "src/**/*"
+    - "tests/**/*"
+  exclude_patterns:
+    - "*/node_modules/*"
+    - "*/venv/*"
+    - "*/dist/*"
+    - "*/build/*"
+  max_files: 1000
+
+suites:
+  # Unit tests - fast, isolated
+  - name: "backend-unit"
+    category: unit
+    files:
+      - "tests/unit/**/*.py"
+    config:
+      timeout: 300
+      retries: 1
+      parallel: true
+      coverage: true
+
+  - name: "frontend-unit"
+    category: unit
+    files:
+      - "src/**/*.test.tsx"
+    config:
+      timeout: 300
+      retries: 1
+      parallel: true
+      coverage: true
+
+  # Integration tests - require dependencies
+  - name: "api-integration"
+    category: integration
+    files:
+      - "tests/integration/api/"
+    dependencies:
+      - "backend-unit"
+    config:
+      timeout: 600
+      retries: 0
+      parallel: false
+      coverage: true
+
+  - name: "database-integration"
+    category: integration
+    files:
+      - "tests/integration/db/"
+    dependencies:
+      - "backend-unit"
+    config:
+      timeout: 600
+      retries: 0
+      parallel: false
+      coverage: true
+
+  # E2E tests - full workflows
+  - name: "e2e-critical-paths"
+    category: e2e
+    files:
+      - "tests/e2e/critical/"
+    dependencies:
+      - "api-integration"
+      - "database-integration"
+    config:
+      timeout: 1200
+      retries: 2
+      parallel: false
+      coverage: false
+
+  # Performance tests
+  - name: "load-tests"
+    category: performance
+    files:
+      - "tests/performance/load/"
+    dependencies:
+      - "api-integration"
+    config:
+      timeout: 1800
+      retries: 0
+      parallel: false
+      coverage: false
+
+  - name: "stress-tests"
+    category: performance
+    files:
+      - "tests/performance/stress/"
+    dependencies:
+      - "load-tests"
+    config:
+      timeout: 3600
+      retries: 0
+      parallel: false
+      coverage: false
+
+  # Security tests
+  - name: "security-scan"
+    category: security
+    files:
+      - "src/"
+    dependencies:
+      - "backend-unit"
+      - "frontend-unit"
+    config:
+      timeout: 900
+      retries: 0
+      parallel: false
+      coverage: false
+
+  - name: "dependency-audit"
+    category: security
+    files:
+      - "requirements.txt"
+      - "package.json"
+    config:
+      timeout: 300
+      retries: 0
+      parallel: true
+      coverage: false
+
+  # Accessibility tests
+  - name: "a11y-compliance"
+    category: accessibility
+    files:
+      - "src/components/"
+    dependencies:
+      - "frontend-unit"
+    config:
+      timeout: 600
+      retries: 1
+      parallel: true
+      coverage: false
+
+execution:
+  max_parallel_suites: 4
+  fail_fast: false
+  continue_on_failure: true
+  timeout: 7200  # 2 hours
+
+coverage:
+  enabled: true
+  targets:
+    line: 90
+    branch: 85
+    function: 95
+  fail_on_missed: true
+
+success_criteria:
+  min_pass_rate: 100
+  critical_suites:
+    - "backend-unit"
+    - "frontend-unit"
+    - "security-scan"
+    - "a11y-compliance"
+  no_critical_failures: true

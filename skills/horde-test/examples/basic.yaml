@@ -1,0 +1,65 @@
+# Basic Test Plan Example
+# This demonstrates a simple test plan with unit and integration tests
+
+plan_id: "basic-example"
+version: "1.0.0"
+
+context:
+  implementation_files:
+    - "src/auth/*.py"
+    - "src/models/user.py"
+  test_requirements:
+    - "Unit tests for all public methods"
+    - "Integration tests for API endpoints"
+  coverage_target: 80
+
+scope:
+  include_patterns:
+    - "src/**/*.py"
+    - "tests/**/*.py"
+  exclude_patterns:
+    - "*/venv/*"
+    - "*/__pycache__/*"
+
+suites:
+  - name: "unit-tests"
+    category: unit
+    files:
+      - "tests/unit/test_*.py"
+    config:
+      timeout: 300
+      retries: 1
+      parallel: true
+      coverage: true
+
+  - name: "integration-tests"
+    category: integration
+    files:
+      - "tests/integration/test_*.py"
+    dependencies:
+      - "unit-tests"
+    config:
+      timeout: 600
+      retries: 0
+      parallel: false
+      coverage: true
+
+execution:
+  max_parallel_suites: 2
+  fail_fast: false
+  continue_on_failure: true
+  timeout: 1800
+
+coverage:
+  enabled: true
+  targets:
+    line: 80
+    branch: 70
+    function: 90
+  fail_on_missed: true
+
+success_criteria:
+  min_pass_rate: 95
+  critical_suites:
+    - "unit-tests"
+  no_critical_failures: true

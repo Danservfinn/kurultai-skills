@@ -1,0 +1,67 @@
+name: horde-skill-creator
+description: |
+  Guide for creating effective skills using a 7-phase multi-agent workflow.
+  Provides a structured approach to skill development from requirements analysis
+  through specification, implementation, testing, documentation, and packaging.
+
+version: 1.0.0
+author: kurultai
+license: MIT
+
+engine: horde-swarm
+
+integrations:
+  - horde-swarm
+  - horde-plan
+
+tags:
+  - skill-creation
+  - workflow
+  - multi-agent
+  - development
+  - scaffolding
+
+categories:
+  - core
+  - development
+
+entry_points:
+  skill: SKILL.md
+  architecture: ARCHITECTURE.md
+
+config:
+  phases:
+    - requirements-analysis
+    - specification-design
+    - implementation-planning
+    - core-implementation
+    - testing-validation
+    - documentation
+    - packaging-review
+  complexity_multipliers:
+    simple: 1.0
+    moderate: 1.5
+    complex: 2.0
+
+dependencies:
+  required:
+    - name: horde-swarm
+      version: ">=1.0.0"
+    - name: horde-plan
+      version: ">=1.0.0"
+
+features:
+  - 7-phase skill creation workflow
+  - Automatic task dependency mapping
+  - Specialist subagent routing
+  - Validation gates between phases
+  - Packaging and registry integration
+  - Requirements analysis and specification
+
+resources:
+  documentation: SKILL.md
+  architecture: ARCHITECTURE.md
+
+compatibility:
+  claude_code: ">=1.0.0"
+  skills_format: "1.0"

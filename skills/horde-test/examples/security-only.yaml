@@ -1,0 +1,94 @@
+# Security-Only Test Plan Example
+# Focused on security testing for CI/CD security gates
+
+plan_id: "security-audit"
+version: "1.0.0"
+
+context:
+  implementation_files:
+    - "src/"
+  test_requirements:
+    - "OWASP Top 10 compliance"
+    - "No high/critical vulnerabilities"
+    - "Dependency vulnerability scan"
+  coverage_target: 0  # Coverage not applicable for security tests
+
+scope:
+  include_patterns:
+    - "src/**/*"
+    - "*.json"
+    - "*.txt"
+  exclude_patterns:
+    - "*/tests/*"
+    - "*/test_*"
+    - "*/node_modules/*"
+    - "*/venv/*"
+
+suites:
+  # Static Application Security Testing (SAST)
+  - name: "sast-scan"
+    category: security
+    files:
+      - "src/"
+    config:
+      timeout: 900
+      retries: 0
+      parallel: false
+      coverage: false
+
+  # Dependency vulnerability scan
+  - name: "dependency-check"
+    category: security
+    files:
+      - "requirements.txt"
+      - "package.json"
+      - "Pipfile.lock"
+      - "package-lock.json"
+    config:
+      timeout: 600
+      retries: 0
+      parallel: true
+      coverage: false
+
+  # Secret detection
+  - name: "secret-scan"
+    category: security
+    files:
+      - "src/"
+      - "config/"
+      - "scripts/"
+    config:
+      timeout: 300
+      retries: 0
+      parallel: true
+      coverage: false
+
+  # Infrastructure security (if applicable)
+  - name: "infra-security"
+    category: security
+    files:
+      - "terraform/"
+      - "docker/"
+      - "k8s/"
+    config:
+      timeout: 600
+      retries: 0
+      parallel: true
+      coverage: false
+
+execution:
+  max_parallel_suites: 3
+  fail_fast: true  # Stop on first security issue
+  continue_on_failure: false
+  timeout: 3600
+
+coverage:
+  enabled: false  # Security tests don't track coverage
+
+success_criteria:
+  min_pass_rate: 100  # All security tests must pass
+  critical_suites:
+    - "sast-scan"
+    - "dependency-check"
+    - "secret-scan"
+  no_critical_failures: true

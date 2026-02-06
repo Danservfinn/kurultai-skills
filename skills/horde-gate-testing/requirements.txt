@@ -1,0 +1,7 @@
+# Core dependencies for phase-gate-testing
+pytest>=7.0.0
+pytest-json-report>=1.5.0
+
+# Optional dependencies for future enhancements
+# jinja2>=3.0.0
+# jsonschema>=4.0.0

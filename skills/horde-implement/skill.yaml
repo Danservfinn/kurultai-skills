@@ -1,0 +1,77 @@
+name: horde-implement
+description: |
+  Automatically transform user requests into executed implementations through
+  AI-driven planning and subagent swarm execution. Complete pipeline from
+  prompt engineering through autonomous execution to final review.
+
+version: 1.0.0
+author: kurultai
+license: MIT
+
+engine: horde-swarm
+
+integrations:
+  - horde-swarm
+  - senior-prompt-engineer
+  - subagent-driven-development
+  - implementation-status
+  - horde-review
+
+tags:
+  - implementation
+  - execution
+  - automation
+  - swarm
+  - subagent-orchestration
+
+categories:
+  - core
+  - execution
+
+entry_points:
+  skill: SKILL.md
+  implementer: implementer-prompt.md
+  spec_reviewer: spec-reviewer-prompt.md
+  code_quality: code-quality-reviewer-prompt.md
+  verification: verification-prompt.md
+  fix_subagent: fix-subagent-prompt.md
+
+config:
+  max_retries: 3
+  retry_backoff:
+    - 1
+    - 2
+    - 4
+  enable_verification: true
+  enable_spec_review: true
+  enable_code_quality_review: true
+  parallel_execution: false
+
+dependencies:
+  required:
+    - name: horde-swarm
+      version: ">=1.0.0"
+
+features:
+  - Automatic plan generation via senior-prompt-engineer
+  - Subagent swarm deployment for task execution
+  - Independent test verification
+  - Domain-specialist spec review
+  - Code quality review gates
+  - Systematic failure recovery
+  - Implementation status audit
+  - Final horde-review validation
+  - State persistence and checkpointing
+
+resources:
+  documentation: SKILL.md
+  prompts:
+    - implementer-prompt.md
+    - spec-reviewer-prompt.md
+    - code-quality-reviewer-prompt.md
+    - verification-prompt.md
+    - fix-subagent-prompt.md
+
+compatibility:
+  claude_code: ">=1.0.0"
+  skills_format: "1.0"

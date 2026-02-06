@@ -1,0 +1,92 @@
+name: horde-test
+description: |
+  Execute comprehensive testing plans using horde-swarm to dispatch parallel test agents
+  across multiple test categories (unit, integration, e2e, performance, security, accessibility).
+  Integrates with horde-implement Phase 6 to provide automated testing and validation
+  with coverage tracking and result aggregation.
+
+version: 1.0.0
+author: kurultai
+license: MIT
+
+engine: horde-swarm
+
+integrations:
+  - horde-swarm
+  - horde-implement
+  - horde-gate-testing
+
+tags:
+  - testing
+  - validation
+  - coverage
+  - parallel-execution
+  - quality-assurance
+
+categories:
+  - testing
+  - devops
+
+entry_points:
+  skill: SKILL.md
+  readme: README.md
+  spec: SPEC.md
+
+schemas:
+  test_plan: schemas/test-plan.json
+  test_results: schemas/test-results.json
+
+examples:
+  - examples/basic.yaml
+  - examples/comprehensive.yaml
+  - examples/security-only.yaml
+
+config:
+  env_variables:
+    - HORDE_TEST_TIMEOUT
+    - HORDE_TEST_MAX_PARALLEL
+    - HORDE_TEST_FAIL_FAST
+    - HORDE_TEST_COVERAGE_DIR
+
+dependencies:
+  required:
+    - name: horde-swarm
+      version: ">=1.0.0"
+  optional:
+    - name: neo4j
+      description: For result storage and traceability
+    - name: coverage.py
+      description: For Python coverage analysis
+
+features:
+  - Test plan parsing with YAML/JSON schema validation
+  - Dependency analysis with DAG building
+  - Parallel test execution via horde-swarm
+  - Multi-category support (unit, integration, e2e, performance, security, accessibility)
+  - Coverage tracking (line, branch, function)
+  - Result aggregation and unified reporting
+  - HTML, Markdown, and machine-readable reports
+
+subagent_mappings:
+  unit: python-development:python-pro
+  integration: backend-development:backend-architect
+  e2e: frontend-mobile-development:frontend-developer
+  performance: python-development:python-pro
+  security: security-auditor
+  accessibility: web-accessibility-checker
+
+success_criteria:
+  - Configurable pass rate thresholds
+  - Coverage target enforcement
+  - Critical suite validation
+  - No critical failures check
+
+resources:
+  documentation: README.md
+  specification: SPEC.md
+  implementation_plan: IMPLEMENTATION_PLAN.md
+  examples: examples/
+
+compatibility:
+  claude_code: ">=1.0.0"
+  skills_format: "1.0"

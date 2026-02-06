@@ -1,0 +1,43 @@
+# OAuth Environment Variables Template
+# Copy to .env.local and fill in your credentials
+
+# ===========================================
+# NextAuth Configuration
+# ===========================================
+
+# Your app's base URL (no trailing slash)
+NEXTAUTH_URL=http://localhost:3000
+
+# Random secret for encrypting cookies/tokens
+# Generate with: openssl rand -base64 32
+NEXTAUTH_SECRET=your_random_secret_here
+
+# ===========================================
+# Google OAuth
+# ===========================================
+# Get these from: https://console.cloud.google.com/apis/credentials
+
+GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# ===========================================
+# Facebook OAuth
+# ===========================================
+# Get these from: https://developers.facebook.com/apps
+
+FACEBOOK_CLIENT_ID=your_facebook_app_id
+FACEBOOK_CLIENT_SECRET=your_facebook_app_secret
+
+# ===========================================
+# Apple OAuth (Optional)
+# ===========================================
+# Get these from: https://developer.apple.com/account
+
+APPLE_ID=your_apple_service_id
+APPLE_SECRET=your_apple_secret
+
+# ===========================================
+# Database (if using Prisma adapter)
+# ===========================================
+
+DATABASE_URL=your_database_connection_string

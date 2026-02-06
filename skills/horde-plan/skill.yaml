@@ -1,0 +1,58 @@
+name: horde-plan
+description: |
+  Create comprehensive implementation plans using plan mode with task breakdown,
+  dependency mapping, and hands off to horde-implement for execution. Provides
+  structured planning with EnterPlanMode/ExitPlanMode integration.
+
+version: 1.0.0
+author: kurultai
+license: MIT
+
+engine: horde-swarm
+
+integrations:
+  - horde-swarm
+  - horde-implement
+
+tags:
+  - planning
+  - task-management
+  - implementation
+  - plan-mode
+  - workflow
+
+categories:
+  - core
+  - planning
+
+entry_points:
+  skill: SKILL.md
+
+config:
+  default_phases:
+    - setup
+    - core-implementation
+    - integration
+    - testing
+    - documentation
+    - deployment
+
+dependencies:
+  required:
+    - name: horde-swarm
+      version: ">=1.0.0"
+
+features:
+  - Plan mode integration (EnterPlanMode/ExitPlanMode)
+  - Task breakdown with acceptance criteria
+  - Dependency mapping between tasks
+  - Automatic task creation via TaskCreate
+  - Integration with horde-implement for execution
+  - Multi-phase planning support
+
+resources:
+  documentation: SKILL.md
+
+compatibility:
+  claude_code: ">=1.0.0"
+  skills_format: "1.0"

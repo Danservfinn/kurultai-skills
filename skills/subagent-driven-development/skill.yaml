@@ -1,0 +1,74 @@
+name: subagent-driven-development
+description: |
+  Execute implementation plans with independent tasks using fresh subagents per
+  task with multi-stage review. Features domain-specialist routing, independent
+  verification gates, and systematic failure recovery for high-quality parallel-safe
+  execution.
+
+version: 1.0.0
+author: kurultai
+license: MIT
+
+engine: null
+
+integrations:
+  - horde-implement
+  - systematic-debugging
+
+tags:
+  - development
+  - execution
+  - subagents
+  - review
+  - quality-gates
+
+categories:
+  - core
+  - execution
+
+entry_points:
+  skill: SKILL.md
+  implementer: implementer-prompt.md
+  spec_reviewer: spec-reviewer-prompt.md
+  code_quality: code-quality-reviewer-prompt.md
+  fix_subagent: fix-subagent-prompt.md
+
+config:
+  max_retries: 3
+  retry_backoff:
+    - 1
+    - 2
+    - 4
+  enable_verification: true
+  enable_spec_review: true
+  enable_code_quality_review: true
+
+dependencies:
+  required: []
+  optional:
+    - name: systematic-debugging
+      version: ">=1.0.0"
+
+features:
+  - Fresh subagent per task execution
+  - Domain-specialist routing
+  - Independent test verification
+  - Spec compliance review
+  - Code quality review
+  - Systematic failure recovery
+  - Multi-stage review gates
+  - Parallel-safe execution
+  - TodoWrite integration
+  - Security/Accessibility review gates
+
+resources:
+  documentation: SKILL.md
+  prompts:
+    - implementer-prompt.md
+    - spec-reviewer-prompt.md
+    - code-quality-reviewer-prompt.md
+    - fix-subagent-prompt.md
+
+compatibility:
+  claude_code: ">=1.0.0"
+  skills_format: "1.0"

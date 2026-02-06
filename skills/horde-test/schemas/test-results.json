@@ -1,0 +1,258 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://kurultai.io/schemas/horde-test/test-results.json",
+  "title": "Horde Test Results",
+  "description": "Schema for test execution results from horde-test",
+  "type": "object",
+  "required": ["execution_id", "timestamp", "duration_ms", "summary", "suites", "success"],
+  "properties": {
+    "execution_id": {
+      "type": "string",
+      "description": "Unique execution identifier",
+      "format": "uuid"
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "ISO 8601 timestamp",
+      "format": "date-time"
+    },
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total execution time in milliseconds"
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total_suites", "passed_suites", "failed_suites", "total_tests", "passed_tests", "failed_tests", "skipped_tests", "pass_rate"],
+      "properties": {
+        "total_suites": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of test suites"
+        },
+        "passed_suites": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of passed suites"
+        },
+        "failed_suites": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of failed suites"
+        },
+        "total_tests": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of tests"
+        },
+        "passed_tests": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of passed tests"
+        },
+        "failed_tests": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of failed tests"
+        },
+        "skipped_tests": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of skipped tests"
+        },
+        "pass_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Overall pass rate percentage"
+        }
+      }
+    },
+    "suites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "category", "status", "duration_ms"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Suite name"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["unit", "integration", "e2e", "performance", "security", "accessibility"],
+            "description": "Test category"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["passed", "failed", "skipped", "error"],
+            "description": "Suite execution status"
+          },
+          "duration_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Suite execution time in milliseconds"
+          },
+          "tests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "status"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Test name"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["passed", "failed", "skipped", "error"],
+                  "description": "Test execution status"
+                },
+                "duration_ms": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Test execution time in milliseconds"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Error message if failed"
+                },
+                "stack_trace": {
+                  "type": "string",
+                  "description": "Stack trace if failed"
+                }
+              }
+            }
+          },
+          "coverage": {
+            "type": "object",
+            "properties": {
+              "line": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Line coverage percentage"
+              },
+              "branch": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Branch coverage percentage"
+              },
+              "function": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Function coverage percentage"
+              }
+            }
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "description": "Artifact file path"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Artifact type"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "properties": {
+        "overall": {
+          "type": "object",
+          "properties": {
+            "line": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "branch": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "function": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        },
+        "by_file": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "file": {
+                "type": "string"
+              },
+              "line": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "branch": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "function": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            }
+          }
+        },
+        "meets_targets": {
+          "type": "boolean",
+          "description": "Whether coverage targets were met"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "properties": {
+        "report_html": {
+          "type": "string",
+          "description": "Path to HTML report"
+        },
+        "report_markdown": {
+          "type": "string",
+          "description": "Path to Markdown report"
+        },
+        "coverage_xml": {
+          "type": "string",
+          "description": "Path to coverage XML"
+        },
+        "coverage_json": {
+          "type": "string",
+          "description": "Path to coverage JSON"
+        },
+        "logs": {
+          "type": "string",
+          "description": "Path to execution logs"
+        }
+      }
+    },
+    "success": {
+      "type": "boolean",
+      "description": "Overall success status"
+    },
+    "message": {
+      "type": "string",
+      "description": "Human-readable summary"
+    }
+  }
+}

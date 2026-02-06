@@ -1,0 +1,59 @@
+name: horde-learn
+description: |
+  Extract insights and actionable learnings from text sources (X posts, notebook entries,
+  websites, documents, articles) and apply them to the current project context. Analyzes
+  content from diverse sources and translates them into actionable recommendations.
+
+version: 1.0.0
+author: kurultai
+license: MIT
+
+engine: horde-swarm
+
+integrations:
+  - horde-swarm
+
+tags:
+  - learning
+  - extraction
+  - insights
+  - research
+  - knowledge-application
+
+categories:
+  - core
+  - research
+
+entry_points:
+  skill: SKILL.md
+
+config:
+  content_types:
+    - short_form
+    - long_form
+    - technical_docs
+    - conversational
+  analysis_depths:
+    - surface
+    - moderate
+    - deep
+
+dependencies:
+  required:
+    - name: horde-swarm
+      version: ">=1.0.0"
+
+features:
+  - Extract insights from text sources
+  - Content type specific analysis
+  - Project context application
+  - Actionable recommendation generation
+  - Best practice identification
+  - Anti-pattern detection
+
+resources:
+  documentation: SKILL.md
+
+compatibility:
+  claude_code: ">=1.0.0"
+  skills_format: "1.0"

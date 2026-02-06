@@ -1,0 +1,71 @@
+name: senior-prompt-engineer
+description: |
+  World-class prompt engineering skill for LLM optimization, prompt patterns,
+  structured outputs, and AI product development. Expertise in Claude, GPT-4,
+  prompt design patterns, few-shot learning, chain-of-thought, and AI evaluation.
+  Includes RAG optimization, agent design, and LLM system architecture.
+
+version: 1.0.0
+author: kurultai
+license: MIT
+
+engine: null
+
+integrations:
+  - horde-implement
+
+tags:
+  - prompt-engineering
+  - llm
+  - optimization
+  - refinement
+  - ai-product-development
+
+categories:
+  - core
+  - llm
+
+entry_points:
+  skill: SKILL.md
+
+config:
+  optimization_levels:
+    - basic
+    - advanced
+    - expert
+  prompt_patterns:
+    - few-shot
+    - chain-of-thought
+    - tree-of-thought
+    - ReAct
+    - reflection
+
+dependencies:
+  required: []
+
+features:
+  - Prompt optimization and refinement
+  - LLM performance tuning
+  - Structured output design
+  - Few-shot learning patterns
+  - Chain-of-thought prompting
+  - Agentic system design
+  - RAG optimization
+  - LLM evaluation frameworks
+  - Cost-performance optimization
+  - Production prompt patterns
+
+resources:
+  documentation: SKILL.md
+  references:
+    - references/prompt_engineering_patterns.md
+    - references/llm_evaluation_frameworks.md
+    - references/agentic_system_design.md
+  scripts:
+    - scripts/prompt_optimizer.py
+    - scripts/rag_evaluator.py
+    - scripts/agent_orchestrator.py
+
+compatibility:
+  claude_code: ">=1.0.0"
+  skills_format: "1.0"
