@@ -1,17 +1,25 @@
 ---
 name: horde-plan
-version: "1.1"
-description: Create comprehensive implementation plans using plan mode with EnterPlanMode/ExitPlanMode. For complex projects, invokes golden-horde multi-agent deliberation to validate architecture before task breakdown. Integrates with tasks and hands off to horde-implement for execution.
+version: "1.2"
+description: >
+  Create comprehensive implementation plans optimized for horde-implement execution.
+  Plans follow a strict output contract (heading levels, exit criteria, task type hints,
+  gate depth signals) ensuring automatic parsing by horde-implement's Plan Parser.
+  For complex projects, invokes golden-horde deliberation to validate architecture
+  before task breakdown. Structured handoff with plan manifest for zero-loss execution.
 integrations:
   - horde-swarm
   - golden-horde
+  - horde-implement
 ---
 
 # Horde Plan
 
-Create comprehensive implementation plans using plan mode with task breakdown, dependency mapping, and hands off to horde-implement for execution.
+Create comprehensive implementation plans using plan mode with task breakdown, dependency mapping, and structured handoff to horde-implement for execution.
 
-**New in v1.1:** For complex projects, horde-plan can invoke golden-horde patterns (Adversarial Debate, Consensus Deliberation) to validate architectural decisions *before* task breakdown. This produces an Architecture Decision Record (ADR) that constrains the plan, preventing the #1 failure mode: wrong architecture discovered only during implementation.
+**New in v1.2:** Plans now follow a strict **Plan Output Contract** ensuring zero-friction parsing by horde-implement. Heading levels, exit criteria, task type hints, gate depth signals, and YAML frontmatter plan manifest are all standardized. Plans produced by horde-plan v1.2 can be executed by horde-implement Path B without any manual reformatting.
+
+**v1.1:** Golden-horde pre-planning deliberation (Adversarial Debate, Consensus Deliberation) for complex projects. ADR constrains task breakdown.
 
 ## Quick Start
 
@@ -83,6 +91,115 @@ Is this a multi-step implementation task?
 | **horde-implement** | Executing an implementation plan | Uses senior-prompt-engineer + subagent-driven-development |
 | **horde-brainstorming** | Exploring multiple approaches before planning | Research and options generation, not structured planning |
 | **writing-plans** | Writing detailed step-by-step plans | Focuses on bite-sized TDD steps, less task tracking |
+
+## Plan Output Contract (horde-implement compatibility)
+
+**Every plan produced by horde-plan MUST follow this format** to ensure zero-friction parsing by horde-implement's Plan Parser.
+
+### Required Heading Levels
+
+```
+# {Plan Title}                          ← H1: Document title
+## Phase {id}: {name}                   ← H2: Phase headers (id: -1, 0, 1, 1.5, 2, ...)
+### Task {phase_id}.{n}: {name}         ← H3: Task headers (1.1, 1.2, 1.5.1, ...)
+### Exit Criteria Phase {id}            ← H3: Exit criteria per phase (checkbox items)
+### Appendix {letter}: {name}           ← H3: Reference appendices (A, B, C, ...)
+```
+
+**WRONG**: `### Phase 1:` (h3) / `#### Task 1.1:` (h4) — parser won't find phases.
+**RIGHT**: `## Phase 1:` (h2) / `### Task 1.1:` (h3) — matches parser regex.
+
+### Required Phase Metadata
+
+After every phase header:
+```markdown
+## Phase 1: Core Implementation
+**Duration**: 2-3 hours
+**Dependencies**: Phase 0
+**Parallelizable**: Yes (Tasks 1.1-1.3 independent)
+```
+
+### Required Exit Criteria
+
+Every phase MUST end with exit criteria:
+```markdown
+### Exit Criteria Phase 1
+- [ ] All API endpoints return 200 on health check
+- [ ] Database migrations applied successfully
+- [ ] Unit tests pass with >80% coverage
+```
+
+Use verifiable language: "returns", "responds", "exists", "passes" — not "looks good" or "seems correct".
+
+### Task Content for Type Classification
+
+horde-implement auto-classifies tasks by content. Ensure tasks contain:
+
+| Task Type | Required Content | Example |
+|-----------|-----------------|---------|
+| `bash` | ` ```bash ` code block with commands | `pip install`, `railway up` |
+| `code_write` | File path + ` ```python/js/ts ` code block | `# src/models/user.py` |
+| `config` | Env var format or config file content | `DATABASE_URL=...` |
+| `browser` | URL + navigation steps | `Navigate to https://...` |
+| `verify` | Command + `Expected:` pattern | `curl ... # Expected: 200` |
+| `human_required` | Explicit `**HUMAN_REQUIRED**` marker | Account creation, CAPTCHA |
+
+**WRONG**: "Set up the database" — no code block, unclassifiable.
+**RIGHT**: Task with ````bash\nrails db:migrate\n```\n` — classified as `bash`.
+
+### Gate Depth Signals
+
+Between phases, gate depth is inferred from content. Help the parser:
+
+| Signal | Gate Depth | How to Signal |
+|--------|-----------|---------------|
+| Phase N creates code, N+1 deploys it | `DEEP` | Exit criteria reference deployment |
+| Phase N exports schema, N+1 imports it | `STANDARD` | Task references files from prior phase |
+| Phases work on different subsystems | `LIGHT` | `**Dependencies**: None` |
+| Phase is purely verification | `NONE` | All tasks are `verify` type |
+
+### YAML Frontmatter Plan Manifest
+
+Every plan document MUST begin with a machine-readable manifest:
+
+```yaml
+---
+plan_manifest:
+  version: "1.0"
+  created_by: "horde-plan"
+  plan_name: "Feature Name"
+  total_phases: 5
+  total_tasks: 14
+  phases:
+    - id: "1"
+      name: "Database & Models"
+      task_count: 3
+      parallelizable: false
+      gate_depth: "STANDARD"
+    - id: "2"
+      name: "Backend API"
+      task_count: 4
+      parallelizable: true
+      gate_depth: "LIGHT"
+  task_transfer:
+    mode: "transfer"
+    task_ids: []  # populated with TaskCreate IDs after planning
+---
+```
+
+**Fallback resilience:** If frontmatter is missing, horde-implement falls back to markdown parsing. But frontmatter saves ~1500 tokens by eliminating re-discovery.
+
+### Validation Checklist (run before ExitPlanMode)
+
+- [ ] All phase headers use `## Phase {id}:` format
+- [ ] All task headers use `### Task {id}.{n}:` format
+- [ ] Every phase has `### Exit Criteria Phase {id}` with checkboxes
+- [ ] Every task contains code blocks, URLs, or explicit action verbs
+- [ ] Duration and Dependencies on every phase
+- [ ] YAML frontmatter plan_manifest present
+- [ ] Appendices use `### Appendix {letter}:` format
+
+---
 
 ## Pre-Flight Confirmation
 
@@ -437,28 +554,43 @@ Decompose the work into discrete, trackable tasks:
 - **Each task has clear acceptance criteria**
 - **Tasks map to phases** for logical grouping
 
-**Task Structure Template:**
+**Task Structure Template (horde-implement compatible):**
 ```markdown
-### Task N: [Task Title]
+### Task {phase_id}.{n}: [Task Title]
+**Dependencies**: None / Task M.N
 
-**Description:** [What this task accomplishes]
+[Task body — MUST contain content enabling automatic type classification:]
+
+For bash tasks: include ```bash code blocks
+For code tasks: include file path + ```python/js/ts code
+For config tasks: include env var format or config file content
+For browser tasks: include URLs + navigation steps
+For verify tasks: include commands + Expected: patterns
+For human tasks: include **HUMAN_REQUIRED** marker
 
 **Files:**
 - Create: `path/to/new/file.ext`
 - Modify: `path/to/existing/file.ext`
-- Reference: `path/to/reference/file.ext`
 
 **Acceptance Criteria:**
-- [ ] Criterion 1
+- [ ] Criterion 1 (verifiable: "returns 200", "file exists", "tests pass")
 - [ ] Criterion 2
-- [ ] Tests passing
-
-**Dependencies:** None / Task M, Task N
-
-**Domain:** [Backend/Frontend/DevOps/etc.]
-
-**Notes:** [Any important context]
 ```
+
+**Task Type Classification Guide:**
+
+When writing task bodies, include the right content so horde-implement routes to the correct executor:
+
+| Want This Type | Include in Task Body |
+|---------------|---------------------|
+| `bash` | ` ```bash\npip install ...\n``` ` — a bash code block |
+| `code_write` | ` # src/models/user.py\n```python\n...\n``` ` — file path + code |
+| `config` | ` DATABASE_URL=postgresql://... ` — env var or config format |
+| `browser` | ` Navigate to https://railway.app/dashboard ` — URL + steps |
+| `verify` | ` ```bash\ncurl .../health\n# Expected: 200\n``` ` — command + assertion |
+| `human_required` | ` **HUMAN_REQUIRED**: Create account at ... ` — explicit marker |
+
+**Why this matters:** horde-implement's Plan Parser classifies tasks by content. A task that says "set up the database" with no code block is unclassifiable and gets routed to a generic agent. A task with `\`\`\`bash\nrails db:migrate\n\`\`\`` is classified as `bash` and routed to a Bash-capable executor.
 
 **Standard Phases:**
 1. **Phase 1: Setup & Foundation** - Project structure, dependencies, base configuration
@@ -497,14 +629,38 @@ TaskCreate(
 
 ### Phase 5: Plan Document Generation
 
-Create the plan document with structure for ExitPlanMode:
+Create the plan document following the **Plan Output Contract** above. The document MUST be parseable by horde-implement's Plan Parser.
 
 **Plan Template:**
 ```markdown
+---
+plan_manifest:
+  version: "1.0"
+  created_by: "horde-plan"
+  plan_name: "[Feature Name]"
+  total_phases: N
+  total_tasks: N
+  phases:
+    - id: "0"
+      name: "Setup & Foundation"
+      task_count: N
+      parallelizable: false
+      gate_depth: "LIGHT"
+    - id: "1"
+      name: "Core Implementation"
+      task_count: N
+      parallelizable: true
+      gate_depth: "STANDARD"
+    # ... one entry per phase
+  task_transfer:
+    mode: "transfer"
+    task_ids: []  # populated after TaskCreate calls
+---
+
 # [Feature Name] Implementation Plan
 
 > **Plan Status:** Draft
-> **Created:** 2026-02-04
+> **Created:** YYYY-MM-DD
 > **Estimated Tasks:** N
 > **Estimated Phases:** N
 
@@ -516,43 +672,96 @@ Create the plan document with structure for ExitPlanMode:
 
 **Tech Stack:** [Key technologies]
 
-## Phase Breakdown
+## Phase 0: Setup & Foundation
+**Duration**: 30-60 minutes
+**Dependencies**: None
+**Parallelizable**: No (sequential setup)
 
-### Phase 1: [Phase Name]
+### Task 0.1: [Task Title]
+**Dependencies**: None
 
-**Status:** Pending
-**Tasks:** N
-**Parallelizable:** Yes/No
-
-#### Task 1.1: [Task Title]
-**Description:** [What]
-**Files:** [List]
-**Acceptance:** [Criteria]
-**Dependencies:** None
-
-[... remaining tasks ...]
-
-### Phase 2: [Phase Name]
-[... same structure ...]
-
-## Dependencies
-
-```
-Phase 1 (Setup)
-    ├── Phase 2 (Core) - depends on Phase 1
-    │   ├── Phase 3 (Integration) - depends on Phase 2
-    │   └── Phase 4 (Testing) - depends on Phase 2
-    └── Phase 5 (Documentation) - can run parallel
+[Description with appropriate content for type classification:]
+```bash
+# Include bash blocks for CLI tasks
+pip install -r requirements.txt
 ```
 
-## Execution Handoff
+**Files:**
+- Create: `path/to/new/file.ext`
+- Modify: `path/to/existing/file.ext`
 
-Once approved, this plan will be executed using:
-- **Skill:** `horde-implement`
-- **Pipeline:** senior-prompt-engineer → subagent-driven-development → implementation-status → horde-review
-- **Mode:** Same-session parallel dispatch with review gates and completion audit
+**Acceptance Criteria:**
+- [ ] Criterion 1
+- [ ] Criterion 2
 
-## Appendix A: Architecture Decision Record (if validated planning was used)
+### Task 0.2: [Task Title]
+**Dependencies**: Task 0.1
+
+[Task content with code blocks, file paths, or URLs for type classification]
+
+### Exit Criteria Phase 0
+- [ ] Dependencies installed successfully
+- [ ] Configuration files created and validated
+- [ ] Development server starts without errors
+
+## Phase 1: Core Implementation
+**Duration**: 2-4 hours
+**Dependencies**: Phase 0
+**Parallelizable**: Yes (Tasks 1.1-1.3 independent)
+
+### Task 1.1: [Task Title]
+**Dependencies**: None
+
+```python
+# src/models/user.py — include code for code_write classification
+class User(BaseModel):
+    id: int
+    email: str
+```
+
+**Files:**
+- Create: `src/models/user.py`
+
+**Acceptance Criteria:**
+- [ ] Model validates input correctly
+- [ ] Tests pass
+
+### Task 1.2: [Another Task]
+**Dependencies**: None
+
+[Content with URLs for browser classification, or verification commands]
+```bash
+curl http://localhost:8000/health
+# Expected: {"status": "healthy"}
+```
+
+### Exit Criteria Phase 1
+- [ ] All API endpoints return 200 on health check
+- [ ] Database migrations applied successfully
+- [ ] Unit tests pass with >80% coverage
+
+## Phase 2: [Phase Name]
+**Duration**: [estimate]
+**Dependencies**: Phase 1
+**Parallelizable**: [Yes/No]
+
+[... same structure: tasks with content for type classification, exit criteria ...]
+
+### Exit Criteria Phase 2
+- [ ] [Verifiable criterion]
+- [ ] [Verifiable criterion]
+
+## Dependency Graph
+
+```
+Phase 0 (Setup)
+    ├── Phase 1 (Core) — gate: STANDARD
+    │   ├── Phase 2 (Integration) — gate: STANDARD
+    │   └── Phase 3 (Testing) — gate: LIGHT
+    └── Phase 4 (Documentation) — gate: NONE, can run parallel
+```
+
+### Appendix A: Architecture Decision Record (if validated planning was used)
 
 > **Decision:** [Chosen approach]
 > **Validated by:** [N]-agent [pattern name] deliberation
@@ -560,13 +769,18 @@ Once approved, this plan will be executed using:
 
 [Full ADR content from Phase 2.5]
 
+### Appendix B: [Additional Reference Material]
+
+[Schemas, configs, or context referenced by tasks]
+
 ## Approval
 
+- [ ] Plan Output Contract validated (heading levels, exit criteria, task content)
 - [ ] Requirements understood
 - [ ] Architecture validated (if ADR present)
 - [ ] Task breakdown acceptable
 - [ ] Dependencies correct
-- [ ] Ready for execution
+- [ ] Ready for execution via horde-implement
 
 **Ready to proceed?** Use ExitPlanMode to approve.
 ```
@@ -598,43 +812,83 @@ Plan complete! Here's what I'll build:
 Shall I proceed with execution?
 ```
 
-## Integration with Horde-Implement
+## Structured Handoff to Horde-Implement
 
-After plan approval, the skill automatically hands off to `horde-implement`:
+After plan approval, the skill performs a **structured handoff** to `horde-implement` Path B (Execute mode). This eliminates re-discovery overhead — horde-implement receives a pre-parsed plan with full metadata.
+
+### Handoff Protocol
+
+**Step 1: Update plan manifest with TaskCreate IDs**
+
+After all tasks are created via TaskCreate during planning, update the YAML frontmatter:
+
+```python
+# After all TaskCreate calls, collect IDs
+task_ids = [task1_id, task2_id, task3_id, ...]
+
+# Update the plan_manifest.task_transfer.task_ids in the saved plan file
+# (edit the YAML frontmatter to include actual task IDs)
+```
+
+**Step 2: Invoke horde-implement with structured prompt**
 
 ```
 User: "Yes, proceed"
 
 Claude:
-Using horde-implement to execute [feature-name] plan.
+Skill("horde-implement", """
+Execute this plan via Path B (existing plan document).
 
-[Invokes horde-implement with:
-- Plan file reference
-- All tasks pre-created via TaskCreate
-- Dependency mapping established
-- Review gates configured]
+Plan: docs/plans/YYYY-MM-DD-[feature].md
+Entry: Path B (structured markdown with YAML frontmatter plan_manifest)
+
+The plan includes:
+- YAML frontmatter with phase index, gate depths, and task transfer IDs
+- {N} phases with ## Phase headers
+- {N} tasks with ### Task headers and typed content (bash/code/config/browser/verify)
+- Exit criteria per phase (### Exit Criteria Phase {id})
+- Dependency graph with gate depth annotations
+
+Task transfer mode: transfer
+TaskCreate IDs from planning: {task_ids}
+These tasks can be claimed via TaskUpdate(taskId=X, owner="horde-implement", status="in_progress")
+
+Proceed with phase-by-phase execution, gate testing, and post-execution pipeline.
+""")
 ```
 
-**Handoff Template:**
-```markdown
-## Execution Handoff
+**Step 3: Task state transfer**
 
-I'm now using **horde-implement** to execute this plan.
+horde-implement **reuses** tasks created during planning (transfer mode):
+- Claims ownership: `TaskUpdate(taskId=X, owner="horde-implement")`
+- Updates status as work progresses
+- Preserves lineage from planning → execution → review
 
-**Plan Reference:** `docs/plans/YYYY-MM-DD-[feature].md`
-**Total Tasks:** N
-**Current Phase:** Phase 1
+**Why not Path A?** horde-plan already generated the plan. Invoking Path A would redundantly call senior-prompt-engineer to generate another plan. Always use Path B when horde-plan produced the plan.
+
+### Handoff Announcement Template
+
+```
+Handing off to horde-implement (Path B: Execute)...
+
+**Plan:** `docs/plans/YYYY-MM-DD-[feature].md`
+**Phases:** N (gate depths: {DEEP: 1, STANDARD: 2, LIGHT: 1, NONE: 1})
+**Tasks:** N (types: {bash: 4, code_write: 6, config: 2, verify: 2})
+**Task IDs:** {list of TaskCreate IDs for transfer}
 
 horde-implement will:
-1. Use senior-prompt-engineer to refine the implementation approach
-2. Deploy subagent-driven-development for parallel task execution
-3. Apply review gates at each task completion
-4. Track progress and handle errors with systematic-debugging
-5. Upon completion, run implementation-status to verify 100% completion
-6. Only after 100% verification, run horde-review for comprehensive validation
-
-[Proceeds with implementation]
+1. Parse plan manifest from YAML frontmatter (skip re-discovery)
+2. Claim transferred tasks via TaskUpdate
+3. Execute phases with gate testing at STANDARD/DEEP boundaries
+4. Run post-execution: implementation-status → horde-test → horde-review
 ```
+
+### Fallback
+
+If horde-implement is not available or invocation fails:
+1. Present the plan document path to the user
+2. Suggest: "Run `/implement docs/plans/YYYY-MM-DD-[feature].md` in a new session"
+3. Plan is self-contained — YAML frontmatter is optional (horde-implement falls back to markdown parsing)
 
 ## Task Domain Routing
 
@@ -666,77 +920,163 @@ When breaking down tasks, identify domains for specialist routing:
 
 ## Quality Checks
 
-Before exiting plan mode, verify:
+Before exiting plan mode, verify against the **Plan Output Contract**:
 
+- [ ] **Heading levels correct** - Phases are `##`, tasks are `###`, exit criteria are `###`
+- [ ] **YAML frontmatter present** - plan_manifest with phase index and gate depths
+- [ ] **Exit criteria per phase** - Every phase has `### Exit Criteria Phase {id}` with checkboxes
+- [ ] **Task content typed** - Every task has code blocks, URLs, or explicit markers for type classification
+- [ ] **Duration/Dependencies on phases** - Every phase has `**Duration**` and `**Dependencies**`
 - [ ] **Complete breakdown** - All work is captured in tasks
-- [ ] **Clear acceptance** - Each task has success criteria
+- [ ] **Clear acceptance** - Each task has verifiable success criteria
 - [ ] **Reasonable dependencies** - Dependencies are real, not artificial
 - [ ] **File paths specified** - Implementation knows where to work
 - [ ] **Test coverage planned** - Testing is explicit in tasks
-- [ ] **Integration points clear** - How pieces connect is documented
 
-## Common Patterns
+## Common Patterns (horde-implement compatible)
 
 ### Pattern 1: CRUD Feature
 
 ```markdown
-### Phase 1: Database Schema
-- Task 1.1: Create table migration
-- Task 1.2: Create model definitions
+## Phase 1: Database Schema
+**Duration**: 30-60 minutes
+**Dependencies**: None
+**Parallelizable**: No
 
-### Phase 2: Backend API
-- Task 2.1: Create endpoint
-- Task 2.2: Add validation
-- Task 2.3: Add error handling
+### Task 1.1: Create table migration
+**Dependencies**: None
+```bash
+alembic revision --autogenerate -m "add_users_table"
+```
+### Task 1.2: Create model definitions
+**Dependencies**: Task 1.1
+```python
+# src/models/user.py
+class User(Base):
+    __tablename__ = "users"
+```
 
-### Phase 3: Frontend Integration
-- Task 3.1: Create API client
-- Task 3.2: Build UI components
-- Task 3.3: Connect to state
+### Exit Criteria Phase 1
+- [ ] Migration applies without errors
+- [ ] Model imports successfully
 
-### Phase 4: Testing
-- Task 4.1: Unit tests
-- Task 4.2: Integration tests
-- Task 4.3: E2E tests
+## Phase 2: Backend API
+**Duration**: 1-2 hours
+**Dependencies**: Phase 1
+**Parallelizable**: Yes (Tasks 2.1-2.3 independent)
+
+### Task 2.1: Create endpoint
+### Task 2.2: Add validation
+### Task 2.3: Add error handling
+
+### Exit Criteria Phase 2
+- [ ] All endpoints return correct status codes
+- [ ] Validation rejects invalid input
+
+## Phase 3: Frontend Integration
+**Duration**: 1-2 hours
+**Dependencies**: Phase 2
+**Parallelizable**: Yes
+
+### Task 3.1: Create API client
+### Task 3.2: Build UI components
+### Task 3.3: Connect to state
+
+### Exit Criteria Phase 3
+- [ ] UI renders profile data from API
+- [ ] Form submission updates backend
+
+## Phase 4: Testing
+**Duration**: 1 hour
+**Dependencies**: Phase 2, Phase 3
+**Parallelizable**: Yes
+
+### Task 4.1: Unit tests
+### Task 4.2: Integration tests
+### Task 4.3: E2E tests
+
+### Exit Criteria Phase 4
+- [ ] All tests pass
+- [ ] Coverage >80%
 ```
 
 ### Pattern 2: Infrastructure Work
 
 ```markdown
-### Phase 1: Planning
-- Task 1.1: Design architecture
-- Task 1.2: Create diagrams
+## Phase 1: Planning
+**Duration**: 30 minutes
+**Dependencies**: None
 
-### Phase 2: Implementation
-- Task 2.1: Configure services
-- Task 2.2: Set up networking
-- Task 2.3: Add monitoring
+### Task 1.1: Design architecture
+### Task 1.2: Create diagrams
 
-### Phase 3: Validation
-- Task 3.1: Test failover
-- Task 3.2: Load testing
-- Task 3.3: Security review
+### Exit Criteria Phase 1
+- [ ] Architecture diagram reviewed
+
+## Phase 2: Implementation
+**Duration**: 2-3 hours
+**Dependencies**: Phase 1
+
+### Task 2.1: Configure services
+### Task 2.2: Set up networking
+### Task 2.3: Add monitoring
+
+### Exit Criteria Phase 2
+- [ ] Services responding on expected ports
+- [ ] Monitoring dashboard shows metrics
+
+## Phase 3: Validation
+**Duration**: 1 hour
+**Dependencies**: Phase 2
+
+### Task 3.1: Test failover
+### Task 3.2: Load testing
+### Task 3.3: Security review
+
+### Exit Criteria Phase 3
+- [ ] Failover completes in <30s
+- [ ] Load test sustains target RPS
 ```
 
 ### Pattern 3: Refactoring
 
 ```markdown
-### Phase 1: Analysis
-- Task 1.1: Map current structure
-- Task 1.2: Identify coupling points
+## Phase 1: Analysis
+**Duration**: 30 minutes
+**Dependencies**: None
 
-### Phase 2: Refactor
-- Task 2.1: Extract module
-- Task 2.2: Update imports
-- Task 2.3: Add tests
+### Task 1.1: Map current structure
+### Task 1.2: Identify coupling points
 
-### Phase 3: Verification
-- Task 3.1: Run existing tests
-- Task 3.2: Add new tests
-- Task 3.3: Performance comparison
+### Exit Criteria Phase 1
+- [ ] Dependency graph documented
+
+## Phase 2: Refactor
+**Duration**: 1-2 hours
+**Dependencies**: Phase 1
+
+### Task 2.1: Extract module
+### Task 2.2: Update imports
+### Task 2.3: Add tests
+
+### Exit Criteria Phase 2
+- [ ] Existing tests still pass
+- [ ] New module imports cleanly
+
+## Phase 3: Verification
+**Duration**: 30 minutes
+**Dependencies**: Phase 2
+
+### Task 3.1: Run existing tests
+### Task 3.2: Add new tests
+### Task 3.3: Performance comparison
+
+### Exit Criteria Phase 3
+- [ ] No performance regression >5%
+- [ ] All tests pass
 ```
 
-## Example Output
+## Example Output (horde-implement compatible)
 
 **User:** "/horde-plan Add user profile management with avatar uploads"
 
@@ -751,7 +1091,7 @@ I'll create an implementation plan for: User Profile Management with Avatar Uplo
 
 Estimated tasks: 12-15
 Estimated phases: 5
-Complexity: Medium
+Complexity: Medium (score: 18)
 
 Integration points:
 - User authentication (existing)
@@ -760,10 +1100,50 @@ Integration points:
 - Profile API endpoints
 - Avatar upload UI
 
-Type 'yes' to continue or 'no' to cancel.
+Planning options:
+1. Fast plan (5-10 min) - Single-agent analysis
+2. Validated plan (8-15 min) - Multi-agent architecture deliberation
 
-[User: yes]
+Type '1' for fast, '2' for validated, or 'no' to cancel.
 
+[User: 1]
+
+---
+plan_manifest:
+  version: "1.0"
+  created_by: "horde-plan"
+  plan_name: "User Profile Management"
+  total_phases: 5
+  total_tasks: 14
+  phases:
+    - id: "1"
+      name: "Database & Models"
+      task_count: 3
+      parallelizable: false
+      gate_depth: "STANDARD"
+    - id: "2"
+      name: "Backend API"
+      task_count: 4
+      parallelizable: true
+      gate_depth: "STANDARD"
+    - id: "3"
+      name: "Storage Integration"
+      task_count: 2
+      parallelizable: true
+      gate_depth: "LIGHT"
+    - id: "4"
+      name: "Frontend UI"
+      task_count: 3
+      parallelizable: true
+      gate_depth: "LIGHT"
+    - id: "5"
+      name: "Testing & Docs"
+      task_count: 2
+      parallelizable: true
+      gate_depth: "NONE"
+  task_transfer:
+    mode: "transfer"
+    task_ids: []
 ---
 
 # User Profile Management Implementation Plan
@@ -781,246 +1161,343 @@ Type 'yes' to continue or 'no' to cancel.
 
 **Tech Stack:** FastAPI, PostgreSQL, MinIO/S3, React, Dropzone
 
-## Phase Breakdown
+## Phase 1: Database & Models
+**Duration**: 45-60 minutes
+**Dependencies**: None
+**Parallelizable**: No (sequential migrations)
 
-### Phase 1: Database & Models
+### Task 1.1: Extend User Schema
+**Dependencies**: None
 
-**Status:** Pending
-**Tasks:** 3
-**Parallelizable:** No (sequential migrations)
+Add profile fields to users table:
+```bash
+alembic revision --autogenerate -m "add_profile_fields"
+alembic upgrade head
+```
 
-#### Task 1.1: Extend User Schema
-**Description:** Add profile fields to users table
 **Files:**
 - Create: `migrations/002_add_profile_fields.sql`
 - Modify: `src/models/user.py`
-**Acceptance:**
+
+**Acceptance Criteria:**
 - [ ] display_name, bio, location columns added
 - [ ] Avatar URL column added
 - [ ] Migration runs successfully
-**Dependencies:** None
 
-#### Task 1.2: Create Pydantic Models
-**Description:** Request/response schemas for profile data
+### Task 1.2: Create Pydantic Models
+**Dependencies**: Task 1.1
+
+Request/response schemas for profile data:
+```python
+# src/schemas/profile.py
+class UserProfileCreate(BaseModel):
+    display_name: str = Field(max_length=100)
+    bio: Optional[str] = None
+    location: Optional[str] = None
+```
+
 **Files:**
 - Create: `src/schemas/profile.py`
-**Acceptance:**
-- [ ] UserProfileCreate schema
-- [ ] UserProfileResponse schema
-- [ ] AvatarUploadResponse schema
-**Dependencies:** Task 1.1
 
-#### Task 1.3: Add Repository Layer
-**Description:** Database access methods for profiles
+**Acceptance Criteria:**
+- [ ] UserProfileCreate schema validates input
+- [ ] UserProfileResponse schema serializes output
+- [ ] AvatarUploadResponse includes URL
+
+### Task 1.3: Add Repository Layer
+**Dependencies**: Task 1.2
+
+Database access methods for profiles:
+```python
+# src/repositories/profile.py
+class ProfileRepository:
+    async def get_profile(self, user_id: int) -> UserProfile: ...
+    async def update_profile(self, user_id: int, data: dict) -> UserProfile: ...
+```
+
 **Files:**
 - Create: `src/repositories/profile.py`
-**Acceptance:**
-- [ ] get_profile() method
-- [ ] update_profile() method
-- [ ] upload_avatar() method
-**Dependencies:** Task 1.2
 
-### Phase 2: Backend API
+**Acceptance Criteria:**
+- [ ] get_profile() returns profile or raises NotFound
+- [ ] update_profile() persists changes
+- [ ] Tests pass for repository methods
 
-**Status:** Pending
-**Tasks:** 4
-**Parallelizable:** Yes (except 2.4)
+### Exit Criteria Phase 1
+- [ ] `alembic upgrade head` completes without errors
+- [ ] `python -c "from src.models.user import User"` succeeds
+- [ ] Profile schema validates sample input correctly
 
-#### Task 2.1: GET Profile Endpoint
-**Description:** Retrieve current user's profile
+## Phase 2: Backend API
+**Duration**: 1-2 hours
+**Dependencies**: Phase 1
+**Parallelizable**: Yes (Tasks 2.1-2.3 independent after 1.3)
+
+### Task 2.1: GET Profile Endpoint
+**Dependencies**: Task 1.3
+
+```python
+# src/api/v1/profile.py
+@router.get("/api/v1/profile", response_model=UserProfileResponse)
+async def get_profile(current_user: User = Depends(get_current_user)):
+    return await profile_repo.get_profile(current_user.id)
+```
+
 **Files:**
 - Create: `src/api/v1/profile.py`
-**Acceptance:**
-- [ ] GET /api/v1/profile returns user profile
-- [ ] 404 if profile doesn't exist
-- [ ] Requires authentication
-**Dependencies:** Task 1.3
-**Domain:** Backend
 
-#### Task 2.2: PATCH Profile Endpoint
-**Description:** Update profile fields
+**Acceptance Criteria:**
+- [ ] GET /api/v1/profile returns user profile
+- [ ] Returns 404 if profile doesn't exist
+- [ ] Requires authentication (401 without token)
+
+### Task 2.2: PATCH Profile Endpoint
+**Dependencies**: Task 2.1
+
+```python
+@router.patch("/api/v1/profile", response_model=UserProfileResponse)
+async def update_profile(data: UserProfileCreate, ...):
+    return await profile_repo.update_profile(current_user.id, data.dict())
+```
+
 **Files:**
 - Modify: `src/api/v1/profile.py`
-**Acceptance:**
-- [ ] PATCH /api/v1/profile updates allowed fields
-- [ ] Validation on display_name length
-- [ ] Returns updated profile
-**Dependencies:** Task 2.1
-**Domain:** Backend
 
-#### Task 2.3: Avatar Upload Endpoint
-**Description:** Handle avatar image uploads
+**Acceptance Criteria:**
+- [ ] PATCH /api/v1/profile updates allowed fields
+- [ ] Validation rejects display_name > 100 chars
+- [ ] Returns updated profile
+
+### Task 2.3: Avatar Upload Endpoint
+**Dependencies**: Task 2.2
+
+```python
+@router.post("/api/v1/profile/avatar")
+async def upload_avatar(file: UploadFile = File(...)):
+    # Validate type and size, store in S3
+    ...
+```
+
 **Files:**
 - Modify: `src/api/v1/profile.py`
 - Create: `src/services/storage.py`
-**Acceptance:**
-- [ ] POST /api/v1/profile/avatar accepts image
-- [ ] Validates file type (jpg, png, webp)
-- [ ] Validates file size (< 5MB)
-- [ ] Stores in S3 and returns URL
-**Dependencies:** Task 2.2
-**Domain:** Backend
 
-#### Task 2.4: Avatar Deletion
-**Description:** Remove avatar and revert to default
+**Acceptance Criteria:**
+- [ ] POST /api/v1/profile/avatar accepts image upload
+- [ ] Rejects non-image files (validates Content-Type)
+- [ ] Rejects files > 5MB
+- [ ] Returns URL of stored avatar
+
+### Task 2.4: Avatar Deletion
+**Dependencies**: Task 2.3
+
+```python
+@router.delete("/api/v1/profile/avatar")
+async def delete_avatar(current_user: User = Depends(get_current_user)):
+    await storage.delete(current_user.avatar_key)
+    ...
+```
+
 **Files:**
 - Modify: `src/api/v1/profile.py`
-**Acceptance:**
+
+**Acceptance Criteria:**
 - [ ] DELETE /api/v1/profile/avatar removes avatar
 - [ ] S3 object deleted
-- [ ] Profile updated to default avatar
-**Dependencies:** Task 2.3
-**Domain:** Backend
+- [ ] Profile reverts to default avatar URL
 
-### Phase 3: Storage Integration
+### Exit Criteria Phase 2
+- [ ] `curl -H "Authorization: Bearer $TOKEN" localhost:8000/api/v1/profile` returns 200
+- [ ] All 4 endpoints respond with correct status codes
+- [ ] Invalid requests return proper error responses
 
-**Status:** Pending
-**Tasks:** 2
-**Parallelizable:** Yes
+## Phase 3: Storage Integration
+**Duration**: 30-60 minutes
+**Dependencies**: None (can run parallel to Phase 2)
+**Parallelizable**: Yes
 
-#### Task 3.1: Configure S3 Client
-**Description:** Set up boto3 S3 client with MinIO
+### Task 3.1: Configure S3 Client
+**Dependencies**: None
+
+```python
+# src/config/storage.py
+S3_BUCKET = os.getenv("S3_BUCKET", "avatars")
+S3_ENDPOINT = os.getenv("S3_ENDPOINT", "http://minio:9000")
+```
+
 **Files:**
 - Create: `src/config/storage.py`
-**Acceptance:**
+
+**Acceptance Criteria:**
 - [ ] S3 client configured from env vars
 - [ ] Bucket existence check on startup
-- [ ] Presigned URL generation
-**Dependencies:** None
-**Domain:** DevOps
+- [ ] Presigned URL generation works
 
-#### Task 3.2: Image Processing Pipeline
-**Description:** Resize and optimize avatars
+### Task 3.2: Image Processing Pipeline
+**Dependencies**: None
+
+```python
+# src/services/images.py
+from PIL import Image
+def resize_avatar(image_bytes: bytes, sizes=[64, 128, 256]) -> dict:
+    ...
+```
+
 **Files:**
 - Create: `src/services/images.py`
-**Acceptance:**
-- [ ] Resize to standard sizes (64, 128, 256)
-- [ ] Convert to WebP with fallback
-- [ ] Strip EXIF data
-**Dependencies:** None
-**Domain:** Backend
 
-### Phase 4: Frontend UI
+**Acceptance Criteria:**
+- [ ] Resizes to standard sizes (64, 128, 256)
+- [ ] Converts to WebP with JPEG fallback
+- [ ] Strips EXIF data for privacy
 
-**Status:** Pending
-**Tasks:** 3
-**Parallelizable:** Yes
+### Exit Criteria Phase 3
+- [ ] S3 client connects to MinIO without errors
+- [ ] Image resize produces correct dimensions
+- [ ] EXIF stripping verified on test image
 
-#### Task 4.1: Profile Page Layout
-**Description:** Create profile management page
+## Phase 4: Frontend UI
+**Duration**: 1-2 hours
+**Dependencies**: Phase 2
+**Parallelizable**: Yes
+
+### Task 4.1: Profile Page Layout
+**Dependencies**: None
+
+```tsx
+// src/app/profile/page.tsx
+export default function ProfilePage() {
+  return <ProfileForm />;
+}
+```
+
 **Files:**
 - Create: `src/app/profile/page.tsx`
 - Create: `src/app/profile/components/ProfileForm.tsx`
-**Acceptance:**
-- [ ] Form with display name, bio, location
-- [ ] Avatar preview and upload area
-- [ ] Save/cancel buttons
-**Dependencies:** None
-**Domain:** Frontend
 
-#### Task 4.2: Avatar Upload Component
-**Description:** Drag-drop avatar upload
+**Acceptance Criteria:**
+- [ ] Form renders with display name, bio, location fields
+- [ ] Avatar preview area visible
+- [ ] Save/cancel buttons functional
+
+### Task 4.2: Avatar Upload Component
+**Dependencies**: Task 4.1
+
+```tsx
+// src/app/profile/components/AvatarUpload.tsx
+import { useDropzone } from 'react-dropzone';
+```
+
 **Files:**
 - Create: `src/app/profile/components/AvatarUpload.tsx`
-**Acceptance:**
-- [ ] Dropzone integration
-- [ ] Image preview before upload
-- [ ] Progress indicator
-- [ ] Error handling
-**Dependencies:** Task 4.1
-**Domain:** Frontend
 
-#### Task 4.3: API Client Integration
-**Description:** Connect UI to profile API
+**Acceptance Criteria:**
+- [ ] Drag-drop upload zone renders
+- [ ] Image preview before upload
+- [ ] Progress indicator during upload
+- [ ] Error messages on failure
+
+### Task 4.3: API Client Integration
+**Dependencies**: Task 4.2
+
+```typescript
+// src/lib/api/profile.ts
+export async function getProfile(): Promise<UserProfile> { ... }
+export async function updateProfile(data: Partial<UserProfile>): Promise<UserProfile> { ... }
+export async function uploadAvatar(file: File): Promise<{ url: string }> { ... }
+```
+
 **Files:**
 - Create: `src/lib/api/profile.ts`
 - Modify: `src/app/profile/page.tsx`
-**Acceptance:**
-- [ ] getProfile() fetches current profile
-- [ ] updateProfile() sends changes
-- [ ] uploadAvatar() handles file upload
-**Dependencies:** Task 4.2
-**Domain:** Frontend
 
-### Phase 5: Testing & Docs
+**Acceptance Criteria:**
+- [ ] getProfile() fetches and displays current profile
+- [ ] updateProfile() sends changes and shows success
+- [ ] uploadAvatar() handles file upload with progress
 
-**Status:** Pending
-**Tasks:** 2
-**Parallelizable:** Yes
+### Exit Criteria Phase 4
+- [ ] Profile page renders without console errors
+- [ ] Form submission updates backend (verified via API)
+- [ ] Avatar upload displays new image after completion
 
-#### Task 5.1: Test Coverage
-**Description:** Unit and integration tests
+## Phase 5: Testing & Docs
+**Duration**: 1-2 hours
+**Dependencies**: Phase 2, Phase 3, Phase 4
+**Parallelizable**: Yes
+
+### Task 5.1: Test Coverage
+**Dependencies**: None (after phase deps satisfied)
+
+```bash
+pytest tests/api/test_profile.py tests/services/test_images.py -v --cov=src
+# Expected: All tests pass, coverage >80%
+```
+
 **Files:**
 - Create: `tests/api/test_profile.py`
 - Create: `tests/services/test_images.py`
-**Acceptance:**
-- [ ] API endpoint tests
-- [ ] Image processing tests
-- [ ] Storage mock tests
-- [ ] >80% coverage
-**Dependencies:** All Phase 2-4 tasks
 
-#### Task 5.2: Documentation
-**Description:** API docs and usage guide
+**Acceptance Criteria:**
+- [ ] API endpoint tests for all 4 routes
+- [ ] Image processing unit tests
+- [ ] Storage mock tests
+- [ ] Coverage >80%
+
+### Task 5.2: Documentation
+**Dependencies**: None (after phase deps satisfied)
+
 **Files:**
 - Create: `docs/api/profile.md`
 - Create: `docs/setup/avatar-storage.md`
-**Acceptance:**
-- [ ] OpenAPI spec complete
+
+**Acceptance Criteria:**
+- [ ] OpenAPI spec documents all endpoints
 - [ ] Setup instructions for S3/MinIO
-- [ ] Example curl commands
-**Dependencies:** All Phase 2-4 tasks
+- [ ] Example curl commands for each endpoint
 
-## Dependencies
+### Exit Criteria Phase 5
+- [ ] `pytest` exits with code 0
+- [ ] Coverage report shows >80%
+- [ ] Documentation files exist and are non-empty
+
+## Dependency Graph
 
 ```
-Phase 1 (Database & Models)
-    ├── Phase 2 (Backend API) - depends on Phase 1
-    │   ├── Phase 4 (Frontend UI) - depends on Phase 2
-    │   └── Phase 5 (Testing) - depends on Phase 2
-    └── Phase 3 (Storage) - independent, can run parallel
+Phase 1 (Database) — gate: STANDARD
+    ├── Phase 2 (API) — gate: STANDARD
+    │   ├── Phase 4 (Frontend) — gate: LIGHT
+    │   └── Phase 5 (Testing) — gate: NONE
+    └── Phase 3 (Storage) — gate: LIGHT, independent
 ```
-
-## Execution Handoff
-
-Once approved, this plan will be executed using:
-- **Skill:** `horde-implement`
-- **Pipeline:** senior-prompt-engineer → subagent-driven-development → implementation-status → horde-review
-- **Mode:** Same-session parallel dispatch with review gates and completion audit
-- **Specialist Routing:** Backend (2.x), DevOps (3.1), Frontend (4.x)
 
 ## Approval
 
+- [ ] Plan Output Contract validated
 - [ ] Requirements understood
 - [ ] Task breakdown acceptable
 - [ ] Dependencies correct
-- [ ] Ready for execution
+- [ ] Ready for execution via horde-implement
 
-**Ready to proceed?**
+**Ready to proceed?** Use ExitPlanMode to approve.
 
 ---
 
-[ExitPlanMode invoked with:
-- allowedPrompts: [
-    "Run pytest",
-    "Run npm test",
-    "Git commands",
-    "Python/Node commands"
-  ]
-]
+[ExitPlanMode invoked]
 
 Plan complete! Here's what I'll build:
 
 **Summary:** User profile management system with avatar uploads, spanning database schema, REST API, S3 storage, and React UI.
 
 **Tasks:** 14 total across 5 phases
-**Estimated effort:** 6-8 hours
+**Gate depths:** STANDARD (Phase 1→2), STANDARD (Phase 2→4), LIGHT (Phase 3, 4), NONE (Phase 5)
 
-**Next Steps:**
-1. Review the plan above
-2. If approved, I'll use horde-implement to execute
-3. Each task will have review gates before proceeding
-4. Progress tracked via TaskList throughout
+Handing off to horde-implement (Path B: Execute)...
+
+**Plan:** `docs/plans/2026-02-04-user-profile-management.md`
+**Phases:** 5 (STANDARD: 2, LIGHT: 2, NONE: 1)
+**Tasks:** 14 (code_write: 8, bash: 3, verify: 2, config: 1)
+**Task transfer:** 14 TaskCreate IDs transferred
 
 Shall I proceed with execution?
 ```
@@ -1183,11 +1660,17 @@ Claude:
 **Skill Relationship:**
 ```
 horde-brainstorming (explore options)
-  └── horde-plan (create structured plan)
+  └── horde-plan v1.2 (create structured plan)
         ├── [Phase 2.5] golden-horde deliberation (validate architecture)
-        └── horde-implement (execute plan)
+        ├── [Output] Plan Output Contract (## phases, ### tasks, exit criteria, YAML manifest)
+        └── horde-implement Path B (execute plan — zero re-discovery)
+              ├── Plan Parser reads YAML frontmatter (skip structural inference)
+              ├── Task transfer (reuse TaskCreate IDs via TaskUpdate)
+              ├── Phase loop with gate testing (depths from manifest)
+              └── Post-execution: implementation-status → horde-test → horde-review
 ```
 
 **File Locations:**
 - Plans saved to: `docs/plans/YYYY-MM-DD-[feature].md`
-- Task tracking: In-memory via TaskCreate/TaskList
+- Plan manifest: YAML frontmatter in plan document (machine + human readable)
+- Task tracking: In-memory via TaskCreate/TaskList, transferred to horde-implement via task_ids
