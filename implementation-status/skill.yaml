@@ -1,0 +1,61 @@
+name: implementation-status
+description: |
+  Audits active implementation plans for completion status and generates completion
+  prompts. Use when checking implementation progress, auditing a plan's completion
+  status, or generating prompts to finish incomplete implementations.
+
+version: 1.0.0
+author: kurultai
+license: MIT
+
+engine: null
+
+integrations:
+  - subagent-driven-development
+
+tags:
+  - audit
+  - status
+  - implementation
+  - tracking
+  - progress-monitoring
+
+categories:
+  - quality
+  - tracking
+
+entry_points:
+  skill: SKILL.md
+
+config:
+  audit_depth:
+    - surface
+    - detailed
+    - comprehensive
+  output_formats:
+    - markdown
+    - json
+
+dependencies:
+  required: []
+  optional:
+    - name: subagent-driven-development
+      version: ">=1.0.0"
+
+features:
+  - Plan completion auditing
+  - Phase-by-phase status tracking
+  - Automatic audit task creation
+  - Gap analysis and identification
+  - Completion prompt generation
+  - Parallel audit dispatch
+  - Integration with subagent-driven-development
+
+resources:
+  documentation: SKILL.md
+  scripts:
+    - scripts/audit_phase.py
+
+compatibility:
+  claude_code: ">=1.0.0"
+  skills_format: "1.0"

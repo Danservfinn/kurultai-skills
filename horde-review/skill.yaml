@@ -9,9 +9,10 @@ version: 1.0.0
 author: kurultai
 license: MIT
 
-engine: horde-swarm
+engine: golden-horde
 
 integrations:
+  - golden-horde
   - horde-swarm
   - dispatching-parallel-agents
   - subagent-driven-development
@@ -49,8 +50,12 @@ config:
 
 dependencies:
   required:
+    - name: golden-horde
+      version: ">=1.0.0"
+  optional:
     - name: horde-swarm
       version: ">=1.0.0"
+      note: "Fallback for 1-2 domain reviews where golden-horde overhead is not justified"
 
 features:
   - Multi-disciplinary expert review

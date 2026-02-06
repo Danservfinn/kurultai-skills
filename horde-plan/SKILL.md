@@ -1,28 +1,49 @@
 ---
 name: horde-plan
-description: Create comprehensive implementation plans using plan mode with EnterPlanMode/ExitPlanMode. Use when starting any multi-step feature implementation, complex refactoring, or system design work. Integrates with tasks and hands off to horde-implement for execution.
+version: "1.1"
+description: Create comprehensive implementation plans using plan mode with EnterPlanMode/ExitPlanMode. For complex projects, invokes golden-horde multi-agent deliberation to validate architecture before task breakdown. Integrates with tasks and hands off to horde-implement for execution.
 integrations:
   - horde-swarm
+  - golden-horde
 ---
 
 # Horde Plan
 
 Create comprehensive implementation plans using plan mode with task breakdown, dependency mapping, and hands off to horde-implement for execution.
 
+**New in v1.1:** For complex projects, horde-plan can invoke golden-horde patterns (Adversarial Debate, Consensus Deliberation) to validate architectural decisions *before* task breakdown. This produces an Architecture Decision Record (ADR) that constrains the plan, preventing the #1 failure mode: wrong architecture discovered only during implementation.
+
 ## Quick Start
 
+**Fast Plan (default):**
 ```bash
-# Invoke the skill
 User: "/horde-plan Create a user authentication system with JWT tokens"
 
 Claude:
-1. Enters plan mode (EnterPlanMode)
-2. Analyzes requirements
+1. Analyzes requirements + scores complexity
+2. Enters plan mode (EnterPlanMode)
 3. Creates task breakdown with phases
 4. Maps dependencies (TaskCreate with addBlockedBy)
 5. Generates plan.md
 6. Exits plan mode for approval (ExitPlanMode)
 7. Hands off to horde-implement for execution
+```
+
+**Validated Plan (complex projects):**
+```bash
+User: "/horde-plan --validated Build a HIPAA-compliant telemedicine platform"
+  — or auto-detected when complexity is high —
+
+Claude:
+1. Analyzes requirements + scores complexity → HIGH
+2. Offers validated planning with golden-horde deliberation
+3. User approves → spawns golden-horde team (Adversarial Debate or Consensus)
+4. Agents deliberate architecture → produce Architecture Decision Record (ADR)
+5. Presents ADR to user for approval
+6. Enters plan mode, uses ADR to constrain task breakdown
+7. Standard planning workflow (phases, tasks, dependencies)
+8. Plan document includes ADR as appendix
+9. Exits plan mode → hands off to horde-implement
 ```
 
 ## When to Use
@@ -44,6 +65,11 @@ Claude:
 ```
 Is this a multi-step implementation task?
 ├── Yes → Use horde-plan
+│   └── Score complexity (see Complexity Scoring below)
+│       ├── Score < 15 → Fast plan (single-agent, current workflow)
+│       ├── Score 15-30 → Offer validated plan (Adversarial Debate, 2-3 agents)
+│       ├── Score 31-50 → Recommend validated plan (Consensus Deliberation, 3-4 agents)
+│       └── Score 51+ → Strongly recommend validated plan + hierarchical decomposition
 └── No → Can you do it directly?
     ├── Yes → Do it now
     └── No → Use horde-brainstorming first
@@ -97,20 +123,42 @@ I'll create an implementation plan for: [brief description]
 
 Estimated tasks: 15+
 Estimated phases: 4-8
-Complexity: High
+Complexity: High (score: [N])
 
 Areas affected:
 - [Component 1]
 - [Component 2]
 - [Database/API/etc.]
 
-This will:
-- Create detailed task breakdown
-- Map all dependencies
-- Generate execution plan for horde-implement
-- Take 5-10 minutes to plan thoroughly
+Planning options:
+1. Fast plan (5-10 min) - Single-agent analysis
+2. Validated plan (8-15 min) - Multi-agent architecture deliberation
+   Agents will debate the architecture approach before task breakdown.
+   Produces an Architecture Decision Record (ADR) as plan appendix.
 
-Type 'PROCEED' to continue or 'no' to cancel.
+I recommend option 2 for this level of complexity.
+
+Type '1' for fast, '2' for validated, or 'no' to cancel.
+```
+
+**Auto-Validated** (triggers detected: compliance, financial, security, migration):
+```
+[⚠⚠⚠] Entering Plan Mode - HIGH-STAKES WORK
+
+I'll create an implementation plan for: [brief description]
+
+Detected: [HIPAA compliance / financial transactions / security-critical / data migration]
+
+This project has high-risk characteristics. I strongly recommend
+validated planning with golden-horde deliberation:
+- [Domain specialist 1] validates [concern 1]
+- [Domain specialist 2] validates [concern 2]
+- Architecture Decision Record (ADR) produced before task breakdown
+
+Estimated time: 10-15 minutes
+Alternative: Fast plan in 5 minutes (you validate architecture yourself)
+
+Type 'validated' to proceed with deliberation, 'fast' for single-agent, or 'no' to cancel.
 ```
 
 ## The Horde Plan Workflow
@@ -152,6 +200,232 @@ Before I create the plan, I need to understand:
 
 You can answer now or I'll make reasonable assumptions.
 ```
+
+### Phase 2.5: Complexity Scoring & Pre-Planning Deliberation (NEW)
+
+After requirements analysis (Phase 2), score the project's complexity to decide whether to invoke golden-horde deliberation before task breakdown.
+
+#### Complexity Scoring
+
+Score the project based on these factors:
+
+```
+Complexity Score Calculation:
+  Base: min(estimated_task_count, 50)
+  + (number_of_subsystems × 3)
+  + (number_of_hard_dependencies)
+  + (10 if security_requirements)
+  + (8 if compliance_requirements: HIPAA, PCI-DSS, SOC2, GDPR)
+  + (12 if novel_architecture: new patterns, unfamiliar tech)
+  + (8 if multi_team_coordination)
+  + (6 if data_migration)
+
+Thresholds:
+  0-14:  Low    → Fast plan (single-agent, skip to Phase 3)
+  15-30: Medium → Offer Adversarial Debate (2 advocates + 1 judge)
+  31-50: High   → Recommend Consensus Deliberation (3-4 experts)
+  51+:   Very High → Strongly recommend Consensus + hierarchical decomposition
+```
+
+**Auto-detect triggers** (override score to >= 30 regardless of calculated score):
+- Keywords: HIPAA, PCI-DSS, SOC2, GDPR, "compliance", "regulatory"
+- Financial: "payment", "billing", "transaction", "fintech"
+- Migration: "migrate from", "rewrite", "monolith to microservices"
+- User explicit: `--validated` flag
+
+**Skip deliberation when:**
+- User says "fast" or "quick plan"
+- Score < 15 (trivial complexity)
+- Requirements specify exact technology (no architecture decision needed)
+- Incremental feature on established patterns
+
+#### Pre-Planning Deliberation Workflow
+
+When the user opts into (or score triggers) validated planning:
+
+**Step 1: Identify the Architecture Question**
+
+Extract the core decision that needs deliberation:
+```
+Architecture question: "What approach should we use for [X]?"
+
+Examples:
+- "WebSocket vs SSE vs polling for real-time sync?"
+- "Monolith vs microservices for this scale?"
+- "PostgreSQL vs DynamoDB for the event store?"
+- "JWT vs session-based auth with this security profile?"
+```
+
+If there's no clear A-vs-B decision, frame it as: "What architecture best satisfies [constraint 1], [constraint 2], and [constraint 3]?"
+
+**Step 2: Select Golden-Horde Pattern**
+
+| Architecture Question Type | Pattern | Team Composition |
+|---|---|---|
+| Technology A vs B | Adversarial Debate | 2 domain specialists (advocate each side) + 1 senior architect (judge) |
+| Multi-constraint decision (security + cost + perf) | Consensus Deliberation | 3 specialists (one per constraint domain) |
+| Frontend/backend API boundary | Contract-First Negotiation | `frontend-developer` + `backend-architect` |
+| Unknown scope ("how should we approach this?") | Consensus Deliberation | 3 generalists with different domain lenses |
+
+**Step 3: Dispatch Golden-Horde Team**
+
+Spawn the deliberation team using Task() subagent dispatch. Each agent gets the requirements context from Phase 2 plus their role-specific instructions.
+
+**Adversarial Debate (for A-vs-B decisions):**
+```python
+# Advocate for Position A
+Task(
+    subagent_type="backend-development:backend-architect",  # or domain-appropriate
+    description="Advocate for [Position A]",
+    prompt="""You are an advocate in an architecture debate BEFORE implementation planning.
+
+CONTEXT: [Requirements from Phase 2]
+QUESTION: [Architecture question]
+
+YOUR POSITION: Argue FOR [Position A].
+Make the strongest possible case considering:
+1. Technical fit for these specific requirements
+2. Scalability and performance implications
+3. Development velocity and team familiarity
+4. Operational complexity and maintenance cost
+5. Security implications
+
+You MUST be specific to this project's requirements, not generic.
+Output: A structured argument (max 500 words) with evidence.
+Do NOT use the Task tool. Work independently and return your results."""
+)
+
+# Advocate for Position B
+Task(
+    subagent_type="backend-development:backend-architect",  # or domain-appropriate
+    description="Advocate for [Position B]",
+    prompt="""[Same structure, arguing FOR Position B]"""
+)
+
+# Judge
+Task(
+    subagent_type="general-purpose",
+    description="Judge architecture debate",
+    prompt="""You are the judge in an architecture debate BEFORE implementation planning.
+
+CONTEXT: [Requirements from Phase 2]
+QUESTION: [Architecture question]
+
+You will receive two arguments shortly. Wait for both, then:
+1. For each contested point, state which side won and why
+2. Identify points both sides agree on
+3. Issue a clear RULING with the chosen approach
+4. Note any conditions or caveats
+
+Your ruling will become the Architecture Decision Record (ADR) for this project.
+No vague compromises. Pick a winner and justify it.
+Do NOT use the Task tool. Work independently and return your results."""
+)
+```
+
+**Consensus Deliberation (for multi-constraint decisions):**
+```python
+# Expert per constraint domain
+Task(
+    subagent_type="security-auditor",
+    description="Security perspective on architecture",
+    prompt="""You are a security expert evaluating architecture options BEFORE planning.
+
+CONTEXT: [Requirements from Phase 2]
+QUESTION: [Architecture question]
+
+Provide your independent analysis:
+1. Security implications of each approach
+2. Compliance requirements and how each approach satisfies them
+3. Attack surface comparison
+4. Your recommended approach from a security perspective
+
+Be specific to this project. Max 400 words.
+Do NOT use the Task tool."""
+)
+
+Task(
+    subagent_type="backend-development:backend-architect",
+    description="Performance/scalability perspective",
+    prompt="""[Same structure, from performance lens]"""
+)
+
+Task(
+    subagent_type="general-purpose",
+    description="Cost/operations perspective",
+    prompt="""[Same structure, from cost/ops lens]"""
+)
+```
+
+After all agents return, the orchestrator (horde-plan session) synthesizes their findings into a unified ADR.
+
+**Step 4: Produce Architecture Decision Record (ADR)**
+
+```markdown
+## Architecture Decision Record
+
+> **Decision:** [Chosen approach]
+> **Status:** Approved by [N]-agent [pattern name]
+> **Confidence:** [High/Medium/Low based on agent agreement]
+> **Date:** [YYYY-MM-DD]
+
+### Context
+[1-2 sentences from requirements]
+
+### Decision
+[The chosen architecture approach, 2-3 sentences]
+
+### Rationale
+[Key arguments that won, referencing agent findings]
+
+### Alternatives Considered
+| Alternative | Why Not |
+|---|---|
+| [Option B] | [Key reasons from debate/deliberation] |
+
+### Consequences
+- [Positive consequence 1]
+- [Positive consequence 2]
+- [Risk/tradeoff to monitor]
+
+### Dissenting Views
+[Any unresolved disagreements, if applicable]
+```
+
+**Step 5: User Approves ADR**
+
+Present the ADR to the user BEFORE entering plan mode:
+```
+Architecture deliberation complete.
+
+[ADR content]
+
+Accept this architecture and proceed with planning?
+- 'yes' → Enter plan mode with ADR as constraint
+- 'no' → Re-deliberate with different parameters
+- 'fast' → Discard ADR, proceed with single-agent fast plan
+```
+
+**Step 6: Continue to Phase 3 (Task Breakdown)**
+
+If user approves ADR, it becomes a hard constraint for task breakdown:
+- Task breakdown MUST align with the chosen architecture
+- ADR is included as appendix in the final plan document
+- Plan template's "Architecture" field references the ADR
+
+#### Deliberation Budget
+
+| Pattern | Agents | Max Time | Token Budget |
+|---|---|---|---|
+| Adversarial Debate | 3 | 8 min | ~50k tokens |
+| Consensus Deliberation | 3-4 | 10 min | ~80k tokens |
+| Contract-First Negotiation | 2 | 6 min | ~35k tokens |
+
+**Budget enforcement:** If deliberation exceeds budget, force synthesis from available agent outputs and present partial ADR with disclaimer.
+
+**Fallback:** If golden-horde dispatch fails (agents don't return, context overflow), fall back to single-agent planning with a note: "Validated planning unavailable, proceeding with fast plan."
+
+---
 
 ### Phase 3: Task Breakdown
 
@@ -278,9 +552,18 @@ Once approved, this plan will be executed using:
 - **Pipeline:** senior-prompt-engineer → subagent-driven-development → implementation-status → horde-review
 - **Mode:** Same-session parallel dispatch with review gates and completion audit
 
+## Appendix A: Architecture Decision Record (if validated planning was used)
+
+> **Decision:** [Chosen approach]
+> **Validated by:** [N]-agent [pattern name] deliberation
+> **Confidence:** [High/Medium/Low]
+
+[Full ADR content from Phase 2.5]
+
 ## Approval
 
 - [ ] Requirements understood
+- [ ] Architecture validated (if ADR present)
 - [ ] Task breakdown acceptable
 - [ ] Dependencies correct
 - [ ] Ready for execution
@@ -812,6 +1095,75 @@ When the user rejects or requests changes to the plan:
 **Issue:** Plan revision fails after 3 cycles
 **Fix:** Suggest breaking work into smaller, independent plans
 
+## Validated Planning Examples
+
+### Example: HIPAA-Compliant Telemedicine Platform
+
+```
+User: "/horde-plan --validated Build a HIPAA-compliant telemedicine platform"
+
+Claude:
+1. Requirements analysis → Score: 42 (HIPAA +8, novel architecture +12, 4 subsystems)
+2. Auto-recommend validated planning
+
+   [⚠⚠⚠] Entering Plan Mode - HIGH-STAKES WORK
+   Detected: HIPAA compliance
+   Recommending validated planning with:
+   - Healthcare compliance specialist
+   - Security architect
+   - Cloud infrastructure expert
+   Estimated time: 10-15 minutes
+   Type 'validated' to proceed...
+
+3. User: "validated"
+
+4. Dispatches golden-horde Consensus Deliberation:
+   - Task(subagent_type="security-auditor", prompt="Security analysis of telemedicine architecture...")
+   - Task(subagent_type="backend-development:backend-architect", prompt="Backend architecture for HIPAA...")
+   - Task(subagent_type="general-purpose", prompt="Cloud infrastructure cost/compliance analysis...")
+
+5. Synthesizes ADR:
+   > Decision: AWS HIPAA-eligible services with encryption at rest (AES-256),
+   > TLS 1.3 in transit, BAA with AWS, audit logs to immutable S3.
+   > Confidence: High (3/3 agents agreed)
+
+6. User approves ADR → enters plan mode → task breakdown constrained by ADR
+
+7. Plan document includes ADR as Appendix A
+```
+
+### Example: Database Technology Selection
+
+```
+User: "/horde-plan Build an event store — should we use PostgreSQL or DynamoDB?"
+
+Claude:
+1. Requirements analysis → detects A-vs-B architecture question
+2. Offers validated planning with Adversarial Debate
+
+3. Dispatches:
+   - Advocate-A (backend-architect): Argues for PostgreSQL
+   - Advocate-B (backend-architect): Argues for DynamoDB
+   - Judge (general-purpose as senior-architect): Rules on debate
+
+4. ADR: "Use PostgreSQL with JSONB columns for events. DynamoDB's
+   eventual consistency is incompatible with the strong ordering
+   requirements identified in the requirements analysis."
+
+5. Task breakdown uses PostgreSQL throughout — no ambiguity in implementation tasks
+```
+
+### Example: Fast Plan (No Deliberation)
+
+```
+User: "/horde-plan Add CRUD endpoints for the notifications model"
+
+Claude:
+1. Requirements analysis → Score: 8 (5 tasks, 1 subsystem, no risk flags)
+2. Score < 15 → fast plan (no deliberation offered)
+3. Standard single-agent planning workflow (unchanged from v1.0)
+```
+
 ## Integration Notes
 
 **Required Tools:**
@@ -820,11 +1172,21 @@ When the user rejects or requests changes to the plan:
 - `TaskCreate` - Create trackable tasks
 - `TaskList` - Show task progress
 - `TaskUpdate` - Update task status
+- `Task` - Dispatch golden-horde deliberation agents (Phase 2.5, validated planning only)
 
 **Complementary Skills:**
-- `horde-brainstorming` - Use before planning for complex features
+- `golden-horde` - Pre-planning deliberation for complex projects (Phase 2.5)
+- `horde-brainstorming` - Use before planning for exploratory ideation (Phase 0)
 - `horde-implement` - Use after planning for execution (full pipeline: subagent-driven-development → implementation-status → horde-review)
 - `implementation-status` - Use to check plan completion status (built into horde-implement before review)
+
+**Skill Relationship:**
+```
+horde-brainstorming (explore options)
+  └── horde-plan (create structured plan)
+        ├── [Phase 2.5] golden-horde deliberation (validate architecture)
+        └── horde-implement (execute plan)
+```
 
 **File Locations:**
 - Plans saved to: `docs/plans/YYYY-MM-DD-[feature].md`

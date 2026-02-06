@@ -63,32 +63,41 @@ The "horde" skills are the centerpiece of Kurultai. They work together as an **e
 │                      HORDE ECOSYSTEM                             │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│                         ┌──────────────┐                        │
-│                         │ horde-swarm  │  ◄── ENGINE            │
-│                         │   (Core)     │                        │
-│                         └──────┬───────┘                        │
-│                                │                                 │
-│              ┌─────────────────┼─────────────────┐               │
-│              │                 │                 │               │
-│              ▼                 ▼                 ▼               │
-│    ┌─────────────┐   ┌─────────────┐   ┌─────────────┐          │
-│    │horde-       │   │horde-plan   │   │horde-learn  │          │
-│    │brainstorming│   │             │   │             │          │
-│    └──────┬──────┘   └──────┬──────┘   └─────────────┘          │
-│           │                 │                                    │
-│           │                 ▼                                    │
-│           │        ┌─────────────────┐                          │
-│           │        │ horde-implement │                          │
-│           │        │   (depends on   │                          │
-│           │        │    swarm+plan)  │                          │
-│           │        └────────┬────────┘                          │
-│           │                 │                                    │
-│           └─────────────────┘                                    │
-│                             ▼                                    │
-│                    ┌─────────────────┐                          │
-│                    │ horde-gate-test │                          │
-│                    │  (integration)  │                          │
-│                    └─────────────────┘                          │
+│  ┌──────────────────┐                                            │
+│  │  golden-horde    │  ◄── META-ORCHESTRATOR                    │
+│  │  (9 patterns,    │      Embeds all skill methodologies        │
+│  │   60+ agents)    │      Coordinates inter-agent communication │
+│  └────────┬─────────┘                                            │
+│           │ delegates to                                         │
+│           ▼                                                      │
+│  ┌──────────────┐                                                │
+│  │ horde-swarm  │  ◄── ENGINE (fire-and-forget parallel)        │
+│  │   (Core)     │                                                │
+│  └──────┬───────┘                                                │
+│         │                                                        │
+│    ┌────┼────────────────┬────────────────┐                      │
+│    │    │                │                │                      │
+│    ▼    ▼                ▼                ▼                      │
+│  ┌────────────┐  ┌─────────────┐  ┌─────────────┐               │
+│  │horde-      │  │horde-plan   │  │horde-learn  │               │
+│  │brainstorm  │  │             │  │             │               │
+│  └─────┬──────┘  └──────┬──────┘  └─────────────┘               │
+│        │                │                                        │
+│        │                ▼                                        │
+│        │       ┌─────────────────┐                               │
+│        │       │ horde-implement │  ◄── TWO-LAYER CONDUCTOR     │
+│        │       │  (v2.0: plan    │      Parse or generate plans  │
+│        │       │   executor)     │      Phase gating + checkpoint│
+│        │       └────────┬────────┘                               │
+│        │                │                                        │
+│        └────────────────┤                                        │
+│                         ▼                                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
+│  │horde-gate-  │  │ horde-test  │  │horde-review │              │
+│  │testing      │  │             │  │             │              │
+│  │(phase gates)│  │(test suites)│  │(multi-domain│              │
+│  └─────────────┘  └─────────────┘  │ validation) │              │
+│                                    └─────────────┘              │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -101,12 +110,42 @@ The "horde" skills are the centerpiece of Kurultai. They work together as an **e
 | [**horde-swarm**](#horde-swarm) | Core execution engine - dispatch parallel subagents | Any multi-perspective task |
 | [**horde-brainstorming**](#horde-brainstorming) | 6-phase collaborative design process | Complex feature design, architecture decisions |
 | [**horde-plan**](#horde-plan) | Create comprehensive implementation plans | Breaking down large tasks |
-| [**horde-implement**](#horde-implement) | Automated execution of implementation plans | Building features from plans |
+| [**horde-implement**](#horde-implement-v20--two-layer-conductor) | Two-Layer Conductor plan executor with dual entry paths | Execute existing plans or generate-then-execute |
 | [**horde-test**](#horde-test) | Comprehensive test suite execution | Unit, integration, e2e, edge case testing |
 | [**horde-review**](#horde-review) | Multi-disciplinary critical review | Backend, security, performance, architecture review |
 | [**horde-learn**](#horde-learn) | Extract insights from text sources | Research, analysis, competitive intelligence |
 | [**horde-gate-testing**](#horde-gate-testing) | Integration testing between phases | Validating implementations |
 | [**horde-skill-creator**](#horde-skill-creator) | 7-phase skill creation workflow | Building new skills with validation |
+
+### golden-horde (Meta-Orchestrator)
+
+**golden-horde** is the master orchestration skill — a meta-orchestrator that coordinates all other horde skills. Unlike horde-swarm (fire-and-forget parallel dispatch), golden-horde enables **inter-agent communication** through 9 coordination patterns.
+
+#### 9 Orchestration Patterns
+
+| Pattern | Description | Use Case |
+|---------|-------------|----------|
+| **Review Loop** | Producer + Reviewer iterate until quality bar met | Code review, document refinement |
+| **Adversarial Debate** | Agents argue opposing positions, judge synthesizes | Architecture decisions, risk assessment |
+| **Assembly Line** | Sequential handoff between specialists | Multi-step transformations |
+| **Swarm Discovery** | Parallel exploration, results merged | Research, codebase analysis |
+| **Consensus Deliberation** | Multiple agents vote on proposals | Design decisions, prioritization |
+| **Contract-First Negotiation** | Agents agree on interfaces before building | API design, service boundaries |
+| **Expertise Routing** | Route to specialist based on task classification | Mixed-domain workflows |
+| **Watchdog** | Monitor agent oversees worker agents | Long-running tasks, quality gates |
+| **Nested Swarm** | Orchestrator spawns sub-orchestrators | Complex multi-phase projects |
+
+#### 60+ Agent Types (3 Tiers)
+
+- **Tier 1 (Implementation)**: 35+ specialized agents from horde-swarm
+- **Tier 2 (System)**: Plan, Explore, Bash, docs, payment, agent-expert, etc.
+- **Tier 3 (Judgment)**: cost-analyst, chaos-engineer, compliance-auditor — spawned as `general-purpose` with specialized prompts
+
+#### 8 Embedded Skill Methodologies
+
+golden-horde embeds the methodologies of all horde skills (horde-plan, horde-implement, horde-test, horde-review, horde-brainstorming, horde-learn, horde-gate-testing, horde-skill-creator) as prompt templates, since subagents cannot invoke the Skill() tool directly.
+
+---
 
 ### How Skills Compose
 
@@ -269,7 +308,7 @@ User Request
 |-------|------------------------|
 | horde-brainstorming | Dispatches domain specialists in Phase 2 (Parallel Domain Exploration) |
 | horde-plan | Dispatches implementation planners for different components |
-| horde-implement | Dispatches code generators for different files/modules |
+| horde-implement | Dispatches phase executor subagents and uses swarm for parallel task execution |
 | horde-learn | Dispatches researchers to extract information from multiple sources |
 | horde-gate-testing | Dispatches test runners and validators in parallel |
 
@@ -410,50 +449,72 @@ plan:
 
 ---
 
-### horde-implement
+### horde-implement (v2.0 — Two-Layer Conductor)
 
-**horde-implement** executes implementation plans by generating code across multiple files.
+**horde-implement** is a general-purpose plan executor with two entry paths: generate plans from scratch, or execute existing structured markdown plans.
 
-#### How It Works
+#### Architecture: Two-Layer Conductor
 
 ```
-Input: Implementation Plan (from horde-plan)
-              │
-              ▼
-    ┌─────────────────┐
-    │  horde-swarm    │
-    │  dispatches     │
-    │  code generators│
-    │  per file/task  │
-    └────────┬────────┘
-             │
-    ┌────────┼────────┐
-    │        │        │
-    ▼        ▼        ▼
-┌──────┐ ┌──────┐ ┌──────┐
-│File 1│ │File 2│ │File N│
-│      │ │      │ │      │
-│Model │ │API   │ │Tests │
-└──────┘ └──────┘ └──────┘
-    │        │        │
-    └────────┼────────┘
-             │
-             ▼
-    ┌─────────────────┐
-    │  Synthesizer    │
-    │  ensures        │
-    │  consistency    │
-    └─────────────────┘
+                    ┌─────────────────┐
+                    │   Entry Router  │
+                    └────────┬────────┘
+                  ┌──────────┴──────────┐
+                  │                     │
+        ┌─────────▼─────┐     ┌────────▼────────┐
+        │  Path A:      │     │  Path B:        │
+        │  Generate     │     │  Execute        │
+        │  (new request │     │  (existing plan │
+        │   → plan)     │     │   → parse)      │
+        └───────┬───────┘     └────────┬────────┘
+                └──────────┬───────────┘
+                           ▼
+              ┌─────────────────────────┐
+              │   Orchestrator (Light)  │
+              │   Holds: plan index     │
+              │   (~500 tokens)         │
+              └────────────┬────────────┘
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
+          ▼                ▼                ▼
+    ┌──────────┐    ┌──────────┐    ┌──────────┐
+    │ Phase    │    │ Phase    │    │ Phase    │
+    │ Executor │    │ Executor │    │ Executor │
+    │ (Task    │    │ (Task    │    │ (Task    │
+    │  Agent)  │    │  Agent)  │    │  Agent)  │
+    └────┬─────┘    └────┬─────┘    └────┬─────┘
+         │               │               │
+         ▼               ▼               ▼
+    ┌──────────┐    ┌──────────┐    ┌──────────┐
+    │ Gate     │    │ Gate     │    │ Gate     │
+    │ Test     │    │ Test     │    │ Test     │
+    │(horde-   │    │(selective│    │(horde-   │
+    │gate-test)│    │ depth)   │    │gate-test)│
+    └──────────┘    └──────────┘    └──────────┘
 ```
+
+#### Key Features
+
+- **Dual entry**: Generate from request (Path A) or parse existing plans (Path B)
+- **Plan parser**: Extracts phases, tasks, exit criteria from structured markdown
+- **Context windowing**: Plan index + phase slices on demand (handles 40k+ token plans)
+- **Phase gate testing**: 4 depths (NONE/LIGHT/STANDARD/DEEP) via horde-gate-testing
+- **Browser automation**: Orchestrator handles browser tasks inline (subagents can't access MCP)
+- **Checkpoint/resume**: JSON at `.claude/plan-executor/checkpoints/`, survives session interrupts
+- **Post-execution**: implementation-status audit → horde-test → horde-review
 
 #### Usage
 
 ```bash
-# Implement from a plan file
-/claude use horde-implement --plan auth-system-plan.yaml
+# Path A: Generate and execute from request
+/implement Create a user authentication API with JWT tokens
 
-# Or chain from planning
-/claude use horde-plan "Build auth system" | /claude use horde-implement
+# Path B: Execute existing plan
+/implement execute docs/plans/kurultai_0.2.md
+
+# Resume interrupted execution
+/implement resume
 ```
 
 ---
