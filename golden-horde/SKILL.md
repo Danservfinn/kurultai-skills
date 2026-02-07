@@ -673,27 +673,35 @@ Orchestrator (depth 0) — invokes golden-horde
 
 These are condensed prompt blocks that inject a horde skill's methodology into a golden-horde agent. Copy the relevant template into the agent's `prompt` parameter.
 
-#### horde-plan (Planning Methodology)
+#### horde-plan v1.2 (Planning Methodology)
 
 ```
-PLANNING METHODOLOGY (from horde-plan):
+PLANNING METHODOLOGY (from horde-plan v1.2):
 You have access to EnterPlanMode and ExitPlanMode tools.
+
+PLAN OUTPUT CONTRACT (for horde-implement compatibility):
+- Phase headers: ## Phase {id}: {name}    (H2 — parser requires this level)
+- Task headers:  ### Task {id}.{n}: {name} (H3 — parser requires this level)
+- Exit criteria: ### Exit Criteria Phase {id} (H3 — checkboxes with verifiable criteria)
+- Appendices:    ### Appendix {letter}: {name} (H3)
+- Every phase: **Duration**: {time}, **Dependencies**: {phases or None}, **Parallelizable**: Yes/No
+- Every task body: include code blocks (```bash/python/ts), URLs, or **HUMAN_REQUIRED** marker
+  for automatic type classification (bash/code_write/config/browser/verify/human_required)
+- YAML frontmatter: plan_manifest with phase index, gate depths, task_transfer.task_ids
 
 Workflow:
 1. Use EnterPlanMode to enter planning mode
 2. Analyze requirements — identify stakeholders, constraints, success criteria
-3. Break into phases with clear deliverables per phase
-4. Map dependencies between phases (use TaskCreate + TaskUpdate addBlockedBy)
-5. Generate plan document in markdown with:
-   - Objective, scope, assumptions
-   - Phase breakdown with tasks, owners, deliverables
-   - Dependency graph
-   - Risk register with mitigations
-6. Use ExitPlanMode to present plan for approval
-7. After approval, hand off to implementation agent
+3. Score complexity (task count + subsystems×3 + risk flags) — if ≥15, offer golden-horde deliberation
+4. Break into phases (## Phase headers) with exit criteria per phase
+5. Write tasks (### Task headers) with typed content for executor routing
+6. Map dependencies between phases (use TaskCreate + TaskUpdate addBlockedBy)
+7. Generate plan document with YAML frontmatter plan_manifest
+8. Use ExitPlanMode to present plan for approval
+9. Structured handoff to horde-implement Path B (pass plan path + task IDs)
 
-Plan format: Use numbered phases (Phase 1, Phase 2...), each with:
-- Goal, Tasks (numbered), Dependencies, Deliverables, Success Criteria
+Plan format: ## Phase {id}: {Name}, ### Task {id}.{n}: {Name}, ### Exit Criteria Phase {id}
+Gate depth signals: DEEP (code→deploy), STANDARD (schema→consumer), LIGHT (independent), NONE (verify)
 ```
 
 #### horde-implement (Implementation Methodology)
@@ -867,7 +875,7 @@ When the orchestrator analyzes a user request, use this table to determine which
 
 | Request Type | Primary Skill | Supporting Skills | Example Pattern |
 |---|---|---|---|
-| "Plan and build X" | horde-plan → horde-implement | horde-test, horde-review | Assembly Line: planner → implementer → tester → reviewer |
+| "Plan and build X" | horde-plan v1.2 → horde-implement (Path B) | horde-test, horde-review | Assembly Line: planner (outputs Plan Output Contract) → implementer (zero re-discovery) → tester → reviewer |
 | "Design X, debate approaches" | horde-brainstorming | horde-review | Adversarial Debate with brainstorming methodology |
 | "Build and review X" | horde-implement | horde-review, horde-test | Review Loop: implementer + reviewer |
 | "Audit X thoroughly" | horde-review | horde-gate-testing | Swarm Discovery with review methodology |
