@@ -1,12 +1,13 @@
 ---
 name: horde-plan
-version: "1.2"
+version: "1.3"
 description: >
   Create comprehensive implementation plans optimized for horde-implement execution.
   Plans follow a strict output contract (heading levels, exit criteria, task type hints,
   gate depth signals) ensuring automatic parsing by horde-implement's Plan Parser.
   For complex projects, invokes golden-horde deliberation to validate architecture
   before task breakdown. Structured handoff with plan manifest for zero-loss execution.
+  Automatically saves finalized plans to disk as .md files.
 integrations:
   - horde-swarm
   - golden-horde
@@ -17,9 +18,15 @@ integrations:
 
 Create comprehensive implementation plans using plan mode with task breakdown, dependency mapping, and structured handoff to horde-implement for execution.
 
+**New in v1.3:** Plans are now automatically saved to disk as `.md` files after user approval. When ExitPlanMode returns successfully, the plan is written to `docs/plans/YYYY-MM-DD-[plan-name].md` using the Write tool. This ensures plans persist across sessions and provides a source of truth for horde-implement Path B execution.
+
 **New in v1.2:** Plans now follow a strict **Plan Output Contract** ensuring zero-friction parsing by horde-implement. Heading levels, exit criteria, task type hints, gate depth signals, and YAML frontmatter plan manifest are all standardized. Plans produced by horde-plan v1.2 can be executed by horde-implement Path B without any manual reformatting.
 
 **v1.1:** Golden-horde pre-planning deliberation (Adversarial Debate, Consensus Deliberation) for complex projects. ADR constrains task breakdown.
+
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
 
 ## Quick Start
 
@@ -805,12 +812,39 @@ Plan complete! Here's what I'll build:
 
 **Next Steps:**
 1. Review the plan above
-2. If approved, I'll use horde-implement to execute
+2. If approved, I'll save the plan to disk and use horde-implement to execute
 3. Each task will have review gates before proceeding
 4. Progress tracked via TaskList throughout
 
 Shall I proceed with execution?
 ```
+
+### Phase 6.5: Save Plan to Disk (NEW)
+
+After user approval (when ExitPlanMode returns successfully), **automatically save the plan** to disk using the Write tool:
+
+```
+[After ExitPlanMode approval — saving plan to disk...]
+
+**Step 1:** Ensure docs/plans/ directory exists
+```bash
+mkdir -p docs/plans
+```
+
+**Step 2:** Generate filename from plan name
+- Format: YYYY-MM-DD-[kebab-case-plan-name].md
+- Example: 2026-02-06-user-profile-management.md
+
+**Step 3:** Write the complete plan document
+Use Write tool with:
+- file_path: docs/plans/YYYY-MM-DD-[plan-name].md
+- content: [The full plan markdown including YAML frontmatter]
+
+**Step 4:** Confirm save
+Plan saved to: docs/plans/YYYY-MM-DD-[plan-name].md
+```
+
+**Critical:** This file write happens IMMEDIATELY after ExitPlanMode approval, before any execution begins. The saved file becomes the source of truth for horde-implement Path B execution.
 
 ## Structured Handoff to Horde-Implement
 
@@ -1492,6 +1526,11 @@ Plan complete! Here's what I'll build:
 **Tasks:** 14 total across 5 phases
 **Gate depths:** STANDARD (Phase 1→2), STANDARD (Phase 2→4), LIGHT (Phase 3, 4), NONE (Phase 5)
 
+[Creating docs/plans directory if needed...]
+[Writing plan to disk...]
+
+**Plan saved:** `docs/plans/2026-02-04-user-profile-management.md`
+
 Handing off to horde-implement (Path B: Execute)...
 
 **Plan:** `docs/plans/2026-02-04-user-profile-management.md`
@@ -1519,6 +1558,7 @@ Shall I proceed with execution?
 - Map dependencies with addBlockedBy
 - Specify exact file paths
 - Include testing in every plan
+- **Save the plan to disk** using Write tool after ExitPlanMode approval
 - Hand off to horde-implement
 
 ## Plan Revision Workflow

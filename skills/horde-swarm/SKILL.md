@@ -16,6 +16,10 @@ Dispatch a coordinated swarm of specialized subagents to work on a task in paral
 - Simple tasks that don't benefit from multiple perspectives
 - Tightly coupled components that need coordinated implementation
 
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
+
 ## When to Use
 
 Invoke this skill when:

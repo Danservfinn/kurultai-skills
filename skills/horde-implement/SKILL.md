@@ -1,505 +1,733 @@
 ---
 name: horde-implement
-description: This skill should be used when the user invokes "/implement" to automatically generate an implementation plan using senior-prompt-engineer, create structured tasks, and deploy a subagent swarm using subagent-driven-development to execute the plan. After implementation, invokes implementation-status to audit completion before running horde-review. The skill handles the full pipeline from prompt engineering through task creation to autonomous execution, audit, and review across software development, infrastructure, content creation, and data processing domains.
+description: >
+  General-purpose plan executor and implementation pipeline. Two entry paths:
+  (A) Generate mode — takes a request, generates a plan via senior-prompt-engineer, then executes.
+  (B) Execute mode — takes an existing structured markdown plan (like kurultai_0.2.md), parses it
+  into phases and tasks, and executes with phase gating via horde-gate-testing.
+  Both paths converge at the execution engine with subagent dispatch, browser automation,
+  checkpoint/resume, implementation-status audit, horde-test, and horde-review.
 integrations:
   - horde-swarm
+  - horde-gate-testing
+  - horde-test
+  - horde-review
   - senior-prompt-engineer
   - subagent-driven-development
   - dispatching-parallel-agents
   - implementation-status
-  - horde-review
+  - systematic-debugging
 ---
 
 # Implement
 
-Automatically transform user requests into executed implementations through AI-driven planning and subagent swarm execution.
+General-purpose plan executor. Transforms requests or existing plans into executed implementations through AI-driven orchestration, subagent swarm execution, and phased gate testing.
+
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
 
 ## Overview
 
-This skill provides a complete implementation pipeline:
-
-1. **Prompt Engineering** - Uses `senior-prompt-engineer` to analyze the request and generate a comprehensive implementation plan
-2. **Task Decomposition** - Breaks the plan into discrete, trackable tasks
-3. **Subagent Swarm Deployment** - Uses `subagent-driven-development` to execute tasks with parallel subagents
-4. **Autonomous Execution** - Automatically proceeds through the full pipeline without user intervention
-5. **Implementation Status Audit** - Uses `implementation-status` to verify 100% completion before testing
-6. **Testing and Validation** - Designs and executes comprehensive test suite (unit, integration, e2e) with coverage targets
-7. **Critical Review** - Uses `horde-review` to validate the tested implementation across all relevant domains (only after tests pass)
+```
+                         /implement
+                            │
+              ┌─────────────┴─────────────┐
+              ▼                           ▼
+     PATH A: GENERATE              PATH B: EXECUTE
+     (from request)                (from existing plan)
+              │                           │
+     senior-prompt-engineer        Plan Parser
+     generates plan                extracts phases/tasks
+              │                           │
+              └─────────────┬─────────────┘
+                            ▼
+                    EXECUTION ENGINE
+                   ┌────────────────┐
+                   │ Phase Loop     │
+                   │  ├─ Subagent   │ ← Task subagents per phase
+                   │  │  executors  │
+                   │  ├─ Browser    │ ← Orchestrator handles inline
+                   │  │  tasks      │
+                   │  ├─ Gate test  │ ← horde-gate-testing (selective)
+                   │  └─ Checkpoint │ ← JSON state persistence
+                   └────────────────┘
+                            │
+                    POST-EXECUTION
+                   ┌────────────────┐
+                   │ impl-status    │ ← 100% completion audit
+                   │ horde-test     │ ← comprehensive testing
+                   │ horde-review   │ ← multi-domain review
+                   └────────────────┘
+```
 
 ## When to Use
 
 Invoke `/implement` when you want to:
 
-- Build a new feature or component
-- Refactor existing code or infrastructure
+- **Execute an existing plan document** (deployment plans, migration plans, feature specs)
+- Build a new feature or component from a request
 - Set up deployments, CI/CD, or infrastructure
-- Create content, documentation, or marketing materials
-- Build data pipelines, ETL processes, or ML workflows
-- Fix bugs or resolve technical issues
+- Refactor existing code or infrastructure
 - Any task that can be broken into discrete implementation steps
 
-## Workflow
+## Detecting Entry Path
 
-### Phase 1: Request Analysis and Plan Generation
+On invocation, determine the entry path:
 
-Dispatch `senior-prompt-engineer` to analyze the user request and generate an implementation plan.
+**Path B (Execute mode)** if ANY of these are true:
+- User provides a file path to a plan document (`.md` file in `docs/plans/` or similar)
+- User says "implement this plan", "execute this", "follow this document"
+- The argument references an existing structured markdown file with phases/tasks
 
-**Prompt Structure for senior-prompt-engineer:**
+**Path A (Generate mode)** if:
+- User provides a request description without referencing an existing plan
+- User says "build", "create", "implement" + feature description
+
+---
+
+## Path A: Generate Mode
+
+When no existing plan is provided, generate one.
+
+### A.1: Plan Generation
+
+Dispatch `senior-prompt-engineer` to analyze the request:
 
 ```
-Analyze the following implementation request and create a comprehensive plan.
+Skill("senior-prompt-engineer", """
+Analyze this implementation request and create a comprehensive plan.
 
 User Request: {user_request}
 
 Context:
 - Current directory: {cwd}
-- Relevant files (if any): {file_list}
+- Relevant files: {file_list}
 
-Create an implementation plan that includes:
+Create a plan with:
 1. Clear objective statement
-2. Domain classification (software, infrastructure, content, data)
-3. Task breakdown with dependencies
-4. Technical approach and patterns
-5. Success criteria
-6. Risk mitigation strategies
+2. Phase breakdown (use ## Phase N: Name format)
+3. Tasks per phase (use ### Task N.M: Name format)
+4. Exit criteria per phase (use ### Exit Criteria Phase N format with checkboxes)
+5. Dependencies between phases
+6. Success criteria
 
-Format the plan as a structured markdown document suitable for subagent execution.
-```
-
-### Phase 2: Task Extraction and Creation
-
-Parse the generated plan and create trackable tasks:
-
-1. **Extract tasks** from the plan's task breakdown section
-2. **Identify dependencies** between tasks
-3. **Create TodoWrite entries** for each task with:
-   - Task ID
-   - Description
-   - Dependencies (blocked_by)
-   - Estimated complexity
-
-### Phase 3: Subagent Swarm Deployment
-
-Use `subagent-driven-development` to execute the implementation plan:
-
-1. **Dispatch implementer subagent** per task with:
-   - Full task description from the plan
-   - Context from previous completed tasks
-   - Success criteria from the plan
-
-2. **Execute verification subagent** after each task:
-   - Confirm tests pass
-   - Verify implementation matches spec
-   - Check for regressions
-
-3. **Execute domain specialist review**:
-   - Route to appropriate specialist based on task type
-   - Verify technical correctness
-   - Ensure best practices followed
-
-4. **Execute code quality review**:
-   - Check style, patterns, maintainability
-   - Ensure documentation is updated
-
-### Phase 4: Completion and Summary
-
-After all tasks complete:
-
-1. **Generate implementation summary**:
-   - What was implemented
-   - Files changed/created
-   - Tests added
-   - Any issues encountered
-
-2. **Present results** to user with:
-   - High-level summary
-   - Link to detailed changes
-   - Next steps (if any)
-
-### Phase 5: Implementation Status Audit
-
-Before proceeding to testing, invoke `implementation-status` to verify completion:
-
-1. **Invoke implementation-status** to audit the implementation:
-   - Provide the plan path and context
-   - Request comprehensive audit of all phases/tasks
-   - Get completion percentage (Complete/Partial/Missing for each phase)
-
-2. **Process audit results**:
-   - If **100% complete** (all phases marked "Complete"): Proceed to Phase 6
-   - If **partial completion** (some phases marked "Partial" or "Missing"):
-     - Present status matrix to user
-     - Ask whether to:
-       - Complete remaining work first (recommended)
-       - Proceed to testing with incomplete implementation (not recommended)
-     - If user chooses to complete: Return to Phase 3 with remaining tasks
-
-3. **Audit output format** (expected from `implementation-status`):
-   ```markdown
-   | Phase | Status | Implemented | Missing | Blockers |
-   |-------|--------|-------------|---------|----------|
-   | Phase 1 | Complete | Files... | None | None |
-   | Phase 2 | Complete | Files... | None | None |
-   ```
-
-### Phase 6: Testing and Validation
-
-**Only after Phase 5 confirms 100% completion**, design and execute comprehensive testing using `horde-test`:
-
-1. **Design Testing Plan** (using `generate-tests`):
-   - Analyze implementation to identify test requirements
-   - Design test strategy covering:
-     - **Unit tests** - Individual component validation
-     - **Integration tests** - Cross-component interaction
-     - **End-to-end tests** - Full workflow validation
-     - **Edge case tests** - Boundary conditions and error handling
-     - **Performance tests** - Load and stress testing (if applicable)
-   - Define test success criteria and coverage targets
-
-2. **Execute Testing Plan with horde-test**:
-   - Invoke `horde-test` with comprehensive test plan
-   - horde-test dispatches parallel test agents via horde-swarm
-   - Collect and aggregate results from all test categories
-   - Measure coverage against targets
-
-3. **Process Test Results**:
-   - If **all tests pass** and **coverage meets targets**: Proceed to Phase 7
-   - If **tests fail** or **coverage insufficient**:
-     - Present test failure report
-     - Dispatch fix tasks for failing tests
-     - Return to Phase 3 to address gaps
-     - Re-run Phase 6 after fixes
-
-4. **Testing output format**:
-   ```markdown
-   | Test Category | Tests Run | Passed | Failed | Coverage |
-   |---------------|-----------|--------|--------|----------|
-   | Unit          | 45        | 45     | 0      | 92%      |
-   | Integration   | 12        | 12     | 0      | 88%      |
-   | E2E           | 8         | 8      | 0      | 100%     |
-   | **Total**     | **65**    | **65** | **0**  | **90%**  |
-   ```
-
-**Dispatch Pattern for Testing:**
-```python
-# Design testing plan
-Skill("generate-tests", """
-Design comprehensive test plan for:
-- Implementation: [files changed]
-- Test types: unit, integration, e2e, edge cases
-- Coverage target: >80%
-- Output: Test plan with test cases
+Format as structured markdown suitable for Path B execution.
 """)
-
-# Execute tests using horde-test
-Skill("horde-test", """
-Execute comprehensive test plan for implementation:
-
-Context:
-- Implementation files: {files_changed}
-- Test requirements: unit, integration, e2e, edge cases
-- Coverage target: >80%
-
-Test Plan:
-```yaml
-plan_id: "implement-phase-6-{timestamp}"
-version: "1.0.0"
-context:
-  implementation_files:
-    {files_list}
-  test_requirements:
-    - "Unit tests for all new modules"
-    - "Integration tests for API endpoints"
-    - "E2E tests for critical workflows"
-  coverage_target: 80
-
-suites:
-  - name: "unit-tests"
-    category: unit
-    files: {unit_test_files}
-    config:
-      timeout: 300
-      retries: 1
-      parallel: true
-      coverage: true
-
-  - name: "integration-tests"
-    category: integration
-    files: {integration_test_files}
-    dependencies:
-      - "unit-tests"
-    config:
-      timeout: 600
-      retries: 0
-      parallel: false
-      coverage: true
-
-coverage:
-  enabled: true
-  targets:
-    line: 80
-    branch: 70
-    function: 90
-  fail_on_missed: true
-
-success_criteria:
-  min_pass_rate: 100
-  critical_suites:
-    - "unit-tests"
-  no_critical_failures: true
 ```
+
+### A.2: Save and Hand Off
+
+Save the generated plan to `docs/plans/{date}-{slug}.md`, then proceed to Path B execution.
+
+---
+
+## Path B: Plan Ingestion
+
+### B.1: Plan Parser Protocol
+
+Read the plan document and extract the execution structure. The plan may exceed context limits, so parse in two passes.
+
+**Pass 1: Build Plan Index (~500 tokens)**
+
+Scan the document for structural markers:
+
+```
+Phase headers:     ## Phase {id}: {name}        (id can be: -1, 0, 1, 1.5, etc.)
+Task headers:      ### Task {id}: {name}         (id matches phase: 1.1, 1.2, 1.5.1)
+Exit criteria:     ### Exit Criteria Phase {id}   (checklist items below)
+Appendix headers:  ### Appendix {letter}: {name}
+Duration markers:  **Duration**: {time}
+Dependency markers: **Dependencies**: {text}
+```
+
+Produce a plan index:
+
+```json
+{
+  "plan_name": "Kurultai v0.2: Complete Railway Deployment Plan",
+  "source_file": "docs/plans/kurultai_0.2.md",
+  "total_phases": 10,
+  "phases": [
+    {
+      "id": "-1",
+      "name": "Wipe and Rebuild",
+      "line_start": 188,
+      "line_end": 331,
+      "task_count": 4,
+      "tasks": ["-1.1", "-1.2", "-1.3", "-1.4"],
+      "has_exit_criteria": true,
+      "duration": "30 minutes",
+      "dependencies": [],
+      "risk_level": "HIGH"
+    }
+  ],
+  "appendices": ["A", "B", "C", "D", "E", "F", "G", "H"],
+  "estimated_total_time": "4-6 hours"
+}
+```
+
+**Pass 2: Classify Phase Boundaries for Gate Testing**
+
+For each phase transition, determine gate depth:
+
+| Transition | Gate Depth | Criteria |
+|------------|-----------|----------|
+| Phase N exports code/schemas consumed by N+1 | `STANDARD` | horde-gate-testing |
+| Phase N is code, N+1 deploys that code | `DEEP` | horde-gate-testing + verification |
+| Phases are independent systems | `LIGHT` | Exit criteria only |
+| Phase is purely validation/verification | `NONE` | Just advance |
+
+Store gate classifications in the plan index.
+
+### B.2: Context Windowing
+
+The full plan will not fit in a subagent's context. Use this strategy:
+
+**For the orchestrator:** Hold only the plan index (~500 tokens). Read phase slices on demand.
+
+**For phase executor subagents:** Pass:
+1. The specific phase slice (from `line_start` to `line_end`)
+2. Relevant appendix sections (if tasks reference them)
+3. A summary of completed prior phases (task names + status, ~100 tokens)
+4. Shared artifacts from prior phases (env vars set, files created, services deployed)
+
+**To extract a phase slice:**
+```
+Read(file_path=plan_source, offset=phase.line_start, limit=phase.line_end - phase.line_start)
+```
+
+### B.3: Task Type Classification
+
+Within each phase, classify tasks for routing:
+
+| Type | Detection | Executor |
+|------|-----------|----------|
+| `bash` | Contains ```bash code blocks with CLI commands | Subagent (Bash tool) |
+| `code_write` | Contains Python/JS/Docker code to create as files | Subagent (Write/Edit tools) |
+| `config` | Environment variables, YAML, JSON configuration | Subagent (Bash for `railway variables set`, Write for files) |
+| `browser` | References web UI, dashboard, console, admin panel; contains URLs like `console.neo4j.io` | Orchestrator (Playwright MCP) |
+| `verify` | Contains curl commands, test assertions, "Expected:" patterns | Subagent (Bash tool) |
+| `human_required` | Account creation, payment, CAPTCHA, OAuth first-time consent | Pause for user |
+
+---
+
+## Execution Engine
+
+### Phase Loop
+
+The orchestrator executes phases sequentially:
+
+```
+FOR each phase in plan_index.phases:
+  1. CHECK checkpoint — skip if phase already completed
+  2. READ phase slice from plan document
+  3. CLASSIFY tasks within the phase
+  4. DISPATCH non-browser tasks to subagent executor(s)
+     - Independent tasks: dispatch in parallel
+     - Dependent tasks: dispatch sequentially
+     - Conservative default: if dependency unclear, sequential
+  5. EXECUTE browser tasks inline (orchestrator handles directly)
+  6. VERIFY exit criteria (if phase has them)
+  7. RUN gate test (if gate depth requires it)
+  8. CHECKPOINT phase completion
+  9. ADVANCE to next phase
+```
+
+### Task Dispatch to Phase Executors
+
+Each phase is executed by dispatching a Task subagent:
+
+```python
+Task(
+    subagent_type="general-purpose",
+    description=f"Execute Phase {phase.id}",
+    prompt=f"""
+## You are executing Phase {phase.id}: {phase.name}
+
+## Plan Context
+Previously completed phases: {completed_phases_summary}
+Shared artifacts: {shared_artifacts}
+
+## Phase Instructions
+{phase_slice_content}
+
+## Your Task
+Execute ALL tasks in this phase sequentially:
+{task_list_with_descriptions}
+
+For each task:
+1. Read the task instructions carefully
+2. Execute the commands/code as specified
+3. Verify the task completed successfully
+4. Report what was done and any artifacts created
+
+## Output Format
+Report for each task:
+- Task ID and name
+- Status: completed/failed
+- What was done (commands run, files created/modified)
+- Artifacts: list of files created, services deployed, env vars set
+- Errors: any issues encountered
+
+## Important
+- Execute tasks in order unless explicitly marked as parallelizable
+- If a task fails, report the error and continue to the next task
+- Do NOT skip verification steps within tasks
+"""
+)
+```
+
+**Subagent type selection by domain:**
+
+| Phase Domain | Subagent Type |
+|-------------|---------------|
+| Backend code | `backend-development:backend-architect` |
+| Frontend code | `frontend-mobile-development:frontend-developer` |
+| Infrastructure/deploy | `general-purpose` |
+| Database/schema | `backend-development:backend-architect` |
+| Mixed/general | `general-purpose` |
+
+### Browser Task Handling
+
+Browser tasks MUST be handled by the orchestrator directly — subagents do not have access to MCP browser tools.
+
+**Detection keywords:** "dashboard", "console", "admin panel", "Navigate to", URLs in task text.
+
+**Execution order:** Prefer CLI/API alternatives first. Only use browser automation when no CLI exists.
+
+| Operation | Prefer | Browser Only If |
+|-----------|--------|-----------------|
+| Railway operations | `railway` CLI | CLI lacks the feature |
+| Authentik admin | `ak` CLI or API (`/api/v3/`) | API doesn't support it |
+| Neo4j AuraDB | No CLI for free tier | Always browser |
+| Git/GitHub | `git`/`gh` CLI | Never browser |
+| Docker | `docker` CLI | Never browser |
+
+**Browser execution template (using Playwright MCP):**
+```
+1. mcp__plugin_playwright_playwright__browser_navigate → target URL
+2. mcp__plugin_playwright_playwright__browser_snapshot → verify page loaded
+3. Check: login page or dashboard?
+   - If login needed + env var credentials available → fill form
+   - If login needed + no credentials → PAUSE for user
+4. Execute interactions (click, fill, select)
+5. mcp__plugin_playwright_playwright__browser_snapshot → verify success
+6. Extract output data (connection strings, IDs, URLs)
+```
+
+**Auth strategy by service:**
+
+| Service | Auth Approach | Fallback |
+|---------|--------------|----------|
+| Railway | CLI (already authenticated) | Pre-authenticated Chrome |
+| Authentik | Form fill from `AUTHENTIK_BOOTSTRAP_PASSWORD` env var | Pause for user |
+| Neo4j AuraDB | Pre-authenticated Chrome session | Pause for user |
+| Generic | Pre-authenticated Chrome session | Pause for user |
+
+**Fallback ladder when browser automation fails:**
+1. **Retry** (up to 3 times with wait)
+2. **Alternative approach** (try API/CLI instead)
+3. **Partial automation** (navigate to page, ask user to complete)
+4. **Human handoff** (capture context, screenshot, tell user what to do)
+
+---
+
+## Phase Gate System
+
+Two levels of verification run between phases.
+
+### Level 1: Exit Criteria Verification (every phase)
+
+Extract criteria from `### Exit Criteria Phase N` sections. Each checkbox item is one criterion.
+
+**Classification:**
+
+| Category | Detection | How Verified |
+|----------|-----------|-------------|
+| `automated` | Contains commands, URLs, ports, "returns", "responds", "exists" | Execute command via Bash, check exit code |
+| `semi_automated` | "no errors", "logs show", "tests pass" | Execute command, interpret output |
+| `subjective` | "sound", "clean", "appropriate" | Agent assessment with logged rationale |
+
+**Verification protocol:**
+1. Run all `automated` criteria (Bash commands, curl checks)
+2. Run all `semi_automated` criteria (execute + interpret)
+3. Assess `subjective` criteria (brief review of artifacts)
+
+**Gate decision:**
+- All criteria passed → **GATE OPEN**
+- Any `automated`/`semi_automated` failed → **GATE BLOCKED** → tiered recovery
+- Any `subjective` uncertain → **GATE HELD** → present to user
+
+**Tiered recovery for blocked gates:**
+1. **Auto-retry** (transient failures: timeout, not-ready) — wait 30s, retry, max 2 attempts
+2. **Re-execute task** (identify which task produced the failing artifact, re-dispatch)
+3. **User escalation** (present failure report, options: fix+retry / override / abort)
+
+### Level 2: horde-gate-testing (selective)
+
+Run between phases classified as `STANDARD` or `DEEP` gate depth.
+
+**Invoke after exit criteria pass:**
+
+```python
+Skill("horde-gate-testing", f"""
+Plan: {plan_source_file}
+Current phase: Phase {N} — {phase_name}
+Next phase: Phase {N+1} — {next_phase_name}
+
+Phase {N} produced:
+- Files: {files_changed_or_created}
+- Services: {services_deployed}
+- Schemas: {schema_changes}
+- Config: {config_changes}
+
+Phase {N+1} expects:
+{next_phase_dependency_summary}
+
+Test the integration surface between these phases.
+Verify Phase {N}'s outputs satisfy Phase {N+1}'s inputs.
+""")
+```
+
+**Process gate test results:**
+- `PASS` → advance to next phase
+- `WARN` → advance, log risks to checkpoint, report to user
+- `FAIL` → dispatch fix subagents for identified issues, re-test
+
+**When to use which gate depth:**
+
+```
+determine_gate_depth(phase_n, phase_n_plus_1):
+  IF phase_n exports code/schemas AND phase_n_plus_1 imports them:
+    RETURN "STANDARD"  → horde-gate-testing
+  IF phase_n is implementation AND phase_n_plus_1 is deployment:
+    RETURN "DEEP"      → horde-gate-testing + extra verification
+  IF phases operate on independent systems:
+    RETURN "LIGHT"     → exit criteria only
+  IF phase_n_plus_1 is purely verification:
+    RETURN "NONE"      → just advance
+  DEFAULT:
+    RETURN "LIGHT"     → conservative
+```
+
+**Example gate depth map for kurultai_0.2.md:**
+
+| Transition | Depth | Reason |
+|-----------|-------|--------|
+| Phase -1 → 0 | LIGHT | Cleanup → setup, independent |
+| Phase 0 → 1 | LIGHT | Env setup → neo4j, independent |
+| Phase 1 → 1.5 | STANDARD | Neo4j schema → task dependency engine |
+| Phase 1.5 → 2 | STANDARD | Task engine → capability acquisition |
+| Phase 2 → 3 | DEEP | Code → Railway deployment |
+| Phase 3 → 4 | LIGHT | Deploy → signal verify |
+| Phase 4 → 4.5 | LIGHT | Signal → notion, independent |
+| Phase 4.5 → 5 | LIGHT | Notion → authentik, independent |
+| Phase 5 → 6 | STANDARD | Auth → monitoring, cross-cutting |
+| Phase 6 → 7 | NONE | Monitoring → testing, natural |
+
+---
+
+## Checkpoint & Resume
+
+### Checkpoint Storage
+
+**Location:** `.claude/plan-executor/checkpoints/`
+**File:** `{plan_hash_8chars}_{plan_name_slug}.checkpoint.json`
+**Backup:** `{same}.prev.json` (previous checkpoint for corruption recovery)
+
+### Checkpoint Format
+
+```json
+{
+  "version": "1.0",
+  "plan": {
+    "name": "Plan name",
+    "source_file": "/path/to/plan.md",
+    "content_hash": "a1b2c3d4",
+    "total_phases": 10,
+    "phase_ids": ["-1", "0", "1", "1.5", "2", ...]
+  },
+  "execution": {
+    "id": "exec_20260206_143022",
+    "started_at": "2026-02-06T14:30:22Z",
+    "last_updated_at": "2026-02-06T16:45:33Z",
+    "current_phase": "2",
+    "status": "in_progress"
+  },
+  "phases": {
+    "-1": {
+      "status": "completed",
+      "tasks": [
+        {"id": "t-1.1", "name": "Pre-Deletion Backup", "status": "completed", "artifacts": []}
+      ],
+      "gate": {"status": "passed", "depth": "LIGHT"}
+    },
+    "2": {
+      "status": "in_progress",
+      "tasks": [
+        {"id": "t2.1", "status": "completed", "artifacts": ["railway-deploy.log"]},
+        {"id": "t2.2", "status": "in_progress"},
+        {"id": "t2.3", "status": "pending"}
+      ],
+      "gate": {"status": "pending", "depth": "DEEP"}
+    }
+  },
+  "shared_artifacts": {
+    "env_vars_set": ["RAILWAY_TOKEN", "NEO4J_URI"],
+    "services_deployed": [{"name": "authentik-server", "url": "..."}],
+    "files_created": ["authentik-server/Dockerfile"]
+  },
+  "error_log": []
+}
+```
+
+**Size constraint:** Checkpoint stores task-level state only, not command outputs. Verbose logs go to separate artifact files. Target: under 50KB.
+
+### When to Checkpoint
+
+Write checkpoint (atomic: write temp → rename prev → rename active) at:
+- Execution start (all phases pending)
+- Each task completion or failure
+- Each gate verification result
+- Each phase completion
+- Session end (graceful)
+
+### Resume Protocol
+
+On `/implement` invocation, check for existing checkpoints:
+
+```
+1. DISCOVER: List .claude/plan-executor/checkpoints/*.checkpoint.json
+2. If none found → fresh execution
+3. If found → read checkpoint, present to user:
+
+   "Found checkpoint for '{plan_name}'
+    Last active: {time_ago}
+    Completed: Phases {list}
+    Current: Phase {N} ({completed_tasks}/{total_tasks} tasks done)
+
+    Options:
+    1. Resume from Phase {N}
+    2. Restart from a specific phase
+    3. Start fresh (discard checkpoint)"
+
+4. VALIDATE: Re-run exit criteria for most recent completed phase
+   - If pass → resume from first pending task
+   - If fail → report what changed, ask user for decision
+
+5. STALE CHECK:
+   - Checkpoint > 24 hours old → warn
+   - Plan file hash changed → warn "plan was edited since last execution"
+   - If changes only affect future phases → safe to resume
+   - If changes affect completed phases → warn, let user decide
+```
+
+**In-progress tasks on resume:** Treated as pending (re-executed). Partial task state is unreliable.
+
+### Phase Skip / Start-At
+
+When user requests starting at a specific phase:
+
+1. Read exit criteria for all skipped phases
+2. Run automated criteria against current state (quick validation)
+3. If all pass → proceed with skipped phases marked `skipped_verified`
+4. If some fail → report which prerequisites are missing, offer options
+
+---
+
+## Post-Execution Pipeline
+
+After all phases complete, run the quality pipeline.
+
+### Implementation Status Audit
+
+Invoke `implementation-status` to verify 100% completion:
+
+```
+Skill("implementation-status", """
+Plan: {plan_source_file}
+Context: {implementation_summary}
+Audit all phases for completion status.
+""")
+```
+
+- **100% complete** → proceed to testing
+- **Partial** → present status matrix, offer to complete remaining work or proceed
+
+### Testing & Validation
+
+**Only after 100% completion confirmed.** Invoke `horde-test`:
+
+```
+Skill("horde-test", """
+Execute comprehensive test plan for implementation.
+
+Files changed: {all_artifacts_from_checkpoint}
+Test types: unit, integration, e2e, edge cases
+Coverage target: >80%
 
 Report: Full test results with coverage analysis
 """)
 ```
 
-### Phase 7: Critical Review
+- **All pass** → proceed to review
+- **Failures** → dispatch fix tasks, re-test
 
-**Only after Phase 6 (Testing) confirms all tests pass**, invoke `horde-review` for comprehensive validation:
+### Critical Review
 
-1. **Determine review scope** based on implementation type:
-   - **Backend changes**: Backend, Architecture, Security, Performance, DevOps
-   - **Frontend changes**: UX & Accessibility, Frontend, Architecture
-   - **Fullstack changes**: All domains applicable
-   - **Infrastructure**: DevOps, Architecture (possibly Security)
+**Only after tests pass.** Invoke `horde-review`:
 
-2. **Invoke horde-review** with the implemented artifact:
-   - Provide context: what was built, files changed
-   - Request multi-domain analysis based on scope
-   - Parallel dispatch of specialist skills
+```
+Skill("horde-review", """
+Review the implementation of {plan_name}.
 
-3. **Present consolidated review report**:
-   - Executive summary of review findings
-   - Findings by domain with severity levels
-   - Cross-cutting concerns
-   - Prioritized improvement list
+Files changed: {artifacts}
+Scope: {review_domains based on plan type}
 
-4. **Handle review outcomes**:
-   - All findings passed → Implementation verified complete
-   - Issues found → Present to user for approval to fix
-   - User approves fixes → Return to Phase 3 with improvement tasks
+Perform multi-domain analysis.
+""")
+```
+
+Review domain routing:
+- **Backend changes** → Backend, Architecture, Security, Performance
+- **Frontend changes** → UX, Frontend, Architecture
+- **Infrastructure** → DevOps, Architecture, Security
+- **Fullstack** → All applicable domains
+
+---
 
 ## Domain Routing
 
-Automatically detect domain from the plan and route to appropriate specialists:
+**For Skill invocation:**
 
-**For Skill invocation (use `Skill()` tool):**
-
-| Domain | Keywords | Skills to Invoke |
-|--------|----------|------------------|
-| Software | code, API, component, refactor, bug | `code-reviewer`, `senior-backend`, `senior-frontend` |
-| Infrastructure | deploy, CI/CD, Docker, Kubernetes | `senior-devops` |
-| Content | write, document, blog, copy | `content-research-writer` |
-| Data | ETL, pipeline, analysis, ML | `senior-data-engineer`, `senior-data-scientist` |
+| Domain | Keywords | Skills |
+|--------|----------|--------|
+| Software | code, API, component, refactor | `code-reviewer`, `senior-backend`, `senior-frontend` |
+| Infrastructure | deploy, CI/CD, Docker | `senior-devops` |
+| Content | write, document, blog | `content-research-writer` |
+| Data | ETL, pipeline, ML | `senior-data-engineer`, `senior-data-scientist` |
 | Testing | test, spec, verify | `generate-tests` |
-| Quality | review, audit, check | `code-reviewer` |
 
-**For Task subagent dispatch (use `Task(subagent_type=...)`):**
+**For Task subagent dispatch:**
 
-| Domain | Keywords | Subagent Type |
-|--------|----------|---------------|
-| Backend | API, endpoint, database, schema | `backend-development:backend-architect` |
-| Frontend | component, UI, React, accessibility | `frontend-mobile-development:frontend-developer` |
-| DevOps | infrastructure, deployment, CI/CD | `senior-devops` (as skill) |
-| Data Engineering | pipeline, ETL, analytics | `senior-data-engineer` (as skill) |
+| Domain | Subagent Type |
+|--------|---------------|
+| Backend | `backend-development:backend-architect` |
+| Frontend | `frontend-mobile-development:frontend-developer` |
+| Security | `security-auditor` |
+| General | `general-purpose` |
 
-**Key distinction:**
-- **Skills** are invoked via `Skill("skill-name", "prompt")` - these are workflow capabilities
-- **Subagent types** are dispatched via `Task(subagent_type="domain:agent", prompt="...")` - these are specialized agent implementations
+---
 
 ## Task State Management
 
-Track task progress through states:
-
 ```
-                    ┌─────────────┐
-                    │   pending   │
-                    └──────┬──────┘
-                           │ start
-                           ▼
-                    ┌─────────────┐     max retries      ┌──────────┐
-                    │ in_progress │─────────────────────▶│ escalated│
-                    └──────┬──────┘    exceeded          └──────────┘
-                           │
-              ┌────────────┼────────────┐
-              │            │            │
-              ▼            ▼            ▼
-        ┌─────────┐  ┌─────────┐  ┌──────────┐
-        │completed│  │  failed │  │partial   │
-        └─────────┘  └────┬────┘  │complete  │
-                          │       └────┬─────┘
-                    retry │            │ continue
-                    with  │            │
-                    backoff▼            ▼
-                    ┌───────────────────────┐
-                    │      retrying         │
-                    │  (attempt N of 3)     │
-                    └───────────────────────┘
+pending → in_progress → completed
+                     → failed → retrying (max 3) → escalated
+                     → partial_complete → continue
 ```
 
-**State Definitions:**
-- `pending`: Task created but not started
-- `in_progress`: Task currently being executed
-- `completed`: Task finished successfully
-- `failed`: Task failed, awaiting retry decision
-- `retrying`: Task in retry with exponential backoff
-- `partial_complete`: Task partially completed (some deliverables ready)
-- `escalated`: Max retries exceeded, requires human intervention
+**Retry policy:** Max 3 attempts, exponential backoff (1s, 2s, 4s). After 3 failures → escalate to user.
 
-**Retry Policy:**
-- Max 3 retry attempts per task
-- Exponential backoff: 1s, 2s, 4s between attempts
-- Circuit breaker: After 3 failures, escalate to user
+**Error taxonomy:**
+- **Transient** (timeout, connection refused) → auto-retry
+- **Permanent** (invalid config, missing dependency) → escalate after analysis
+- **Architectural** (design flaw) → immediate escalation
 
-**Dependency Cycle Detection:**
-- Before execution, run topological sort on task graph
-- If cycle detected, halt and report circular dependencies to user
-- Require user to resolve dependency graph before proceeding
+**On failure:**
+1. Capture error context (type, message, component, recovery hints)
+2. Use `systematic-debugging` if root cause unclear
+3. Dispatch fix subagent
+4. Retry with fix applied
+5. Escalate if retries exhausted
 
-**On task failure:**
-1. Capture error context in structured format:
-   ```json
-   {
-     "error_type": "transient|permanent|architectural",
-     "component": "task-id",
-     "message": "error description",
-     "timestamp": "ISO8601",
-     "trace_id": "trace-id",
-     "recovery_hints": ["suggested actions"]
-   }
-   ```
-2. Use `systematic-debugging` to analyze root cause
-3. Dispatch fix subagent with debugging context
-4. Retry with exponential backoff (max 3 attempts)
-5. Escalate to user if retries exhausted or error is architectural
-
-**Error Taxonomy:**
-- **Transient**: Network issues, temporary unavailability → Auto-retry
-- **Permanent**: Invalid configuration, missing dependencies → Escalate after analysis
-- **Architectural**: Design flaws, fundamental issues → Immediate escalation
-
-## Execution Configuration
-
-**Parallelism:**
-- Execute independent tasks in parallel (no hard limit - use resource monitoring)
-- Respect task dependencies (blocked tasks wait)
-- Dynamic concurrency based on available resources
-
-**Context Passing:**
-- Pass completed task outputs to dependent tasks via structured context object
-- Maintain shared context across the swarm
-- Context schema: `{ plan_summary, completed_tasks[], current_task, shared_artifacts{}, dependencies_resolved[] }`
-
-**Review Gates:**
-- Verification after each task
-- Specialist review for domain-specific tasks
-- Quality review before marking complete
-
-## State Persistence and Checkpointing
-
-**Checkpoint Pattern:**
-- Create checkpoint after each phase completion (plan generation, task extraction, each task execution)
-- Store checkpoint to durable storage: `.claude/implement-checkpoints/{session_id}/{phase}.json`
-- Checkpoint includes: task states, context, completed work, errors encountered
-
-**Recovery Procedures:**
-- On session interruption, scan for latest checkpoint on next `/implement` invocation
-- If checkpoint found within 24 hours, offer resume from checkpoint
-- If resuming, validate task states and continue from last completed phase
-
-**TodoWrite Integration:**
-- Each task maps to a TodoWrite entry
-- Task state transitions update TodoWrite atomically
-- On recovery, sync state from TodoWrite if checkpoint is stale
-
-## Observability and Monitoring
-
-**Structured Logging:**
-```json
-{
-  "timestamp": "ISO8601",
-  "session_id": "uuid",
-  "phase": "plan_generation|task_execution|review",
-  "event": "subagent_start|subagent_complete|error",
-  "task_id": "task-identifier",
-  "subagent_type": "implementer|verifier|reviewer",
-  "duration_ms": 1234,
-  "status": "success|failure"
-}
-```
-
-**Metrics:**
-- Active subagents count
-- Task queue depth
-- Completion rate by domain
-- Average time per task
-- Retry count per task
-- Error rate by phase
-
-**Health Checks:**
-- Controller process heartbeat every 30 seconds
-- Subagent liveness check (timeout if no response)
-- Resource usage monitoring
-
-**Trace Propagation:**
-- Generate trace ID at session start
-- Propagate trace ID through all subagent dispatches
-- Include trace ID in all log entries
-
-## Resource Controls
-
-**Retry Policy:**
-- Max 3 retry attempts per task
-- Exponential backoff: 1s, 2s, 4s between retries
-- Circuit breaker: After 3 failures on same task, escalate to user
-
-## Example Usage
-
-**User:** `/implement Create a user authentication API with JWT tokens`
-
-**Skill Execution:**
-1. Dispatch `senior-prompt-engineer` to create auth API plan
-2. Extract tasks: setup project structure, implement JWT middleware, create login endpoint, create register endpoint, add tests
-3. Create TodoWrite tasks with dependencies
-4. Deploy subagent swarm via `subagent-driven-development`
-5. Execute tasks with verification and reviews
-6. Present completed implementation summary
-7. Invoke `implementation-status` to audit completion (verifies 100% before review)
-8. If 100% complete: Invoke `horde-review` for comprehensive validation across Backend, Architecture, Security, and DevOps domains
-9. If not 100% complete: Offer to complete remaining work first
-10. Present consolidated review report with findings and improvement recommendations
+---
 
 ## Error Handling
 
-**Plan Generation Fails:**
-- Retry with additional context
-- Ask clarifying questions if request is ambiguous
+**Plan parsing fails:** Ask clarifying questions. Suggest plan format conventions.
 
-**Task Execution Fails:**
-- Capture full error context
-- Use `systematic-debugging` for root cause
-- Dispatch fix subagent
-- Retry with fix applied
+**Phase executor fails:** Capture output, analyze failure, re-dispatch or escalate.
 
-**Multiple Failures:**
-- Escalate to user with context
-- Present partial results
-- Recommend next steps
+**Browser automation fails:** Follow fallback ladder (retry → CLI alternative → partial automation → human handoff).
+
+**Gate test fails:** Dispatch fix subagents for specific integration issues, re-run gate.
+
+**Context limit approaching:** Complete current task, write checkpoint, inform user to resume.
+
+**Multiple failures in same phase:** Escalate to user with full context, present options (fix/skip/abort).
+
+---
 
 ## Integration Points
 
-**Required Skills:**
-- `senior-prompt-engineer` - Plan generation
-- `subagent-driven-development` - Task execution
-- `dispatching-parallel-agents` - Parallel subagent management
+**Required:**
+- `horde-gate-testing` — Phase boundary integration testing
+- `subagent-driven-development` — Task execution via subagent swarm
+- `dispatching-parallel-agents` — Parallel subagent management
 
-**Optional Skills (auto-detected by domain):**
-- `code-reviewer` - Code review
-- `senior-backend` - Backend implementation
-- `senior-frontend` - Frontend implementation
-- `senior-devops` - Infrastructure tasks
-- `senior-data-engineer` - Data pipelines
-- `content-research-writer` - Content creation
-- `systematic-debugging` - Error analysis
-- `implementation-status` - Completion audit before review (Phase 5)
-- `horde-review` - Comprehensive post-implementation validation (Phase 6, only after 100% completion)
+**Conditional (by entry path):**
+- `senior-prompt-engineer` — Plan generation (Path A only)
+
+**Post-execution (always):**
+- `implementation-status` — Completion audit
+- `horde-test` — Comprehensive testing
+- `horde-review` — Multi-domain critical review
+
+**On error:**
+- `systematic-debugging` — Root cause analysis
+
+**Domain specialists (auto-detected):**
+- `senior-backend`, `senior-frontend`, `senior-devops`
+- `senior-data-engineer`, `senior-data-scientist`
+- `code-reviewer`, `content-research-writer`
+
+---
+
+## Examples
+
+### Example 1: Execute an Existing Plan
+
+**User:** `/implement docs/plans/kurultai_0.2.md`
+
+**Execution:**
+1. Detect Path B (file path provided)
+2. Parse plan → 10 phases, ~30 tasks, 8 appendices
+3. Check for checkpoint → none found, fresh execution
+4. Classify gate depths → 4 STANDARD/DEEP, 6 LIGHT/NONE
+5. Begin phase loop:
+   - Phase -1: dispatch executor subagent, run tasks, exit criteria → LIGHT gate → advance
+   - Phase 0: dispatch executor, env setup, exit criteria → LIGHT gate → advance
+   - Phase 1: dispatch executor, Neo4j setup, exit criteria → horde-gate-testing (STANDARD) → advance
+   - ...continue through all phases...
+   - Phase 3: browser tasks for Authentik UI handled inline by orchestrator
+6. Checkpoint after each phase
+7. All phases complete → implementation-status audit → horde-test → horde-review
+8. Present final report
+
+### Example 2: Generate and Execute from Request
+
+**User:** `/implement Create a user authentication API with JWT tokens`
+
+**Execution:**
+1. Detect Path A (no file path, feature request)
+2. Dispatch `senior-prompt-engineer` to generate plan
+3. Save plan to `docs/plans/2026-02-06-jwt-auth-api.md`
+4. Hand off to Path B execution engine
+5. Parse plan → 4 phases, 12 tasks
+6. Execute with gate testing at code→test boundary
+7. Post-execution pipeline: audit → test → review
+
+### Example 3: Resume Interrupted Execution
+
+**User:** `/implement docs/plans/kurultai_0.2.md`
+
+**Execution:**
+1. Detect Path B
+2. Check for checkpoint → found! Last active 2 hours ago
+3. Present: "Completed Phases -1 through 1.5, Phase 2 in progress (2/5 tasks done). Resume?"
+4. User confirms resume
+5. Validate Phase 1.5 exit criteria → pass
+6. Resume Phase 2 from task 2.3
+7. Continue execution normally

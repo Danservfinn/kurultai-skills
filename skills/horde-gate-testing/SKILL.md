@@ -9,6 +9,10 @@ integrations:
 
 This skill runs comprehensive integration tests between implementation phases (mid-plan execution) to catch integration issues early, rather than discovering them at the end.
 
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
+
 ## When to Use
 
 Use this skill when:

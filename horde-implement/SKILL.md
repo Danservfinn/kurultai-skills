@@ -23,6 +23,10 @@ integrations:
 
 General-purpose plan executor. Transforms requests or existing plans into executed implementations through AI-driven orchestration, subagent swarm execution, and phased gate testing.
 
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
+
 ## Overview
 
 ```

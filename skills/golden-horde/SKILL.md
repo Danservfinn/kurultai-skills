@@ -2,6 +2,9 @@
 name: golden-horde
 version: "2.0"
 description: Master orchestration skill. Collaborative multi-agent coordination with 60+ agent types (implementation, system, judgment), 9 patterns, and embedded methodologies from all horde skills (plan, implement, test, review, brainstorm, learn, gate-test, skill-create, swarm).
+integrations:
+  - horde-swarm
+  - horde-prompt
 ---
 
 # Golden Horde
@@ -21,6 +24,10 @@ Master orchestration skill for collaborative multi-agent workflows. Golden-horde
 **Relationship to Horde Skills:** Golden-horde embeds ALL horde skill methodologies as prompt templates. Spawned agents cannot call `Skill()` directly, so the orchestrator injects the relevant skill's workflow into the agent's prompt. This makes golden-horde a self-contained meta-orchestrator — it doesn't depend on external skill invocations during execution.
 
 **The Orchestrator:** Throughout this document, "the orchestrator" refers to the top-level Claude Code session that invokes golden-horde. It is NOT a spawned agent -- it is the invoking session that creates the team, monitors progress, and synthesizes output. Pattern-specific roles like "facilitator" (Consensus Deliberation) and "judge" (Adversarial Debate) are spawned agents within the team, distinct from the orchestrator unless explicitly noted.
+
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
 
 ## When to Use
 

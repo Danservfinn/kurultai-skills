@@ -43,6 +43,10 @@ Standalone utility for generating optimized prompts for horde agent types. Analy
 └─────────────────────────────────────────────────────────────┘
 ```
 
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
+
 ## When to Use
 
 Invoke `/horde-prompt` when:

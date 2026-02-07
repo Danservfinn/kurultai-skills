@@ -9,6 +9,10 @@ integrations:
 
 Transform ideas into production-ready designs through collaborative discovery amplified by parallel domain expert analysis.
 
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
+
 ## When to Use This Skill
 
 Invoke this skill when:

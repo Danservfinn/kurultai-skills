@@ -11,6 +11,10 @@ integrations:
 
 Enable continuous learning and knowledge application by analyzing text from diverse sources, extracting relevant insights, and translating them into actionable recommendations for the current project context.
 
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
+
 ## When to Use
 
 Invoke this skill when:

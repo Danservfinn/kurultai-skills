@@ -16,6 +16,10 @@ integrations:
 
 Perform comprehensive multi-disciplinary reviews using golden-horde Consensus Deliberation (Pattern 5). Domain experts independently analyze the artifact, then challenge each other's findings across domain boundaries, and converge on a consolidated report with cross-validated recommendations. This produces higher-quality reviews than independent parallel dispatch because experts directly identify conflicts, blind spots, and cross-cutting concerns that no single domain would catch alone.
 
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
+
 ## Quick Start
 
 Invoke this skill with your artifact:

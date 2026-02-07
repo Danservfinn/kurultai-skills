@@ -74,9 +74,21 @@ The cleanup preserves:
 2. Verify remaining processes are legitimate main sessions
 3. Check memory usage has decreased
 
+## Automatic Cleanup (PostToolUse Hook)
+
+A PostToolUse hook automatically monitors subagent count after every `Task` tool call:
+
+- **Script:** `~/.claude/hooks/post-task-cleanup.sh`
+- **Trigger:** Fires after each `Task` tool dispatch
+- **Threshold:** If orphaned subagent count > 50, kills all orphans
+- **Config:** Registered in `~/.claude/settings.json` under `hooks.PostToolUse`
+
+This is the primary defense against ENFILE (file table overflow). All 11 horde skills also include a "Process Guard" preamble as secondary defense-in-depth.
+
 ## Preventive Measures
 
 To avoid accumulation:
+- The PostToolUse hook handles cleanup automatically during horde dispatches
 - Restart Claude Code sessions weekly
 - Run cleanup before starting intensive work
 - Monitor memory usage periodically

@@ -25,6 +25,10 @@ Master orchestration skill for collaborative multi-agent workflows. Golden-horde
 
 **The Orchestrator:** Throughout this document, "the orchestrator" refers to the top-level Claude Code session that invokes golden-horde. It is NOT a spawned agent -- it is the invoking session that creates the team, monitors progress, and synthesizes output. Pattern-specific roles like "facilitator" (Consensus Deliberation) and "judge" (Adversarial Debate) are spawned agents within the team, distinct from the orchestrator unless explicitly noted.
 
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
+
 ## When to Use
 
 Use golden-horde when:

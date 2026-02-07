@@ -22,6 +22,10 @@ Execute comprehensive testing plans using parallel test agents across multiple t
 
 horde-test is a testing execution engine that leverages horde-swarm to run comprehensive test suites in parallel. It supports multiple test categories, tracks coverage metrics, and generates unified reports. Designed to integrate seamlessly with horde-implement Phase 6 (Testing and Validation).
 
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
+
 ## When to Use
 
 Invoke horde-test when you need to:

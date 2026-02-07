@@ -4,6 +4,7 @@ description: Guide for creating effective skills using a 7-phase multi-agent wor
 integrations:
   - horde-swarm
   - horde-plan
+  - horde-prompt
 ---
 
 # Supercharged Skill Creator
@@ -13,6 +14,10 @@ integrations:
 **Workflow:** 7-Phase Multi-Agent Skill Creation
 
 ---
+
+## Process Guard
+
+**Before dispatching agents**, run: `pgrep -fc "claude.*--disallowedTools"`. If count > 50, run `pkill -f "claude.*--disallowedTools"` first. This prevents orphaned subagent accumulation from causing ENFILE (file table overflow).
 
 ## Quick Start
 
