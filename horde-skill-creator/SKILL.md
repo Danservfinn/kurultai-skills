@@ -4,6 +4,7 @@ description: Guide for creating effective skills using a 7-phase multi-agent wor
 integrations:
   - horde-swarm
   - horde-plan
+  - horde-prompt
 ---
 
 # Supercharged Skill Creator

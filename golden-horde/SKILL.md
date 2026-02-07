@@ -2,6 +2,9 @@
 name: golden-horde
 version: "2.0"
 description: Master orchestration skill. Collaborative multi-agent coordination with 60+ agent types (implementation, system, judgment), 9 patterns, and embedded methodologies from all horde skills (plan, implement, test, review, brainstorm, learn, gate-test, skill-create, swarm).
+integrations:
+  - horde-swarm
+  - horde-prompt
 ---
 
 # Golden Horde

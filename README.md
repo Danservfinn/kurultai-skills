@@ -24,7 +24,7 @@ Skills are immediately available as slash commands in Claude Code (e.g., `/horde
 
 | Category | Skills |
 |---|---|
-| **Horde Ecosystem** | golden-horde (v2.0), horde-swarm, horde-plan (v1.2), horde-implement (v2.0), horde-test (v1.0), horde-review, horde-brainstorming, horde-learn, horde-gate-testing, horde-skill-creator |
+| **Horde Ecosystem** | golden-horde (v2.0), horde-swarm, horde-plan (v1.2), horde-implement (v2.0), horde-test (v1.0), horde-review, horde-brainstorming, horde-learn, horde-gate-testing, horde-skill-creator, horde-prompt |
 | **Senior Specialists** | senior-architect, senior-backend, senior-frontend, senior-fullstack, senior-devops, senior-data-engineer, senior-data-scientist, senior-ml-engineer, senior-computer-vision, senior-prompt-engineer |
 | **Dev Workflow** | brainstorming, writing-plans, executing-plans, subagent-driven-development, dispatching-parallel-agents, code-reviewer, requesting-code-review, receiving-code-review, verification-before-completion, systematic-debugging, implementation-status, ship-it |
 | **Specialized** | agent-collaboration, agent-development, command-development, skill-creator, skill-development, changelog-generator, claude-cleanup, file-organizer, video-downloader, webapp-testing, oauth-setup, theme-factory, web-artifacts-builder, frontend-design, writing-rules |
