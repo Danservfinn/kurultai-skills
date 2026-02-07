@@ -1,68 +1,89 @@
-# Signal Communication Protocol
+# Signal Communication Protocol (v0.2)
 
-Reference for communicating with OpenClaw agents via Signal messaging.
+Reference for communicating with OpenClaw agents. Updated for Kurultai v0.2 architecture.
+
+## v0.2 Architecture Change
+
+**Signal runs embedded inside the moltbot container** as a child process. The previous standalone `signal-cli-native-production.up.railway.app` RPC endpoint **no longer exists**.
+
+All external communication now goes through:
+1. **Gateway API** (primary) — `$OPENCLAW_GATEWAY_URL/api/message`
+2. **Signal relay** (fallback) — `$OPENCLAW_GATEWAY_URL/api/signal/send`
+3. **User relay** (last resort) — user pastes Signal messages manually
 
 ## Connection Details
 
-**Signal-CLI RPC Endpoint**: `https://signal-cli-native-production.up.railway.app/api/v1/rpc`
-**Signal Account**: `+15165643945`
+**Gateway API**: `$OPENCLAW_GATEWAY_URL/api/message` (authenticated via Bearer token)
+**External URL**: `https://kublai.kurult.ai` (behind Authentik SSO)
+**Signal Account**: `+15165643945` (embedded in moltbot, localhost-only)
 **Signal Group Name**: `Kublai Klub`
 **Signal Group ID**: `BROemHVncLgSz8tReUKBz6V3BeDhDB0EXaJd+sRp6oA=`
 
-**Note**: The OpenClaw gateway at `kublai.kurult.ai` is behind Authentik OAuth proxy. For programmatic access, use the signal-cli JSON-RPC endpoint directly.
+## Gateway API Reference
 
-## JSON-RPC API Reference
+### Send Message to Agent
 
-### Send Message to Group
 ```bash
-curl -X POST "https://signal-cli-native-production.up.railway.app/api/v1/rpc" \
+curl -X POST "$OPENCLAW_GATEWAY_URL/api/message" \
+  -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "jsonrpc": "2.0",
-    "method": "send",
-    "params": {
-      "account": "+15165643945",
-      "groupId": "BROemHVncLgSz8tReUKBz6V3BeDhDB0EXaJd+sRp6oA=",
-      "message": "Your message here"
-    },
-    "id": 1
+    "recipient": "main",
+    "message": "Your message here",
+    "plan_id": "plan-20260206-001"
   }'
 ```
 
-### Send Direct Message
+Valid recipient IDs: `main`, `researcher`, `writer`, `developer`, `analyst`, `ops`
+
+### Send Signal Message via Relay
+
 ```bash
-curl -X POST "https://signal-cli-native-production.up.railway.app/api/v1/rpc" \
+curl -X POST "$OPENCLAW_GATEWAY_URL/api/signal/send" \
+  -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "jsonrpc": "2.0",
-    "method": "send",
-    "params": {
-      "account": "+15165643945",
-      "recipient": ["+19194133445"],
-      "message": "Your message here"
-    },
-    "id": 1
+    "recipient": "+19194133445",
+    "message": "Your message here"
   }'
 ```
 
-### List Groups
+### Send to Signal Group via Relay
+
 ```bash
-curl -X POST "https://signal-cli-native-production.up.railway.app/api/v1/rpc" \
+curl -X POST "$OPENCLAW_GATEWAY_URL/api/signal/send" \
+  -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","method":"listGroups","params":{"account":"+15165643945"},"id":1}'
+  -d '{
+    "groupId": "BROemHVncLgSz8tReUKBz6V3BeDhDB0EXaJd+sRp6oA=",
+    "message": "Group message here"
+  }'
+```
+
+### Check Plan Status
+
+```bash
+curl "$OPENCLAW_GATEWAY_URL/api/plans/$PLAN_ID/status" \
+  -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN"
+```
+
+### Check Recent Messages
+
+```bash
+curl "$OPENCLAW_GATEWAY_URL/api/messages/recent" \
+  -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN"
 ```
 
 ## Message Types
 
 ### 1. Plan Handoff
 
-Send an implementation plan to @kublai (Squad Lead) for delegation and execution.
-
 ```markdown
 ---PLAN-HANDOFF---
 Plan ID: [unique-identifier]
 Priority: high | medium | low
 To: @kublai
+X-Agent-Auth:
 
 ## Objective
 [Clear statement of what needs to be accomplished]
@@ -70,65 +91,66 @@ To: @kublai
 ## Context
 [Background information the agent needs]
 
-## Steps
-1. [Step with clear success criteria]
-2. [Step with clear success criteria]
-3. [Step with clear success criteria]
+## Suggested Approach
+[Hint at specialist + steps]
 
 ## Success Criteria
 - [ ] [Measurable outcome 1]
 - [ ] [Measurable outcome 2]
 
 ## Constraints
-- [Time limit, if any]
-- [Resources available]
-- [Scope boundaries]
+- [Time, scope, resources]
 
 ## Handoff Protocol
-Report progress to: [Signal group or DM]
+Report progress to: Claude Code (via gateway API or Signal)
 Checkpoint frequency: [after each step | hourly | on completion]
-Escalate blockers to: @kublai
+On completion: Send HANDBACK-REPORT
 ---END-PLAN---
 ```
 
-### 2. Status Update
+### 2. Status Request
 
-Request or provide status on ongoing work.
+```markdown
+---STATUS-REQUEST---
+Plan ID: [reference to original plan]
+To: @[agent]
+X-Agent-Auth:
+
+[What status is being requested]
+---END-REQUEST---
+```
+
+### 3. Status Update
 
 ```markdown
 ---STATUS-UPDATE---
 Plan ID: [reference to original plan]
-Agent: [reporting agent]
-Timestamp: [ISO 8601]
+Agent: @[reporting agent]
 
 ## Progress
 - [x] Step 1: [completion notes]
-- [ ] Step 2: [in progress - 60%]
+- [ ] Step 2: [in progress]
 - [ ] Step 3: [not started]
 
 ## Blockers
-[None | Description of what's blocking progress]
-
-## Decisions Made
-- [Decision 1]: [rationale]
+[None | Description]
 
 ## Next Action
 [What happens next and when]
 ---END-STATUS---
 ```
 
-### 3. Handback Report
-
-Agent reports completion back to Claude Code.
+### 4. Handback Report
 
 ```markdown
 ---HANDBACK-REPORT---
 Plan ID: [original plan reference]
-Agent: [completing agent]
+Agent: @[completing agent]
 Status: completed | partial | blocked
+X-Agent-Auth:
 
 ## Deliverables
-- [Deliverable 1]: [location or description]
+- [Deliverable 1]: [location in /data/workspace/souls/{agent_id}/]
 - [Deliverable 2]: [location or description]
 
 ## Summary
@@ -136,29 +158,27 @@ Status: completed | partial | blocked
 
 ## Success Criteria Met
 - [x] [Criteria 1]
-- [x] [Criteria 2]
+- [ ] [Unmet criteria with explanation]
 
 ## Files Modified
 - [path/to/file1] - [what changed]
-- [path/to/file2] - [what changed]
 
 ## Open Items
-[Any remaining work or follow-up needed]
+[Remaining work or "None"]
 
 ## Learnings
-[Insights for future similar tasks]
+[Insights for future tasks]
 ---END-HANDBACK---
 ```
 
-### 4. Assistance Request
-
-OpenClaw agent requests Claude Code help.
+### 5. Assistance Request
 
 ```markdown
 ---ASSISTANCE-REQUEST---
 From: @[agent-name]
 Plan ID: [if related to existing plan]
 Urgency: high | medium | low
+X-Agent-Auth:
 
 ## Problem
 [Clear description of the issue]
@@ -172,19 +192,17 @@ Urgency: high | medium | low
 
 ## Context Files
 - [path/to/relevant/file]
-- [path/to/relevant/file]
 ---END-REQUEST---
 ```
 
-### 5. Course Correction
-
-Claude Code provides guidance to redirect work.
+### 6. Course Correction
 
 ```markdown
 ---COURSE-CORRECTION---
 Plan ID: [reference]
 To: @[agent]
 Severity: minor | moderate | major
+X-Agent-Auth:
 
 ## Issue Detected
 [What needs to change]
@@ -206,43 +224,52 @@ Severity: minor | moderate | major
 
 ## Agent Directory
 
-| Agent | Role | Best For |
-|-------|------|----------|
-| @kublai | Squad Lead | Coordination, delegation, quality review |
-| @mongke | Deep Researcher | Research, evidence gathering, analysis |
-| @ogedei | Content Writer | Writing, editing, documentation |
-| @temujin | Developer | Code implementation, automation, security |
-| @jochi | Analyst | Data analysis, SEO, metrics, strategy |
-| @chagatai | Operations | Admin, scheduling, process management |
+| Agent | ID | Role | Best For |
+|-------|-----|------|----------|
+| @kublai | `main` | Squad Lead | Coordination, delegation, quality review |
+| @mongke | `researcher` | Researcher | Research, evidence gathering, analysis |
+| @ogedei | `writer` | Writer | Writing, editing, file consistency |
+| @temujin | `developer` | Developer | Code implementation, automation, security |
+| @jochi | `analyst` | Analyst | Data analysis, AST code analysis, metrics, strategy |
+| @chagatai | `ops` | Operations | Admin, scheduling, process management |
 
-## Workspace Paths
+## Inter-Agent Communication
+
+| Channel | Mechanism | Direction |
+|---------|-----------|-----------|
+| Claude Code → Kublai | Gateway API or Signal relay | External → Internal |
+| Kublai → Specialists | `agentToAgent` (moltbot.json) | Internal |
+| Specialist → Kublai | `agentToAgent` return | Internal |
+| Kublai → Claude Code | Signal message or gateway response | Internal → External |
+
+## Workspace Paths (v0.2)
 
 ```
 /data/workspace/
-├── tasks/           # Task queue and tracking
-│   ├── inbox/       # New tasks
-│   ├── assigned/    # Tasks assigned to agents
-│   ├── in-progress/ # Active work
-│   ├── review/      # Awaiting review
-│   └── done/        # Completed
-├── memory/          # Agent working memory
-│   └── [agent]/     # Per-agent memory
-│       ├── WORKING.md
-│       └── [date].md
-├── deliverables/    # Completed work output
-│   ├── research/
-│   ├── content/
-│   ├── code-review/
-│   └── security/
-└── souls/           # Agent personality files
+├── souls/                # Per-agent working directories
+│   ├── main/             # Kublai
+│   │   └── MEMORY.md     # Personal memory
+│   ├── researcher/       # Mongke
+│   ├── writer/           # Ogedei
+│   ├── developer/        # Temujin
+│   ├── analyst/          # Jochi
+│   └── ops/              # Chagatai
+└── deliverables/         # Legacy output directory (being migrated to souls/)
 ```
+
+## Memory Architecture (v0.2)
+
+| Tier | Storage | Access | Contents |
+|------|---------|--------|----------|
+| **Personal** | `/data/workspace/souls/{id}/MEMORY.md` | Agent-only | Preferences, personal history |
+| **Operational** | Neo4j (shared) | All 6 agents | Research, patterns, analysis, task graph |
 
 ## Response Timeouts
 
 | Message Type | Expected Response |
 |--------------|-------------------|
 | Plan Handoff | Acknowledgment within 15 minutes |
-| Status Update | Immediate if agent is active |
+| Status Request | Immediate if agent is active |
 | Assistance Request | Within 1 heartbeat cycle (15 min) |
 | Course Correction | Acknowledgment required |
 
@@ -250,7 +277,17 @@ Severity: minor | moderate | major
 
 If no response received:
 
-1. Check agent heartbeat status in OpenClaw Control UI
-2. Verify Signal channel connectivity
-3. Retry via alternative agent (@kublai can redirect)
-4. If persistent, escalate to human via direct Signal DM
+1. Check gateway health: `curl $OPENCLAW_GATEWAY_URL/health`
+2. Check agent status via gateway API
+3. Check moltbot Railway logs: `railway logs --service moltbot-railway-template --since 5m`
+4. Retry via alternative transport (Signal relay if gateway failed, or vice versa)
+5. If persistent, user relay via Signal app
+
+## Security (v0.2)
+
+- Gateway API authenticated via `OPENCLAW_GATEWAY_TOKEN` Bearer token
+- signal-cli bound to `127.0.0.1:8081` — no external network exposure
+- Authentik SSO protects `kublai.kurult.ai` web endpoints
+- QR linking endpoint protected by `X-Signal-Token` header
+- Sender allowlists in moltbot.json
+- `X-Agent-Auth` field reserved for v0.3 HMAC-SHA256 signing

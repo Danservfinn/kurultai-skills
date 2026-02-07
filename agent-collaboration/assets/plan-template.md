@@ -2,6 +2,7 @@
 Plan ID: plan-{{YYYYMMDD}}-{{sequence}}
 Priority: {{high | medium | low}}
 To: @kublai
+X-Agent-Auth:
 
 ## Objective
 {{Clear, actionable objective statement}}
@@ -30,7 +31,7 @@ Steps:
 - Resources: {{available tools, files, APIs}}
 
 ## Handoff Protocol
-Report progress to: Claude Code (via Signal group)
+Report progress to: Claude Code (via gateway API or Signal)
 Checkpoint frequency: after each major step
 On completion: Send HANDBACK-REPORT
 ---END-PLAN---

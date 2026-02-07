@@ -2,9 +2,10 @@
 Plan ID: {{original plan ID}}
 Agent: @{{agent-name}}
 Status: {{completed | partial | blocked}}
+X-Agent-Auth:
 
 ## Deliverables
-- {{Deliverable 1}}: {{location in /data/workspace/ or description}}
+- {{Deliverable 1}}: {{location in /data/workspace/souls/{agent_id}/ or description}}
 - {{Deliverable 2}}: {{location or description}}
 
 ## Summary
