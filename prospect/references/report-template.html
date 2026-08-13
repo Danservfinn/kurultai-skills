@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{PLATFORM}} — prospect walkthrough — {{DATE}}</title>
+<!--
+  Fill every {{TOKEN}}. Delete sections that don't apply to the archetype; add
+  archetype-specific scorecard rows. "What I'd have paid" is for revenue-aimed runs only.
+
+  The value sections — the confidence trace, the belief ledger, "What it's worth to me",
+  "Does it pay for me", the objection states, and the audience sentence — follow
+  references/value-pyramid.md. They are what turns a rung and a score into an explanation,
+  so they are not optional trimming.
+
+  THEME: retune the variables below to the platform's own palette and fonts so the
+  team reads this as a native document. Sample real values from the site (computed
+  styles or the CSS) rather than guessing. Keep contrast at AA. Everything stays
+  inline — no CDNs, no external fonts; fall back to system stacks.
+-->
+<style>
+  :root{
+    --bg:#0d0d0f; --panel:#15151a; --panel-2:#1c1c22; --line:#2a2a33;
+    --ink:#eceaf0; --ink-dim:#a8a4b3; --ink-faint:#6f6b7c;
+    --accent:#f0b429; --accent-ink:#0d0d0f;
+    --delight:#3ecf8e; --fine:#7c9cf5; --friction:#f0b429; --exit:#f2545b;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --wide:1080px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+       line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--wide);margin:0 auto;padding:48px 24px 96px}
+  header.top{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:40px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;
+           text-transform:uppercase;color:var(--accent)}
+  h1{font-size:clamp(28px,4.5vw,44px);line-height:1.15;margin:12px 0 8px;letter-spacing:-.02em}
+  h2{font-size:24px;margin:56px 0 16px;letter-spacing:-.01em;
+     padding-top:24px;border-top:1px solid var(--line)}
+  h3{font-size:16px;margin:28px 0 10px;color:var(--ink)}
+  .sub{color:var(--ink-dim);font-size:15px;margin:0}
+  .disclaimer{margin-top:16px;font-size:13px;color:var(--ink-faint);
+              border-left:2px solid var(--line);padding-left:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+        padding:24px;margin:20px 0}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .kv{font-size:14px}
+  .kv dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+         text-transform:uppercase;color:var(--ink-faint);margin-bottom:2px}
+  .kv dd{margin:0 0 14px;color:var(--ink)}
+  .src{display:block;font-size:12px;color:var(--ink-faint);font-style:italic;margin-top:2px}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:18px 0}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);
+        vertical-align:top}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+     color:var(--ink-faint);font-weight:500}
+  tbody tr:hover{background:var(--panel-2)}
+  .scroll{overflow-x:auto}
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;
+       border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+  .t-delight{color:var(--delight)} .t-fine{color:var(--fine)}
+  .t-friction{color:var(--friction)} .t-exit{color:var(--exit)}
+  pre{background:#08080a;border:1px solid var(--line);border-radius:8px;padding:14px;
+      overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.5;color:#d6d3de}
+  code{font-family:var(--mono);font-size:.92em;background:var(--panel-2);
+       padding:1px 5px;border-radius:4px}
+  pre code{background:none;padding:0}
+  figure{margin:20px 0}
+  figure img{width:100%;border:1px solid var(--line);border-radius:8px;display:block}
+  figcaption{font-size:13px;color:var(--ink-dim);margin-top:8px}
+  .stat-row{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+            margin:24px 0}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+  .stat .n{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+  .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+           text-transform:uppercase;color:var(--ink-faint);margin-top:6px}
+  .bar{display:inline-flex;gap:3px;vertical-align:middle}
+  .bar i{width:12px;height:12px;border-radius:2px;background:var(--line);display:block}
+  .bar i.on{background:var(--accent)}
+  .rung{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0;padding:0;list-style:none}
+  .rung li{flex:1 1 130px;padding:12px;border:1px solid var(--line);border-radius:8px;
+           font-size:13px;color:var(--ink-faint);background:var(--panel)}
+  .rung li.here{border-color:var(--accent);color:var(--ink);background:var(--panel-2)}
+  .rung li b{display:block;font-family:var(--mono);font-size:11px;color:var(--accent)}
+  .conf{font-family:var(--mono);font-size:13px;white-space:nowrap}
+  .think{color:var(--ink-dim);font-style:italic}
+  .spark{width:100%;height:132px;display:block;background:var(--panel);
+         border:1px solid var(--line);border-radius:10px}
+  .spark text{font-family:var(--mono);font-size:9px;fill:var(--ink-faint)}
+  /* value-ladder diagnoses — see references/value-pyramid.md §3 */
+  .d-copy{color:var(--friction)} .d-gap{color:var(--exit)} .d-over{color:var(--exit)}
+  .d-parity{color:var(--ink-faint)} .d-loss{color:var(--exit)} .d-pitch{color:var(--delight)}
+  .lvl{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+       color:var(--ink-faint)}
+  .math td:last-child{font-family:var(--mono);text-align:right;white-space:nowrap}
+  .math tr.total td{border-top:2px solid var(--line);font-weight:600}
+  .caveat{font-size:12.5px;color:var(--ink-faint);border-left:2px solid var(--friction);
+          padding-left:12px;margin:12px 0}
+  .rec{border-left:3px solid var(--accent);padding:4px 0 4px 16px;margin:22px 0}
+  .rec h3{margin:0 0 6px}
+  .rec .meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+             text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+  .verdict{background:var(--accent);color:var(--accent-ink);border-radius:12px;
+           padding:28px;margin:40px 0}
+  .verdict h2{border:0;margin:0 0 10px;padding:0;color:var(--accent-ink)}
+  .verdict p{margin:0 0 10px}
+  footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
+         font-size:12.5px;color:var(--ink-faint)}
+  @media print{body{background:#fff;color:#111} .card,.stat{border-color:#ddd}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">Prospect walkthrough · {{DATE}}</div>
+  <h1>{{PLATFORM}}, walked as {{PERSONA_NAME}}</h1>
+  <p class="sub">{{ONE_LINE_VERDICT}}</p>
+  <p class="disclaimer">
+    Independent prospect walkthrough of {{PLATFORM_URL}}, produced by simulating one
+    researched buyer persona against the live product on {{DATE}}. Not affiliated with
+    or endorsed by {{COMPANY}}. Findings reflect what this persona encountered in
+    {{SESSION_LENGTH}}; observations about internals are marked as inference.
+  </p>
+</header>
+
+<div class="stat-row">
+  <div class="stat"><div class="n">{{TTFV}}</div><div class="l">Time to first value</div></div>
+  <div class="stat"><div class="n">{{RUNG}}/5</div><div class="l">Exit rung</div></div>
+  <div class="stat"><div class="n">{{SCORE}}</div><div class="l">Overall score</div></div>
+  <div class="stat"><div class="n">{{BLOCKERS}}</div><div class="l">Exit-risk moments</div></div>
+</div>
+
+<!-- VOICE: this report is the persona's own account, first person singular, past tense.
+     Fill every {{...}} below as the persona speaking ("I run platform at…"), not as a
+     description of them. The <span class="src"> annotations stay out of voice — they are
+     the evidence trail. If the persona is an archetype composite rather than a real named
+     person, say so in {{ARCHETYPE}}: first person reads as testimony, so be honest about
+     who is testifying. -->
+<h2>Who I am</h2>
+<div class="card">
+  <h3>{{PERSONA_NAME}} — {{PERSONA_ROLE}}</h3>
+  <div class="grid">
+    <dl class="kv">
+      <dt>Where I work</dt><dd>{{COMPANY_CONTEXT}}<span class="src">{{SOURCE}}</span></dd>
+      <dt>What I'm building</dt><dd>{{BUILDING}}<span class="src">{{SOURCE}}</span></dd>
+      <dt>My stack</dt><dd>{{STACK}}<span class="src">{{SOURCE}}</span></dd>
+    </dl>
+    <dl class="kv">
+      <dt>Why I'm here</dt><dd>{{TRIGGER}}<span class="src">{{SOURCE}}</span></dd>
+      <dt>How I evaluate</dt><dd>{{STYLE}}<span class="src">{{SOURCE}}</span></dd>
+      <dt>Time I'll give it</dt><dd>{{TIME_BUDGET}}</dd>
+    </dl>
+    <dl class="kv">
+      <dt>What I can sign for</dt><dd>{{BUDGET}}</dd>
+      <dt>What I'll use instead</dt><dd>{{ALTERNATIVE}}<span class="src">{{SOURCE}}</span></dd>
+      <dt>Archetype</dt><dd>{{ARCHETYPE}}</dd>
+    </dl>
+  </div>
+  <h3>What makes me leave</h3>
+  <!-- Stated as rules the persona applies, in their own words:
+       "If the quickstart curl doesn't work first try, I'm out." -->
+  <ul>
+    <li>{{HEURISTIC}}</li>
+  </ul>
+
+  <h3>My numbers</h3>
+  <!-- The value math in "Does it pay for me" is arithmetic on these fields and nothing
+       else. Every row carries its source like any other trait. A field with no defensible
+       source is left as "—" and the math says so; an invented number here discredits the
+       whole report. -->
+  <div class="scroll">
+  <table>
+    <thead><tr><th>What</th><th>My figure</th><th>Where it comes from</th></tr></thead>
+    <tbody>
+      <tr><td>{{UNIT}} per month</td><td>{{V}}</td><td>{{SOURCE}}</td></tr>
+      <tr><td>Cost of one {{BAD_OUTCOME}}</td><td>{{C_BAD}}</td><td>{{SOURCE}}</td></tr>
+      <tr><td>How often that happens without this</td><td>{{P_BAD}}</td><td>{{SOURCE}}</td></tr>
+      <tr><td>Cost of one false alarm</td><td>{{C_FP}}</td><td>{{SOURCE}}</td></tr>
+      <tr><td>Hours to integrate</td><td>{{H}}</td><td>{{SOURCE}}</td></tr>
+      <tr><td>What an hour of mine is worth</td><td>{{R}}</td><td>{{SOURCE}}</td></tr>
+      <tr><td>The tier I'd buy</td><td>{{PRICE}}/mo</td><td>{{SOURCE}}</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<h2>What I did</h2>
+<!-- The last two columns are the confidence trace: how likely I was to buy at that
+     moment, and what I was actually thinking. Both recorded at the step, before the next
+     one — a curve drawn afterwards is a story about the verdict, not evidence for it. -->
+<div class="scroll">
+<table>
+  <thead><tr><th>Stage</th><th>What I did</th><th>Expected</th><th>Actually happened</th><th>Verdict</th><th>Confidence</th><th>What I thought</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>{{STAGE}}</td><td>{{DID}}</td><td>{{EXPECTED}}</td><td>{{ACTUAL}}</td>
+      <td><span class="tag t-friction">friction</span></td>
+      <td class="conf">{{CONF}}</td>
+      <td class="think">“{{INNER_THOUGHT}}”</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- Confidence trace. Plot one point per journey row: x = 40 + i*step, y = 110 - conf.
+     Keep the polyline points list in step order; drop a <circle> on the peak and on the
+     steepest fall, and caption both. -->
+<figure>
+<svg class="spark" viewBox="0 0 1000 132" preserveAspectRatio="none" role="img"
+     aria-label="Confidence over the session: {{SPARK_ALT}}">
+  <line x1="40" y1="10" x2="40" y2="110" stroke="#2a2a33"/>
+  <line x1="40" y1="110" x2="980" y2="110" stroke="#2a2a33"/>
+  <line x1="40" y1="60" x2="980" y2="60" stroke="#2a2a33" stroke-dasharray="3 4"/>
+  <text x="6" y="14">100</text><text x="14" y="63">50</text><text x="22" y="113">0</text>
+  <polyline points="{{CONF_POINTS}}" fill="none" stroke="#f0b429" stroke-width="2"/>
+  <circle cx="{{PEAK_X}}" cy="{{PEAK_Y}}" r="4" fill="#3ecf8e"/>
+  <circle cx="{{DROP_X}}" cy="{{DROP_Y}}" r="4" fill="#f2545b"/>
+</svg>
+<figcaption>Peaked at {{PEAK_MOMENT}} — that's where the ask belongs. Fell at
+{{DROP_MOMENT}}, which is where the session really ended.</figcaption>
+</figure>
+
+<figure>
+  <img src="data:image/jpeg;base64,{{B64}}" alt="{{ALT}}">
+  <figcaption>{{CAPTION}}</figcaption>
+</figure>
+
+<pre><code>{{REAL_REQUEST_AND_RESPONSE_WITH_TIMING}}</code></pre>
+
+<h2>Platform map</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>Surface</th><th>Its job</th><th>State</th><th>Note</th></tr></thead>
+  <tbody>
+    <tr><td><code>{{ROUTE}}</code></td><td>{{JOB}}</td>
+        <td><span class="tag t-fine">works</span></td><td>{{NOTE}}</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>What I believed, and what changed it</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>Walking in I thought…</th><th>What changed it</th><th>By the end I thought…</th></tr></thead>
+  <tbody>
+    <tr><td>{{PRIOR_BELIEF}}</td><td>{{THE_ARTIFACT_THAT_MOVED_IT}}</td><td>{{POSTERIOR}}</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="card">
+  <h3>What nothing here tested</h3>
+  <!-- The beliefs the site left to chance. Usually the most useful list in the report. -->
+  <ul><li>{{UNTESTED_BELIEF}}</li></ul>
+</div>
+
+<h2>What it's worth to me</h2>
+<!-- Weights were set before the walkthrough, from my heuristics and why I came.
+     Delivered cites the walkthrough, never the marketing. Communicated is scored from
+     where I actually went — a good page I never reached scores 1, and that's the finding.
+     Diagnosis rules: references/value-pyramid.md §3. -->
+<div class="scroll">
+<table>
+  <thead><tr><th>What I'm buying</th><th>Level</th><th>Weight</th><th>Delivered</th><th>Told me</th><th>{{ALTERNATIVE}}</th><th>Diagnosis</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>{{ELEMENT}}<span class="src">{{RECEIPT_FROM_THE_WALKTHROUGH}}</span></td>
+      <td class="lvl">{{LEVEL}}</td><td>{{W}}/3</td><td>{{D}}/3</td><td>{{C}}/3</td><td>{{A}}/3</td>
+      <td><span class="tag d-copy">copy debt</span></td>
+    </tr>
+    <!-- tags: d-copy "copy debt" · d-gap "product gap" · d-over "overclaim"
+                d-parity "parity" · d-loss "the loss" · d-pitch "the pitch" -->
+  </tbody>
+</table>
+</div>
+<div class="grid">
+  <div class="card">
+    <h3>Where you pitch vs where I decided</h3>
+    <p>{{PITCH_LEVEL_VS_DECISION_LEVEL_IN_ONE_SENTENCE}}</p>
+  </div>
+  <div class="card">
+    <h3>The thing you have and never told me</h3>
+    <p>{{UNSOLD_ASSET}} — today it appears at {{WHERE_IT_APPEARS_NOW}}.</p>
+  </div>
+</div>
+
+<h2>Does it pay for me</h2>
+<div class="scroll">
+<table class="math">
+  <tbody>
+    <tr><td>What one {{BAD_OUTCOME}} costs me</td><td>{{C_BAD}}</td></tr>
+    <tr><td>How often I'd expect one without this</td><td>{{P_BAD}}</td></tr>
+    <tr><td>So my exposure, per year</td><td>{{EXPOSURE}}</td></tr>
+    <tr><td>Caught {{HITS}} of {{N}} things I threw at it</td><td>{{BENEFIT}}</td></tr>
+    <tr><td>Subscription, {{PRICE}}/mo</td><td>{{ANNUAL_PRICE}}</td></tr>
+    <tr><td>{{H}} hours to wire in, at {{R}}/hr</td><td>{{INTEGRATION_COST}}</td></tr>
+    <tr><td>False alarms: {{FPS}} of {{N}} × {{V}}/mo × {{C_FP}} each</td><td>{{FP_COST}}</td></tr>
+    <tr class="total"><td>Net, year one</td><td>{{NET}}</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="caveat">{{HITS}} of {{N}} probes is not a rate. These numbers move a lot on a
+bigger sample; treat the sign, not the magnitude.</p>
+<div class="card">
+  <p><strong>{{BREAK_EVEN_SENTENCE_IN_MY_VOICE}}</strong></p>
+</div>
+<h3>The same sum for what I'd do instead</h3>
+<div class="scroll">
+<table>
+  <thead><tr><th>Option</th><th>Costs me</th><th>Leaves me exposed to</th><th>Net</th></tr></thead>
+  <tbody>
+    <tr><td>{{THIS_PRODUCT}}</td><td>{{X}}</td><td>{{Y}}</td><td>{{NET}}</td></tr>
+    <tr><td>{{ALTERNATIVE}}</td><td>{{X}}</td><td>{{Y}}</td><td>{{NET}}</td></tr>
+    <tr><td>Do nothing — what I did last month</td><td>0</td><td>{{FULL_EXPOSURE}}</td><td>{{NET}}</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>My objections</h2>
+<!-- Three states, not two. "Answered but I never found it" is a navigation bug and gets
+     mistaken for "absent" constantly — which sends the team to build what it already has. -->
+<div class="scroll">
+<table>
+  <thead><tr><th>What worried me</th><th>State</th><th>Evidence</th></tr></thead>
+  <tbody>
+    <tr><td>{{OBJECTION}}</td><td><span class="tag t-friction">answered, never found</span></td><td>{{WHERE_THE_ANSWER_ACTUALLY_LIVES}}</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Who I'd have to explain this to</h2>
+<div class="card">
+  <p>{{THE_AUDIENCE_AND_WHY_THEY_GET_A_SAY}}</p>
+  <p><strong>The sentence I'd use:</strong> “{{THE_SENTENCE}}”</p>
+</div>
+
+<h2>Claim ledger</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>Claim</th><th>Where</th><th>Probe</th><th>Verdict</th></tr></thead>
+  <tbody>
+    <tr><td>{{CLAIM}}</td><td>{{WHERE}}</td><td>{{PROBE}}</td><td>{{HELD_OR_NOT}}</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>What worked, what didn't</h2>
+<div class="grid">
+  <div class="card">
+    <h3 style="color:var(--delight)">Liked</h3>
+    <ul><li>{{LIKE}} <span class="src">{{RECEIPT}}</span></li></ul>
+  </div>
+  <div class="card">
+    <h3 style="color:var(--exit)">Didn't like</h3>
+    <ul><li>{{DISLIKE}} <span class="src">{{RECEIPT}} — {{CAVEAT}}</span></li></ul>
+  </div>
+</div>
+
+<h2>Scorecard</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>Dimension</th><th>{{PLATFORM}}</th><th>Score</th><th>{{ALTERNATIVE}}</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>First impression</td><td>{{N}}/5</td>
+      <td><span class="bar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td>
+      <td>{{ALT_N}}/5</td><td>{{WHY}}</td>
+    </tr>
+    <tr><td>Time to first value</td><td colspan="4">{{ROW}}</td></tr>
+    <tr><td>Docs / help quality</td><td colspan="4">{{ROW}}</td></tr>
+    <tr><td>Pricing clarity</td><td colspan="4">{{ROW}}</td></tr>
+    <tr><td>Trust signals</td><td colspan="4">{{ROW}}</td></tr>
+    <tr><td>Competitive standing</td><td colspan="4">{{ROW}}</td></tr>
+    <!-- archetype extras from references/archetypes.md -->
+  </tbody>
+</table>
+</div>
+
+<h2>What would have kept me</h2>
+<!-- The one place the register shifts, because the audience does. Open each in the
+     persona's voice (what would have changed my mind), then state the fix plainly and
+     directively so it can be lifted straight into a ticket. -->
+<!-- Order by what it costs to fix, not by how loudly it was felt: copy-debt rows are a
+     day's work and go first, product gaps are a quarter and go below them. -->
+<div class="rec">
+  <div class="meta">Impact {{HIGH}} · Effort {{LOW}} · Fixes {{JOURNEY_MOMENT}} · Moves {{VALUE_LADDER_ROW}}</div>
+  <h3>{{RECOMMENDATION}}</h3>
+  <p>{{WHAT_TO_DO_CONCRETELY_ENOUGH_TO_TICKET}}</p>
+</div>
+
+<h2>What I'd have paid</h2>
+<!-- Revenue-aimed runs only. Cards state the floor and almost never test the ceiling. -->
+<div class="scroll">
+<table>
+  <thead><tr><th>Price</th><th>My reaction</th></tr></thead>
+  <tbody>
+    <tr><td>{{TOO_CHEAP}}</td><td>{{WHAT_IS_WRONG_WITH_IT_AT_THAT_PRICE}}</td></tr>
+    <tr><td>{{FAIR}}</td><td>{{WOULD_NOT_THINK_TWICE}}</td></tr>
+    <tr><td>{{HESITATE}}</td><td>{{WHAT_IT_WOULD_HAVE_TO_DO_TO_EARN_IT}}</td></tr>
+    <tr><td>{{TOO_MUCH}}</td><td>{{OUT_OF_THE_QUESTION_BECAUSE}}</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="verdict">
+  <h2>Where I landed</h2>
+  <p><strong>I {{CONVERTED_OR_NOT}}.</strong> {{WHY_IN_TWO_SENTENCES}}</p>
+  <p>The single change that would have moved me up one rung: <strong>{{THE_ONE_CHANGE}}</strong></p>
+</div>
+
+<h2>What I'd tell a colleague</h2>
+<!-- One paragraph, as they'd post it in a team channel. The honest compression of what
+     they think this is worth — and a free word-of-mouth test. -->
+<div class="card">
+  <p>{{THE_PARAGRAPH}}</p>
+</div>
+
+<ul class="rung">
+  <li><b>1</b> Bounced</li>
+  <li><b>2</b> Left unconvinced</li>
+  <li class="here"><b>3</b> Bookmarked</li>
+  <li><b>4</b> Signed up / trialed</li>
+  <li><b>5</b> Would pay / adopt</li>
+</ul>
+
+<footer>
+  Walked {{DATE}} · {{SESSION_LENGTH}} · {{N_CALLS}} API calls · persona derived from
+  {{N_SOURCES}} sources · generated by the <code>prospect</code> skill.
+  Post-exit exploration is labeled inline and excluded from the scorecard.
+</footer>
+
+</div>
+</body>
+</html>
