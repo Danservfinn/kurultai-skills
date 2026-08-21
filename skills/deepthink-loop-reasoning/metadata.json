@@ -1,0 +1,13 @@
+{
+  "slug": "deepthink-loop-reasoning",
+  "source": "discord",
+  "source_ref": "1485392832154832906/1519931768612847647",
+  "source_repo": "1485392832154832906/1519931768612847647",
+  "source_url": "1485392832154832906/1519931768612847647",
+  "extracted_at": "2026-08-21T19:00:34.794096",
+  "run_id": "20260821-1800",
+  "confidence": 0.85,
+  "category": "agent-security",
+  "pipeline_version": "1.0",
+  "generator_model": "zai:glm-5.2"
+}
