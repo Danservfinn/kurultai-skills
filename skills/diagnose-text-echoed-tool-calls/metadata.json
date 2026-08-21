@@ -1,0 +1,13 @@
+{
+  "slug": "diagnose-text-echoed-tool-calls",
+  "source": "discord",
+  "source_ref": "1485307775444844625/1540100375024107571",
+  "source_repo": "1485307775444844625/1540100375024107571",
+  "source_url": "1485307775444844625/1540100375024107571",
+  "extracted_at": "2026-08-21T18:12:24.354857",
+  "run_id": "20260821-1800",
+  "confidence": 0.85,
+  "category": "ops-automation",
+  "pipeline_version": "1.0",
+  "generator_model": "zai:glm-5.2"
+}
