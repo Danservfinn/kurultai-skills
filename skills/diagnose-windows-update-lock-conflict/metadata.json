@@ -1,0 +1,13 @@
+{
+  "slug": "diagnose-windows-update-lock-conflict",
+  "source": "discord",
+  "source_ref": "1485307775444844625/1540567795669143652",
+  "source_repo": "1485307775444844625/1540567795669143652",
+  "source_url": "1485307775444844625/1540567795669143652",
+  "extracted_at": "2026-08-23T06:18:58.106963",
+  "run_id": "20260823-0608",
+  "confidence": 0.85,
+  "category": "ops-automation",
+  "pipeline_version": "1.0",
+  "generator_model": "zai:glm-5.2"
+}
