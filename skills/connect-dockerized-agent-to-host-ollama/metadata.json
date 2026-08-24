@@ -1,0 +1,13 @@
+{
+  "slug": "connect-dockerized-agent-to-host-ollama",
+  "source": "discord",
+  "source_ref": "1485307775444844625/1541086922410303518",
+  "source_repo": "1485307775444844625/1541086922410303518",
+  "source_url": "1485307775444844625/1541086922410303518",
+  "extracted_at": "2026-08-24T06:21:20.230896",
+  "run_id": "20260824-0608",
+  "confidence": 0.85,
+  "category": "infrastructure",
+  "pipeline_version": "1.0",
+  "generator_model": "zai:glm-5.2"
+}
