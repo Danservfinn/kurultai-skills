@@ -1,0 +1,13 @@
+{
+  "slug": "split-shared-sqlite-state-dir-between-docker-and-local-agent-runtimes",
+  "source": "discord",
+  "source_ref": "1485307775444844625/1541579913256108172",
+  "source_repo": "1485307775444844625/1541579913256108172",
+  "source_url": "1485307775444844625/1541579913256108172",
+  "extracted_at": "2026-08-26T06:28:15.674520",
+  "run_id": "20260826-0600",
+  "confidence": 0.85,
+  "category": "ops-automation",
+  "pipeline_version": "1.0",
+  "generator_model": "zai:glm-5.2"
+}
