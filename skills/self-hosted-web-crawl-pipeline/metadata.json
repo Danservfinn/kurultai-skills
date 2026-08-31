@@ -1,0 +1,13 @@
+{
+  "slug": "self-hosted-web-crawl-pipeline",
+  "source": "github",
+  "source_ref": "groktopus/groktocrawl",
+  "source_repo": "groktopus/groktocrawl",
+  "source_url": "https://github.com/groktopus/groktocrawl",
+  "extracted_at": "2026-08-31T06:19:16.054619",
+  "run_id": "20260831-0601",
+  "confidence": 0.8,
+  "category": "infrastructure",
+  "pipeline_version": "1.0",
+  "generator_model": "zai:glm-5.2"
+}
