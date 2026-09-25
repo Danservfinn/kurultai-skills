@@ -1,0 +1,13 @@
+{
+  "slug": "web-to-markdown-and-structured-extraction",
+  "source": "github",
+  "source_ref": "unclecode/crawl4ai",
+  "source_repo": "unclecode/crawl4ai",
+  "source_url": "https://github.com/unclecode/crawl4ai",
+  "extracted_at": "2026-09-25T06:04:19.602427",
+  "run_id": "20260925-0600",
+  "confidence": 0.85,
+  "category": "content",
+  "pipeline_version": "1.0",
+  "generator_model": "zai:glm-5.2"
+}
