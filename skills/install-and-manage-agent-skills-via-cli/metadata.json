@@ -1,0 +1,13 @@
+{
+  "slug": "install-and-manage-agent-skills-via-cli",
+  "source": "github",
+  "source_ref": "vercel-labs/skills",
+  "source_repo": "vercel-labs/skills",
+  "source_url": "https://github.com/vercel-labs/skills",
+  "extracted_at": "2026-09-29T06:10:45.681826",
+  "run_id": "20260929-0608",
+  "confidence": 0.9,
+  "category": "ops-automation",
+  "pipeline_version": "1.0",
+  "generator_model": "zai:glm-5.2"
+}
