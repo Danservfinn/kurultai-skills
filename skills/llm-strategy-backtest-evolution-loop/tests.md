@@ -1,0 +1,10 @@
+# Tests — llm-strategy-backtest-evolution-loop
+
+Manual checklist. All assertions are relative to the installed build's own output, not to numbers printed in the README.
+
+1. **CLI surface check runs first.** `alphaevo --help` exits 0 and the skill's Step 1 help invocations are recorded. Verify the agent's run notes state which of `run`/`evolve`/`optimize`/`tree` (and `rsi`/`truth`/`shadow` groups) exist; if any documented flag was absent, the agent substituted or skipped rather than guessing.
+2. **Baseline exists.** `alphaevo run <strategy_id> --adapter yfinance --start <date> --end <date>` completes and prints a metrics set (signals, win rate, avg return, drawdown or score) that is captured verbatim in the report. No comparison to README figures.
+3. **Evolution run completes.** `alphaevo evolve <strategy_id> --method llm --rounds N --output reports/` exits; `reports/` contains `<strategy_id>_research_log.md` and, per the README's export behavior, `<strategy_id>_research_report.md` and/or `<strategy_id>_llm_evidence.md`. Accept "all mutations rejected, score unchanged" as a valid outcome if the log documents gate rejections.
+4. **Trajectory export path matches the output dir used.** With `--output reports/`, check `ls reports/trajectory/*.jsonl` (and also `find reports -name 'trajectory.jsonl' -o -name 'sharegpt.jsonl' -o -name 'preference.jsonl'` to cover nesting variants). Pass if at least one jsonl artifact exists under `reports/`; if none, the agent must have noted the export flag is missing/different in this build.
+5. **Gate/audit steps are conditional, not fabricated.** If `rsi null-audit` / `truth trials` / `shadow register` appear in `alphaevo --help`, their outputs are included in the deliverable; if not, the report explicitly states they are unavailable rather than inventing output.
+6. **Lineage is renderable.** `alphaevo tree <strategy_id>` (or the documented equivalent) produces a parent-child structure consistent with the versions named in `_research_log.md`.

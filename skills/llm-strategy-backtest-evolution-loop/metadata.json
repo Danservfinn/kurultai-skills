@@ -1,0 +1,13 @@
+{
+  "slug": "llm-strategy-backtest-evolution-loop",
+  "source": "github",
+  "source_ref": "ZhuLinsen/alphaevo",
+  "source_repo": "ZhuLinsen/alphaevo",
+  "source_url": "https://github.com/ZhuLinsen/alphaevo",
+  "extracted_at": "2026-11-19T06:07:39.639997",
+  "run_id": "20261119-0600",
+  "confidence": 0.85,
+  "category": "ops-automation",
+  "pipeline_version": "1.0",
+  "generator_model": "zai:glm-5.2"
+}
